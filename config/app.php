@@ -66,8 +66,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // config/app.php
 
+    'timezone' => 'Asia/Ho_Chi_Minh',
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

@@ -2,7 +2,9 @@
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -24,7 +26,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
         $user= Auth::user();
         if($user->role =='admin'){
-            return redirect()->route('admin_dashboard');
+            return redirect()->route('admin.dashboard');
         }
         // D. Chuyển hướng người dùng về trang chủ
         return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
@@ -39,5 +41,25 @@ class LoginController extends Controller
     $request->session()->regenerateToken(); // 3. Làm mới mã bảo mật (CSRF)
     return redirect()->route('trang_chu'); // 4. Đuổi về trang đăng nhập
     }
-    
+    // 1. Chuyển hướng người dùng sang Google
+public function redirectToGoogle() {
+    return Socialite::driver('google')->redirect();
+}
+
+// 2. Nhận dữ liệu từ Google trả về
+public function handleGoogleCallback() {
+    $googleUser = Socialite::driver('google')->user();
+
+    // Tìm user có email này trong DB, nếu không có thì tạo mới
+    $user = User::updateOrCreate([
+        'google_id' => $googleUser->id,
+    ], [
+        'name' => $googleUser->name,
+        'email' => $googleUser->email,
+        'password' => bcrypt('123456dummy'), // Mật khẩu ảo
+    ]);
+
+    Auth::login($user);
+    return redirect('/dashboard'); // Đăng nhập xong vào thẳng Dashboard
+    }
 }

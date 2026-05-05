@@ -18,7 +18,7 @@ class CheckRole
     {
          {
         if (!Auth::check()) {
-            return redirect()->route('trang_chu');
+            return redirect('/');
         }
 
         $userRole = Auth::user()->role;

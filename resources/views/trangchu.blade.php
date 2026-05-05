@@ -43,9 +43,14 @@
                     <li class="nav-item"><a class="nav-link active" href="#">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#pricing">Gói tập</a></li>
                 </ul>
-
+                <div class="mt-3">
+    <a href="{{ url('auth/google') }}" class="btn btn-danger w-100 mb-2">
+        <i class="fab fa-google"></i> Đăng nhập bằng Google
+    </a>
+    </div>
                 <div class="navbar-nav ms-auto d-flex align-items-center">
                     @guest
+                        
                         <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
                         <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
                     @else
@@ -56,8 +61,8 @@
                                 <span class="text-white fw-medium">{{ Auth::user()->full_name }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-dumbbell me-2 text-muted"></i> Gói tập của tôi</a></li>
+                                <li><a class="dropdown-item" href="{{route ('body.metric') }}"><i class="fas fa-user-circle me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
+                                <li><a class="dropdown-item" href="{{route('my.membership')}}"><i class="fas fa-dumbbell me-2 text-muted"></i> Gói tập của tôi</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-basket me-2 text-muted"></i> Đơn hàng đã mua</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -94,14 +99,16 @@
             <div class="row g-4">
                 @if(isset($goiTaps) && $goiTaps->count() > 0)
                     @foreach($goiTaps as $item)
+                    <!-- hiển thị gói tập-->
                     <div class="col-md-4">
                         <div class="card h-100 border-0 card-gym text-center shadow-sm">
                             <div class="card-body py-5 px-4">
-                                <h3 class="fw-bold text-dark">{{ $item->name }}</h3>
+                                <h3 class="fw-bold text-dark">{{ $item->package_name }}</h3>
                                 <h2 class="text-warning my-4">{{ number_format($item->price) }} VNĐ</h2>
                                 <p class="badge bg-secondary mb-3">{{ $item->duration_days }} Ngày tập luyện</p>
                                 <p class="text-muted small">{{ $item->description }}</p>
-                                <button class="btn btn-dark w-100 mt-3 py-2 fw-bold">ĐĂNG KÝ NGAY</button>
+                                <!--btn-register" data-id="{{ $item->id }}"*-- java nút lưu gói tập-->
+                                <button class="btn btn-dark w-100 mt-3 py-2 fw-bold btn-register" data-id="{{ $item->id }}">ĐĂNG KÝ NGAY</button>
                             </div>
                         </div>
                     </div>
@@ -182,3 +189,39 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+// lệnh xử lý nút đăng ký gói tập//
+<!--btn-register" data-id="{{ $item->id }}"*-- java nút lưu gói tập-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.btn-register').on('click', function() {
+        // 1. Lấy ID của gói tập từ cái nút vừa bấm
+        let packageId = $(this).data('id');
+
+        // 2. Gửi yêu cầu đăng ký lên Server
+        $.ajax({
+            url: "{{ route('membership.register') }}", // Đường dẫn đã khai báo trong web.php
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}", // Bắt buộc phải có để bảo mật
+                package_id: packageId
+            },
+            success: function(res) {
+                if(res.success) {
+                    alert(res.message);
+                    // 3. Chuyển hướng khách sang trang "Gói tập của tôi" để xem kết quả
+                    window.location.href = "{{ route('my.membership') }}";
+                }
+            },
+            error: function(xhr) {
+                if(xhr.status === 401) {
+                    alert('Bạn cần đăng nhập để đăng ký gói tập!');
+                    window.location.href = "/login";
+                } else {
+                    alert('Có lỗi xảy ra, vui lòng thử lại.');
+                }
+            }
+        });
+    });
+});
+</script>

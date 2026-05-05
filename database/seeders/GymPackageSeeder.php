@@ -8,14 +8,14 @@ class GymPackageSeeder extends Seeder
     public function run(): void 
 {
     \App\Models\GymPackage::create([
-        'name' => 'Gói Cơ Bản',
+        'package_name' => 'Gói Cơ Bản',
         'duration_days' => 30,
         'price' => 500000,
         'description' => 'Tập luyện tự do'
     ]);
 
     \App\Models\GymPackage::create([
-        'name' => 'Gói Nâng Cao',
+        'package_name' => 'Gói Nâng Cao',
         'duration_days' => 30,
         'price' => 900000,
         'description' => 'Tập luyện với PT'

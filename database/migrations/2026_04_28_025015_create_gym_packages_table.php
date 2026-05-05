@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('gym_packages', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('package_name');
             $table->integer('duration_days');
             $table->decimal('price', 12, 2);
             $table->text('description')->nullable();

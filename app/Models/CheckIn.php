@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CheckIn extends Model
 {
-    //
-
+protected $fillable = ['user_id', 'check_in_time', 'method'];
 // Trong cả 2 file:
 public function user() { return $this->belongsTo(User::class); }
 }
