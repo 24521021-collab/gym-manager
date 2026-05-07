@@ -56,3 +56,27 @@ Route::get('/admin/checkin', [CheckInController::class, 'index'])->name('admin.c
 Route::post('/admin/checkin/store', [CheckInController::class,'store'])->name('admin.checkin.store');
     /// test 
     Route::get('/test-data', function() {return \App\Models\GymPackage::all();});
+//// route để đăng nhập vào google
+// 1. Đường dẫn để nhấn nút "Đăng nhập bằng Google"
+Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+
+// 2. Đường dẫn để Google trả dữ liệu về (phải khớp 100% với link đã khai báo trên Google Console)
+Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+// route đăng nhập bằng fb
+Route::get('auth/facebook', [LoginController::class, 'redirectToFacebook'])->name('facebook.login');
+Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCallback']);
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductController;
+
+// Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+// Nhóm các đường dẫn chỉ dành cho người đã đăng nhập
+// API giỏ hàng 
+Route::post('/api/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/api/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/api/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/api/cart/checkout', [CartController::class, 'checkout'])->middleware('auth');
+    
+    // (Tương lai) Trang thanh toán
+    // Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout')

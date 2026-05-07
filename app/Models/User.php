@@ -20,6 +20,7 @@ class User extends Authenticatable
      */
     protected $table='user';
     protected $fillable = [
+        'google_id',// id đăng nhập của google dành cho người đăng nhập bằng google
         'full_name',
         'email',
         'role',

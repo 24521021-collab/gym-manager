@@ -44,16 +44,26 @@
                     <li class="nav-item"><a class="nav-link" href="#pricing">Gói tập</a></li>
                 </ul>
                 <div class="mt-3">
-    <a href="{{ url('auth/google') }}" class="btn btn-danger w-100 mb-2">
-        <i class="fab fa-google"></i> Đăng nhập bằng Google
-    </a>
+
     </div>
                 <div class="navbar-nav ms-auto d-flex align-items-center">
                     @guest
-                        
+                        <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-3" style="text-decoration: none;">
+                        <i class="fa fa-shopping-cart" style="font-size: 20px;"></i>
                         <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
                         <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
+                        <div class="d-flex align-items-center">
                     @else
+                    <div class="d-flex align-items-center">
+                        <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-3" style="text-decoration: none;">
+                            <i class="fa fa-shopping-cart" style="font-size: 20px;"></i>
+                            @if(session('cart') && count(session('cart')) > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">
+                            {{ count(session('cart')) }}
+                        </span>
+                    </div>
+                     @endif
+                            </a>
                         <div class="dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=random&color=fff" 
@@ -63,7 +73,7 @@
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                                 <li><a class="dropdown-item" href="{{route ('body.metric') }}"><i class="fas fa-user-circle me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
                                 <li><a class="dropdown-item" href="{{route('my.membership')}}"><i class="fas fa-dumbbell me-2 text-muted"></i> Gói tập của tôi</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-basket me-2 text-muted"></i> Đơn hàng đã mua</a></li>
+                                <li><a class="dropdown-item" href="{{route('products.index')}}"><i class="fas fa-shopping-basket me-2 text-muted"></i> giỏ hàng</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form action="{{route('logout')}}" method="POST">
@@ -145,7 +155,13 @@
                                 <label class="form-label fw-medium">Mật khẩu</label>
                                 <input type="password" name="password" class="form-control" required placeholder="********">
                             </div>
-                            <div class="d-grid mt-4">
+                                <a href="{{ route('auth.google') }}" class="btn btn-danger w-50 mb-2">
+                                     <i class="fab fa-google"></i> Đăng nhập bằng Google
+                                </a>
+                                <a href="{{ route('facebook.login') }}" class="btn btn-danger w-50 mb-2">
+                                     <i class="fab fa-facebook"></i> Đăng nhập bằng Facebook
+                                </a>
+                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-warning fw-bold py-2">ĐĂNG KÝ TÀI KHOẢN</button>
                             </div>
                         </form>
@@ -172,6 +188,9 @@
                                 <label class="form-label fw-medium">Mật khẩu</label>
                                 <input type="password" name="password" class="form-control" required placeholder="********">
                             </div>
+                                <a href="{{ route('auth.google') }}" class="btn btn-danger w-50 mb-2">
+                                    <i class="fab fa-google"></i> Đăng nhập bằng Google
+                                </a>
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-dark fw-bold py-2">ĐĂNG NHẬP</button>
                             </div>

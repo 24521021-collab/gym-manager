@@ -54,12 +54,46 @@ public function handleGoogleCallback() {
     $user = User::updateOrCreate([
         'google_id' => $googleUser->id,
     ], [
-        'name' => $googleUser->name,
+        'full_name' => $googleUser->name,
+        'role'=>'member',
         'email' => $googleUser->email,
-        'password' => bcrypt('123456dummy'), // Mật khẩu ảo
+        'password' => bcrypt('12345678'), // Mật khẩu ảo
     ]);
 
     Auth::login($user);
-    return redirect('/dashboard'); // Đăng nhập xong vào thẳng Dashboard
+    return redirect('/'); // Đăng nhập xong vào thẳng Dashboard
     }
+    // Hàm 1: Đưa người dùng sang Facebook
+public function redirectToFacebook()
+{
+    return Socialite::driver('facebook')->redirect();
+}
+
+// Hàm 2: Xử lý khi Facebook trả dữ liệu về
+public function handleFacebookCallback()
+{
+    try {
+        $facebookUser = Socialite::driver('facebook')->user();
+        // Logic tìm hoặc tạo User (giống hệt cách làm với Google)
+        $user = User::where('email', $facebookUser->email)->first();
+
+        if (!$user) {
+            $user = User::create([
+                'name'     => $facebookUser->name,
+                'email'    => $facebookUser->email,
+                'role'      =>'member',
+                'facebook_id' => $facebookUser->id,
+                'password' => bcrypt('12345678'),
+            ]);
+        } else {
+            // Nếu có user rồi thì cập nhật thêm facebook_id
+            $user->update(['facebook_id' => $facebookUser->id]);
+        }
+
+        Auth::login($user);
+        return redirect()->route('/'); // 
+    } catch (\Exception $e) {
+        return redirect()->route('login')->with('error', 'Lỗi kết nối Facebook!');
+    }
+}
 }
