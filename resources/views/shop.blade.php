@@ -33,7 +33,7 @@
                         </p>
 
                         @if($product->stock_quantity > 0)
-                            <a href="{{ route('cart.add', $product->id) }}" class="btn btn-primary add-to-cart" data-id="{{ $product->id }}">Thêm vào giỏ</a>
+                            <button type="button" class="btn btn-primary add-to-cart" data-id="{{ $product->id }}">Thêm vào giỏ hàng</button>
                         @else
                             <button class="btn btn-secondary" disabled>Tạm hết hàng</button>
                         @endif
@@ -80,7 +80,7 @@
                         <td class="subtotal-price">{{ number_format($details['price'] * $details['stock_quantity']) }}đ</td>
                         <td>
                         {{-- Nút xóa sản phẩm --}}
-                        <button class="btn btn-danger btn-sm remove-from-cart">
+                        <button type="button" class="btn btn-danger btn-sm remove-from-cart">
                             <i class="fa-solid fa-trash"></i> Xóa
                         </button>
                         </td>
@@ -97,12 +97,12 @@
                 </table>
                 @else
                     <div class="text-center py-4">
-                        <p>Giỏ hàng đang trống!</p>
+                        <p>Giỏ hàng đang trống, chưa có gì hết !</p>
                     </div>
                 @endif
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng hàng</button>
                 @if(session('cart'))
                     <a href="#" class="btn btn-primary confirm-checkout-btn">Xác nhận thanh toán</a>
                 @endif
@@ -114,21 +114,26 @@
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(".add-to-cart").click(function (e) {
-    e.preventDefault();
-
+  $(document).on('click', '.add-to-cart', function (e) {
+    e.preventDefault(); // Chặn thẻ <a> hoặc button tự load trang
     var productId = $(this).attr("data-id");
-
+    var button = $(this);
     $.ajax({
-        url: '/cart/add/' + productId, // Đường dẫn này phải khớp với Route ::get('/cart/add/{id}')
-        method: 'POST', 
+        url: '/cart/add/' + productId,
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}'
+        },
+        beforeSend: function() {
+            button.prop('disabled', true).text('Đang thêm...');
+        },
         success: function (response) {
-            // Sau khi add thành công, hiện thông báo hoặc tự mở Modal giỏ hàng lên luôn
-            alert("Đã thêm sản phẩm vào giỏ!");
-            window.location.reload(); // Load lại để cập nhật số lượng trên icon giỏ hàng
+            // Reload trang để Laravel vẽ lại Modal và cập nhật Badge
+            window.location.reload(); 
         },
         error: function (xhr) {
-            alert("Lỗi: " + xhr.responseJSON.error);
+            button.prop('disabled', false).text('Thêm vào giỏ');
+            alert("Lỗi: " + (xhr.responseJSON ? xhr.responseJSON.error : "Không thể thêm hàng"));
         }
     });
 });
@@ -168,7 +173,7 @@
 });
 $('#confirm-checkout-btn').click(function() {
     $.ajax({
-        url: '/api/cart/checkout',
+        url:'{{ route("cart.checkout")}}',
         method: 'POST',
         data: { _token: '{{ csrf_token() }}' },
         success: function(response) {
@@ -181,26 +186,30 @@ $('#confirm-checkout-btn').click(function() {
     });
 });
 // loại sản phẩm khỏi giỏ hàng
-$(".remove-from-cart").click(function (e) {
+$(document).on('click', '.remove-from-cart', function (e) {
     e.preventDefault();
 
     var ele = $(this);
+    var productId = ele.closest("tr").attr("data-id"); // Lấy ID từ thuộc tính data-id của dòng <tr>
 
     if(confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
         $.ajax({
-            url: '{{ route("cart.remove") }}',
+            url: '{{ route("cart.remove") }}', // Đường dẫn khớp với Route::delete
             method: "DELETE",
             data: {
                 _token: '{{ csrf_token() }}', 
-                id: ele.closest("tr").attr("data-id")
+                id: productId
             },
             success: function (response) {
-                // Xóa dòng đó trên giao diện ngay lập tức
+                // Hiệu ứng xóa dòng ngay lập tức trên giao diện
                 ele.closest("tr").fadeOut(300, function() {
                     $(this).remove();
-                    // Sau khi xóa, bạn có thể cần cập nhật lại Tổng tiền (nếu Controller trả về)
-                    location.reload(); // Cách nhanh nhất là reload, hoặc tính toán lại bằng JS
+                    // Tải lại trang để cập nhật lại Tổng tiền trong Session và Badge giỏ hàng
+                    window.location.reload(); 
                 });
+            },
+            error: function (xhr) {
+                alert("Lỗi: Không thể xóa sản phẩm.");
             }
         });
     }

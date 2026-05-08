@@ -32,8 +32,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
         return view('admin_dashboard');
     })->name('admin.dashboard');
 
-    // CRUD Hội viên (Cái mà mình vừa làm xong)
-    // 1. Route chính cho quản lý hội viên (Index, Store, Update, Destroy)
+    // CRUD Hội viên 
+    // 1. Route chính cho admin quản lý hội viên (Index, Store, Update, Destroy)
     // Tên route sẽ tự động là: memberships.index, memberships.store, v.v...
     Route::resource('members', AdminMembershipController::class);
     
@@ -65,6 +65,8 @@ Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallbac
 // route đăng nhập bằng fb
 Route::get('auth/facebook', [LoginController::class, 'redirectToFacebook'])->name('facebook.login');
 Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCallback']);
+
+
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 
@@ -73,10 +75,10 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 
 // Nhóm các đường dẫn chỉ dành cho người đã đăng nhập
 // API giỏ hàng 
-Route::post('/api/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::patch('/api/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/api/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/api/cart/checkout', [CartController::class, 'checkout'])->middleware('auth');
+Route::post('cart/add/{id}', [CartController::class, 'add']);
+Route::patch('cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('cart/checkout', [CartController::class, 'checkout'])->middleware('auth')->name('cart.checkout');
     
     // (Tương lai) Trang thanh toán
     // Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout')

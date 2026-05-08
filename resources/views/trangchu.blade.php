@@ -48,11 +48,12 @@
     </div>
                 <div class="navbar-nav ms-auto d-flex align-items-center">
                     @guest
-                        <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-3" style="text-decoration: none;">
+                    <div class="d-flex align-items-center">
+                        <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-1" style="text-decoration: none;">
                         <i class="fa fa-shopping-cart" style="font-size: 20px;"></i>
+                    </div>
                         <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
                         <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
-                        <div class="d-flex align-items-center">
                     @else
                     <div class="d-flex align-items-center">
                         <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-3" style="text-decoration: none;">
@@ -157,9 +158,6 @@
                             </div>
                                 <a href="{{ route('auth.google') }}" class="btn btn-danger w-50 mb-2">
                                      <i class="fab fa-google"></i> Đăng nhập bằng Google
-                                </a>
-                                <a href="{{ route('facebook.login') }}" class="btn btn-danger w-50 mb-2">
-                                     <i class="fab fa-facebook"></i> Đăng nhập bằng Facebook
                                 </a>
                              <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-warning fw-bold py-2">ĐĂNG KÝ TÀI KHOẢN</button>
