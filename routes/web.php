@@ -72,13 +72,14 @@ use App\Http\Controllers\ProductController;
 
 // Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-
 // Nhóm các đường dẫn chỉ dành cho người đã đăng nhập
 // API giỏ hàng 
 Route::post('cart/add/{id}', [CartController::class, 'add']);
 Route::patch('cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('cart/checkout', [CartController::class, 'checkout'])->middleware('auth')->name('cart.checkout');
-    
+// Route lấy API giỏ hàng để tìm kiếm sản phẩm
+Route::get('/search-products', [ProductController::class, 'getProductsApi']);
+
     // (Tương lai) Trang thanh toán
     // Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout')
