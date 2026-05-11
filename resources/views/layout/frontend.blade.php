@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -66,6 +66,11 @@
                                 <li>
                                     <a class="dropdown-item" href="{{ route('body.metric') }}">
                                         <i class="fas fa-id-card me-2"></i> Hồ sơ & Body Metrics
+                                    </a>
+                                </li>
+                                <li>
+                            <a href="{{ route('my.classes') }}" class="dropdown-item">
+                                <i class="fas fa-calendar-alt"></i> Lớp học của tôi
                                     </a>
                                 </li>
                                 @if(Auth::user()->role == 'admin')
