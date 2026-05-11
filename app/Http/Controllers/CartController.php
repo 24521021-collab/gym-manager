@@ -44,6 +44,11 @@ class CartController extends Controller
         // Lưu lại cái mảng giỏ hàng đã thay đổi vào lại Session
         // Giải thích: "Cất danh sách đồ khách vừa chọn vào bộ nhớ tạm (Session) của máy chủ để khi khách chuyển trang khác, món hàng vẫn còn nằm trong giỏ."
         session()->put('cart', $cart);
+        return response()->json([
+            'success' => 'Đã thêm!',
+            'cart_count' => count($cart),
+            'cart_data' => $cart // Trả về dữ liệu để JS vẽ lại Modal
+            ]);
         // Đưa người dùng quay lại trang trước đó kèm dòng thông báo xanh (success)
         return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng thành công!');
     }
@@ -77,19 +82,31 @@ class CartController extends Controller
          }
     }
     public function remove(Request $request){
-        // Kiểm tra xem phía giao diện có gửi cái ID nào lên không
-        if($request->id) {
-            // Lấy giỏ hàng ra
-            $cart = session()->get('cart');
-            // Nếu tìm thấy cái ID đó trong giỏ hàng
-            if(isset($cart[$request->id])) {
-                // Dùng hàm unset để "đào thải" món đó ra khỏi mảng
-                unset($cart[$request->id]);
-                // Lưu giỏ hàng mới (đã xóa món kia) vào lại Session
-                session()->put('cart', $cart);
-            }
-            // Trả về thông báo thành công (thường dùng cho Ajax)
-            return response()->json(['success' => 'Đã xóa sản phẩm khỏi giỏ!']);
+    // Kiểm tra xem request gửi lên có ID sản phẩm không
+    if($request->id) {
+        // Lấy danh sách giỏ hàng hiện tại từ Session
+        $cart = session()->get('cart');
+
+        // Nếu sản phẩm tồn tại trong giỏ hàng thì dùng hàm unset để loại bỏ
+        if(isset($cart[$request->id])) {
+            unset($cart[$request->id]);
+            // Lưu lại mảng giỏ hàng mới (đã mất đi 1 món) vào lại Session
+            session()->put('cart', $cart);
+        }
+
+        // Tính toán lại tổng số tiền của các món còn lại để gửi về cho giao diện
+        $total = 0;
+        foreach($cart as $details) {
+            // Tổng = Giá * Số lượng
+            $total += $details['price'] * $details['stock_quantity'];
+        }
+
+        // Trả về một phản hồi dạng JSON (đúng chuẩn API)
+        return response()->json([
+            'message' => 'Đã xóa sản phẩm thành công!', // Thông báo
+            'total' => number_format($total) . 'đ',     // Tổng tiền mới đã định dạng
+            'cart_count' => count($cart)               // Số lượng món hàng còn lại
+            ]);
         }
     }
 }

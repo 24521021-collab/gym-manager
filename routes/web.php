@@ -74,6 +74,7 @@ use App\Http\Controllers\ProductController;
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 // Nhóm các đường dẫn chỉ dành cho người đã đăng nhập
 // API giỏ hàng 
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('cart/add/{id}', [CartController::class, 'add']);
 Route::patch('cart/update', [CartController::class, 'update'])->name('cart.update');
 Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remove');
