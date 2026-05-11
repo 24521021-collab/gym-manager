@@ -68,6 +68,10 @@ Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCal
 
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\BookingController;
+
+// Route này nhận ID của lớp học để biết đang đăng ký lớp nào
+Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store');
 use App\Http\Controllers\ProductController;
 
 // Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
