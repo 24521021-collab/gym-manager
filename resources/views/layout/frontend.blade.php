@@ -68,6 +68,11 @@
                                         <i class="fas fa-id-card me-2"></i> Hồ sơ & Body Metrics
                                     </a>
                                 </li>
+                                <li>
+    <a class="dropdown-item" href="{{ route('my.classes') }}">
+        <i class="fas fa-calendar-check me-2"></i> Lớp học của tôi
+    </a>
+</li>
                                 @if(Auth::user()->role == 'admin')
                                     <li><a class="dropdown-item" href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield me-2"></i> Trang Quản Trị</a></li>
                                 @endif
