@@ -55,4 +55,13 @@ public function bookings() { return $this->hasMany(Booking::class); }
 public function orders() { return $this->hasMany(Order::class); }
 public function checkIns() { return $this->hasMany(CheckIn::class); }
 public function bodyMetrics() { return $this->hasMany(BodyMetric::class); }
+
+public function enrolledClasses()
+{
+    // Kết nối với GymClass thông qua bảng bookings
+    // user_id và gym_id phải khớp với tên cột trong file migration của bạn
+    return $this->belongsToMany(GymClass::class, 'bookings', 'user_id', 'gym_id')
+                ->withPivot('status', 'booking_date')
+                ->withTimestamps();
+}
 }
