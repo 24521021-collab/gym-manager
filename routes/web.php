@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminMembershipController;
 use App\Http\Controllers\BodyMetricController;
 use App\Http\Controllers\Admin\CheckInController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\BookingController;
 
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
@@ -87,3 +88,7 @@ Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
 Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
+// ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
+Route::get('/classes',           [BookingController::class, 'index'])->name('classes.index');
+Route::post('/classes/book',     [BookingController::class, 'store'])->name('classes.store')->middleware('auth');
+Route::delete('/classes/cancel', [BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');
