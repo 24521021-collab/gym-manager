@@ -207,7 +207,6 @@
 </body>
 </html>
 // lệnh xử lý nút đăng ký gói tập//
-<!--btn-register" data-id="{{ $item->id }}"*-- java nút lưu gói tập-->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {

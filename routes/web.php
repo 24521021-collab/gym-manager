@@ -9,6 +9,7 @@ use App\Http\Controllers\UserMembershipController;
 use App\Http\Controllers\Admin\AdminMembershipController;
 use App\Http\Controllers\BodyMetricController;
 use App\Http\Controllers\Admin\CheckInController;
+use App\Http\Controllers\CheckoutController;
 
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
@@ -17,6 +18,7 @@ Route::get('/',[HomeController::class, 'index'])->name('trang_chu');
 //gói tập
 Route::get('/goi-tap', [HomeController::class, 'index']);
 // nhận giữ liệu đăng nhập từ form user gửi tới
+
 Route::post('/dang_ky',[RegisterController::class,'store'])->name('register');
 // nhan thong tin dang ky va luu
 Route::get('/dang_nhap',[LoginController::class,'ShowLogin'])->name('login');
@@ -88,3 +90,7 @@ Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 
     // (Tương lai) Trang thanh toán
     // Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout')
+// trang checkout, xác nhận hình thức thanh toán 
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');

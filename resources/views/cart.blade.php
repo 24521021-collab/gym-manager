@@ -54,7 +54,9 @@
                 </div>
                 <div class="col-md-6 text-end">
                     <h3 class="mb-3">Tổng cộng: <span class="total-cart-price text-danger">{{ number_format($total) }}đ</span></h3>
-                    <button id="confirm-checkout-btn" class="btn btn-primary btn-lg px-5">Xác nhận thanh toán</button>
+                    <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg px-5">
+                        Xác nhận thanh toán
+                    </a>
                 </div>
             </div>
         @else
@@ -127,20 +129,6 @@
         }
         });
     });
-$('#confirm-checkout-btn').click(function() {
-    $.ajax({
-        url:'{{ route("cart.checkout")}}',
-        method: 'POST',
-        data: { _token: '{{ csrf_token() }}' },
-        success: function(response) {
-            alert(response.message);
-            window.location.reload(); // Hoặc chuyển hướng sang trang cám ơn
-        },
-        error: function(xhr) {
-            alert(xhr.responseJSON.error);
-        }
-    });
-});
 // loại sản phẩm khỏi giỏ hàng
 // Lắng nghe sự kiện click vào nút có class .remove-from-cart
 $(document).on('click', '.remove-from-cart', function (e) {
@@ -178,111 +166,6 @@ $(document).on('click', '.remove-from-cart', function (e) {
         });
     }
 });
-    // Thanh tìm kiếm sản phẩm 
-    // BỌC TẤT CẢ TRONG LỆNH NÀY ĐỂ ĐỢI HTML LOAD XONG
-    document.addEventListener('DOMContentLoaded', function() {
-    let currentSearchQuery = ''; // Biến để nhớ từ khóa tìm kiếm khi khách chuyển trang
-    // 1. Hàm gọi API và vẽ lại giao diện (Có hỗ trợ số trang)
-    async function fetchProducts(query = '', page = 1) {
-        const productList = document.getElementById('product-list');
-        const paginationContainer = document.getElementById('pagination-container');
-        // Hiện trạng thái đang tải
-        productList.innerHTML = '<div class="col-12 text-center"><p>Đang tải dữ liệu...</p></div>';
-        paginationContainer.innerHTML = ''; // Ẩn phân trang lúc đang tải
-        try {
-            // Gửi API kèm từ khóa và số trang
-            const response = await fetch(`/search-products?search=${encodeURIComponent(query)}&page=${page}`);
-            const responseData = await response.json();
-            productList.innerHTML = '';
-            // ĐÃ FIX LỖI Ở ĐÂY: Trỏ đúng vào mảng con "data" do Laravel paginate tạo ra
-            const items = responseData.products.data; 
-            // Kiểm tra nếu không có sản phẩm
-            if (!items || items.length === 0) {
-                productList.innerHTML = '<div class="col-12 text-center"><p class="text-danger">Không tìm thấy sản phẩm nào phù hợp!</p></div>';
-                return;
-            }
-            // Vẽ danh sách sản phẩm
-            items.forEach(product => {
-                const stockBadge = product.stock_quantity > 0 
-                    ? `<span class="badge bg-success">Còn ${product.stock_quantity} món</span>` 
-                    : `<span class="badge bg-danger">Hết hàng</span>`;
-                
-                const btnHtml = product.stock_quantity > 0 
-                    ? `<button type="button" class="btn btn-primary add-to-cart" data-id="${product.id}">Thêm vào giỏ</button>` 
-                    : `<button class="btn btn-secondary" disabled>Tạm hết hàng</button>`;
-
-                const html = `
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text text-muted mb-1">Mã SKU: <strong>${product.sku}</strong></p>
-                                <p class="card-text text-primary fw-bold h5">Giá: ${new Intl.NumberFormat('vi-VN').format(product.price)}đ</p>
-                                <p class="card-text">Tình trạng: ${stockBadge}</p>
-                                <div class="mt-3">${btnHtml}</div>
-                            </div>
-                        </div>
-                    </div>`;
-                productList.insertAdjacentHTML('beforeend', html);
-            });
-            // Gọi hàm vẽ các nút Phân trang (Truyền vào trang hiện tại và tổng số trang)
-            renderPagination(responseData.products.current_page, responseData.products.last_page);
-        } catch (error) {
-            console.error("Lỗi kết nối:", error);
-            productList.innerHTML = '<p class="text-center text-danger">Có lỗi xảy ra, vui lòng thử lại!</p>';
-        }
-    }
-    // 2. Hàm vẽ các nút Phân trang
-    function renderPagination(currentPage, lastPage) {
-        if (lastPage <= 1) return; // Chỉ có 1 trang thì không cần vẽ nút
-
-        const paginationContainer = document.getElementById('pagination-container');
-        let html = '<ul class="pagination">';
-
-        // Vẽ nút Trước
-        if (currentPage > 1) {
-            html += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">&laquo; Trước</a></li>`;
-        }
-        // Vẽ các số trang (1, 2, 3...)
-        for (let i = 1; i <= lastPage; i++) {
-            if (i === currentPage) {
-                html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
-            } else {
-                html += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
-            }
-        }
-        // Vẽ nút Sau
-        if (currentPage < lastPage) {
-            html += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">Sau &raquo;</a></li>`;
-        }
-        html += '</ul>';
-        paginationContainer.innerHTML = html;
-        // Bắt sự kiện khi click vào nút chuyển trang
-        paginationContainer.querySelectorAll('.page-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                if(this.dataset.page) {
-                    const selectedPage = parseInt(this.dataset.page);
-                    // Gọi lại API nhưng với trang mới
-                    fetchProducts(currentSearchQuery, selectedPage); 
-                    // Tự động cuộn mượt mà lên đầu danh sách sản phẩm
-                    document.getElementById('product-list').scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-    }
-    // 3. Lắng nghe sự kiện gõ phím tìm kiếm
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            currentSearchQuery = e.target.value; 
-            // Gõ từ 2 ký tự trở lên hoặc xóa trắng ô
-            if (currentSearchQuery.length >= 2 || currentSearchQuery.length === 0) {
-                // Luôn bắt đầu tìm kiếm từ trang 1
-                fetchProducts(currentSearchQuery, 1);
-            }
-            });
-        }
-    }); // Kết thúc block DOMContentLoaded
+    
 </script>
 @endsection
