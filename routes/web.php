@@ -71,6 +71,9 @@ Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCal
 
 
 use App\Http\Controllers\CartController;
+
+// Route này nhận ID của lớp học để biết đang đăng ký lớp nào
+Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store');
 use App\Http\Controllers\ProductController;
 
 // Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
@@ -84,6 +87,9 @@ Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remo
 Route::post('cart/checkout', [CartController::class, 'checkout'])->middleware('auth')->name('cart.checkout');
 // Route lấy API giỏ hàng để tìm kiếm sản phẩm
 Route::get('/search-products', [ProductController::class, 'getProductsApi']);
+
+    // (Tương lai) Trang thanh toán
+    // Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout')
 // trang checkout, xác nhận hình thức thanh toán 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
