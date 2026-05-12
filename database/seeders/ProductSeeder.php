@@ -86,7 +86,6 @@ class ProductSeeder extends Seeder
                 'name' => 'Dây nhảy thể lực lõi thép',
                 'sku' => 'DAY-NHAY-01',
                 'price' => 850000, // Đùa chút, 85k thôi
-                'price' => 85000,
                 'stock_quantity' => 100,
             ],
             [
@@ -118,6 +117,12 @@ class ProductSeeder extends Seeder
                 'sku' => 'TUI-GYM-01',
                 'price' => 250000,
                 'stock_quantity' => 25,
+            ],
+             [
+                'name' => 'test ',
+                'sku' => 'test-01',
+                'price' => 5000, // Đùa chút, 85k thôi
+                'stock_quantity' => 100,
             ],
         ];
 

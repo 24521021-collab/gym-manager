@@ -3,12 +3,21 @@
 <div class="container">
     <h2>Danh mục dụng cụ</h2>
      <!-- thanh tìm kiếm sản phẩm id="search input giúp backend tìm kiếm sản phẩm -->
-    <div class="row mb-4">
-        <div class="col-md-6">
+    <div class="row mb-4 g-3">
+        <div class="col-md-4">
             <div class="input-group">
                 <input type="text" id="search-input" class="form-control" placeholder="Tìm tên tạ, máy tập, phụ kiện...">
                 <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
+        </div>
+        <div class="col-md-3">
+            <input type="number" id="min-price" class="form-control" placeholder="Giá từ (VNĐ)">
+        </div>
+        <div class="col-md-3">
+            <input type="number" id="max-price" class="form-control" placeholder="Giá đến (VNĐ)">
+        </div>
+        <div class="col-md-2">
+            <button id="filter-btn" class="btn btn-dark w-100">Lọc giá</button>
         </div>
     </div><br>
     <a href="{{route('cart.index')}}" type="button" class="btn btn-outline-dark position-relative">
@@ -226,8 +235,11 @@ $(document).on('click', '.remove-from-cart', function (e) {
     // BỌC TẤT CẢ TRONG LỆNH NÀY ĐỂ ĐỢI HTML LOAD XONG
     document.addEventListener('DOMContentLoaded', function() {
     let currentSearchQuery = ''; // Biến để nhớ từ khóa tìm kiếm khi khách chuyển trang
+    let currentMinPrice = '';
+    let currentMaxPrice = '';
+
     // 1. Hàm gọi API và vẽ lại giao diện (Có hỗ trợ số trang)
-    async function fetchProducts(query = '', page = 1) {
+    async function fetchProducts(query = '', minPrice = '', maxPrice = '', page = 1) {
         const productList = document.getElementById('product-list');
         const paginationContainer = document.getElementById('pagination-container');
         // Hiện trạng thái đang tải
@@ -235,7 +247,7 @@ $(document).on('click', '.remove-from-cart', function (e) {
         paginationContainer.innerHTML = ''; // Ẩn phân trang lúc đang tải
         try {
             // Gửi API kèm từ khóa và số trang
-            const response = await fetch(`/search-products?search=${encodeURIComponent(query)}&page=${page}`);
+            const response = await fetch(`/search-products?search=${encodeURIComponent(query)}&min_price=${minPrice}&max_price=${maxPrice}&page=${page}`);
             const responseData = await response.json();
             productList.innerHTML = '';
             // ĐÃ FIX LỖI Ở ĐÂY: Trỏ đúng vào mảng con "data" do Laravel paginate tạo ra
@@ -308,7 +320,7 @@ $(document).on('click', '.remove-from-cart', function (e) {
                 if(this.dataset.page) {
                     const selectedPage = parseInt(this.dataset.page);
                     // Gọi lại API nhưng với trang mới
-                    fetchProducts(currentSearchQuery, selectedPage); 
+                    fetchProducts(currentSearchQuery, currentMinPrice, currentMaxPrice, selectedPage); 
                     // Tự động cuộn mượt mà lên đầu danh sách sản phẩm
                     document.getElementById('product-list').scrollIntoView({ behavior: 'smooth' });
                 }
@@ -323,9 +335,32 @@ $(document).on('click', '.remove-from-cart', function (e) {
             // Gõ từ 2 ký tự trở lên hoặc xóa trắng ô
             if (currentSearchQuery.length >= 2 || currentSearchQuery.length === 0) {
                 // Luôn bắt đầu tìm kiếm từ trang 1
-                fetchProducts(currentSearchQuery, 1);
+                fetchProducts(currentSearchQuery, currentMinPrice, currentMaxPrice, 1);
             }
             });
         }
+
+    // 4. Xử lý logic Lọc giá
+    const filterBtn = document.getElementById('filter-btn');
+    const minInput = document.getElementById('min-price');
+    const maxInput = document.getElementById('max-price');
+
+    if (filterBtn) {
+        // Sự kiện khi nhấn nút "Lọc giá"
+        filterBtn.addEventListener('click', function() {
+            // Cập nhật giá trị vào biến toàn cục để giữ trạng thái khi chuyển trang
+            currentMinPrice = minInput.value;
+            currentMaxPrice = maxInput.value;
+            // Gọi hàm tải sản phẩm và luôn bắt đầu từ trang 1 khi lọc mới
+            fetchProducts(currentSearchQuery, currentMinPrice, currentMaxPrice, 1);
+        });
+
+        // Cải tiến: Cho phép nhấn phím Enter trong ô nhập giá để kích hoạt lọc nhanh
+        [minInput, maxInput].forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') filterBtn.click();
+            });
+        });
+    }
     }); // Kết thúc block DOMContentLoaded
 </script>

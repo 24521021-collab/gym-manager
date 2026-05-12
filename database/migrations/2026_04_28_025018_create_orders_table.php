@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
         $table->id(); 
     // Khóa ngoại nối với bảng users
-    // Nếu User bị xóa, đơn hàng vẫn nên giữ lại để làm báo cáo tài chính (dùng restrict hoặc null)
-    // Nhưng ở đây mình để mặc định theo thiết kế của bạn là nối với users.id
         $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
     
         // Tổng tiền của đơn hàng
@@ -23,9 +21,9 @@ return new class extends Migration
     
         // Trạng thái thanh toán
         $table->string('payment_status')->default('Pending'); // Paid, Pending
+
+        $table->string('payment_method')->default('COD');//cod, vnpay;
     
-    // Laravel tự có cột created_at thay cho order_date (cực kỳ tiện lợi)
-    // Nhưng nếu bạn muốn đúng tên order_date như thiết kế:
          $table->timestamp('order_date');
         });
     }

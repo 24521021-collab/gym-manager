@@ -49,8 +49,6 @@ class CartController extends Controller
             'cart_count' => count($cart),
             'cart_data' => $cart // Trả về dữ liệu để JS vẽ lại Modal
             ]);
-        // Đưa người dùng quay lại trang trước đó kèm dòng thông báo xanh (success)
-        return redirect()->back()->with('success', 'Đã thêm vào giỏ hàng thành công!');
     }
     public function update(Request $request){
     // 1. Validate (Cũng đổi tên biến kiểm tra thành stock_quantity)
@@ -60,6 +58,12 @@ class CartController extends Controller
     ]);
     if($request->id && $request->stock_quantity) {
         $cart = session()->get('cart');
+        
+        // KIỂM TRA: Nếu sản phẩm không có trong giỏ thì không làm gì cả hoặc báo lỗi
+        if(!isset($cart[$request->id])) {
+            return response()->json(['error' => 'Sản phẩm không tồn tại trong giỏ hàng!'], 404);
+        }
+
         $product = Product::find($request->id);
         if($request->stock_quantity > $product->stock_quantity) {
             return response()->json(['error' => 'Kho không đủ!'], 400);
