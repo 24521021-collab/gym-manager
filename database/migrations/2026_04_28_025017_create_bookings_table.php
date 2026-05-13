@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
-            $table->foreignId('gym_id')->constrained('gym_classes')->onDelete('cascade');
+            $table->foreignId('class_id')->constrained('gym_classes')->onDelete('cascade');
             $table->timestamp('booking_date')->useCurrent();
             $table->string('status')->default('confirmed');//confirmed,attended,cancelled;
         });

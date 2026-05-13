@@ -69,8 +69,8 @@
                                     </a>
                                 </li>
                                 <li>
-                            <a href="{{ route('my.classes') }}" class="dropdown-item">
-                                <i class="fas fa-calendar-alt"></i> Lớp học của tôi
+                                    <a href="{{ route('classes.index') }}" class="dropdown-item">
+                                        <i class="fas fa-calendar-alt"></i> Lớp học của tôi
                                     </a>
                                 </li>
                                 @if(Auth::user()->role == 'admin')

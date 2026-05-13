@@ -59,9 +59,8 @@ public function bodyMetrics() { return $this->hasMany(BodyMetric::class); }
 public function enrolledClasses()
 {
     // Kết nối với GymClass thông qua bảng bookings
-    // user_id và gym_id phải khớp với tên cột trong file migration của bạn
-    return $this->belongsToMany(GymClass::class, 'bookings', 'user_id', 'gym_id')
-                ->withPivot('status', 'booking_date')
-                ->withTimestamps();
+    // user_id và class_id phải khớp với tên cột trong file migration của bạn
+    return $this->belongsToMany(GymClass::class, 'bookings', 'user_id', 'class_id')
+                ->withPivot('status', 'booking_date');
 }
 }

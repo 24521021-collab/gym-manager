@@ -42,10 +42,11 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link active" href="#">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#pricing">Gói tập</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('classes.index') }}">Lớp học</a></li> 
                 </ul>
                 <div class="mt-3">
 
-    </div>
+        </div>
                 <div class="navbar-nav ms-auto d-flex align-items-center">
                     @guest
                     <div class="d-flex align-items-center">

@@ -10,22 +10,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            UserSeeder::class,
             ProductSeeder::class,
+            GymPackageSeeder::class,
+            GymClassSeeder::class,
         ]);
     }
 }
-    // 1. Tạo tài khoản Admin
-        ##User::create([
-         ##   'full_name' => 'Quản trị viên',
-         ##   'email' => 'adminnew@gmail.com',
-         ##   'password' => Hash::make('123456'), // Mật khẩu là 123456
-         ##   'role' => 'admin',
-        ##]);
-
-        // 2. Tạo tài khoản Hội viên (User thường)
-        ## User::create([
-           ## 'full_name' => 'Nguyễn Văn Khách',
-           ## 'email' => 'khachhang@gmail.com',
-           ## 'password' => Hash::make('123456'),
-           // 'role' => 'member',
-        // ]);
