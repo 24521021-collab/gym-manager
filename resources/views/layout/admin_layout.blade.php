@@ -11,6 +11,22 @@
         .sidebar { min-height: 100vh; background: #343a40; color: white; padding-top: 20px; }
         .sidebar a { color: white; text-decoration: none; display: block; padding: 10px 20px; }
         .sidebar a:hover { background: #495057; }
+        body {
+        display: flex; /* Đẩy Sidebar và Content nằm ngang */
+        min-height: 100vh;
+        }   
+
+    .sidebar {
+    width: 250px;
+    flex-shrink: 0; /* Không cho sidebar bị co lại */
+    background: #212529;
+    }
+
+    .main-content {
+    flex-grow: 1; /* Để content chiếm hết phần còn lại bên phải */
+    padding: 20px;
+    background: #f8f9fa;
+    }
     </style>
 </head>
 <body>
@@ -21,8 +37,9 @@
                 <hr>
                 <a href="/admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="/admin/packages"><i class="fas fa-box"></i> Quản lý gói tập</a>
-                <a href="/admin/members"><i class="fas fa-users"></i> Hội viên</a>
-                <a href="/admin/checkin"><i class="fas fa-checkin"></i>Điểm danh hội viên</a>
+                <a href="/admin/members"><i class="fas fa-users"></i> Gói tập Hội viên</a>
+                <a href="/admin/checkin">Điểm danh hội viên</a>
+                <a href="#">Quản lý sản phẩm </a>
                 <a href="/admin/gym-classes">Quản lý lớp học</a>
             </div>
             <div class="col-md-10">

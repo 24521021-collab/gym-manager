@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     public function index(){
-        // Lấy dữ liệu từ Session có tên là 'cart'. 
+        // Lấy dữ liệu từ Session có tên là 'cart'.
         // Nếu Session này chưa có gì (khách chưa mua), thì trả về mảng rỗng []
         $cart = session()->get('cart',[]);
         // Trả về file giao diện (view) nằm ở resources/views/cart/index.blade.php
@@ -15,7 +15,7 @@ class CartController extends Controller
         return view('cart',compact('cart'));
     }
     public function add($id){
-        // Dùng ID từ đường dẫn để tìm sản phẩm trong DB. 
+        // Dùng ID từ đường dẫn để tìm sản phẩm trong DB.
         // Nếu ID bậy bạ không có trong DB, hàm này sẽ báo lỗi 404 ngay
         $product = Product::findOrFail($id);
         // KIỂM TRA: Nếu cột stock_quantity trong DB <= 0 thì thông báo hết hàng
@@ -39,6 +39,7 @@ class CartController extends Controller
                 "sku"      => $product->sku,
                 "stock_quantity" => 1,
                 "price"    => $product->price,
+                "image"    => $product->image ?? null,
             ];
         }
         // Lưu lại cái mảng giỏ hàng đã thay đổi vào lại Session
@@ -54,11 +55,11 @@ class CartController extends Controller
     // 1. Validate (Cũng đổi tên biến kiểm tra thành stock_quantity)
     $request->validate([
         'id' => 'required|exists:products,id',
-        'stock_quantity' => 'required|integer|min:1|max:99', 
+        'stock_quantity' => 'required|integer|min:1|max:99',
     ]);
     if($request->id && $request->stock_quantity) {
         $cart = session()->get('cart');
-        
+
         // KIỂM TRA: Nếu sản phẩm không có trong giỏ thì không làm gì cả hoặc báo lỗi
         if(!isset($cart[$request->id])) {
             return response()->json(['error' => 'Sản phẩm không tồn tại trong giỏ hàng!'], 404);

@@ -1,15 +1,12 @@
-@extends('layout.admin_layout') 
-@section('content')
+@extends('layout.admin_layout')@section('content')
 <style>
     .section-title { border-left: 5px solid #212529; padding-left: 15px; margin-bottom: 25px; font-weight: bold; font-size: 1.25rem; }
     .card { border: none; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
     .table thead { background: #212529; color: white; }
     .table thead th { border: none; padding: 12px 15px; }
 </style>
-
 <div class="container-fluid py-4">
     <div class="section-title">Quản lý lớp học Gym</div>
-
     <div class="mb-4 text-end">
         <button class="btn btn-dark px-4" data-bs-toggle="modal" data-bs-target="#modalClass" onclick="resetForm()">
             <i class="fas fa-plus"></i> Thêm lớp học mới
@@ -122,6 +119,7 @@
         </form>
     </div>
 </div>
+@endsection
 <script>
     // Hàm reset form về trạng thái "Thêm mới"
     function resetForm() {

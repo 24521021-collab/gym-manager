@@ -38,6 +38,12 @@
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
+                        <div style="height: 200px; background: #f8f9fa;">
+                         <img src="{{asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" 
+                         class="card-img-top w-100 h-100" 
+                         style="object-fit: cover;" 
+                         alt="{{ $product->name }}">
+                        </div>
                         <h5 class="card-title">{{ $product->name }}</h5>
                         <p class="card-text">Mã SKU: <strong>{{ $product->sku }}</strong></p>
                         <p class="card-text text-primary">Giá: {{ number_format($product->price) }}đ</p>

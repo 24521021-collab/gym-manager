@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CheckIn;
 use App\Models\User;
-use App\Models\Membership; // Đảm bảo đúng tên Model quản lý gói tập của Long
+use App\Models\Membership; // Đảm bảo đúng tên Model quản lý gói tập 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 

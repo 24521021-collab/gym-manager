@@ -8,6 +8,7 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
+                            <th style="width: 100px;">Hình</th>
                             <th>Sản phẩm</th>
                             <th>Giá</th>
                             <th style="width: 150px;">Số lượng</th>
@@ -18,21 +19,34 @@
                     <tbody>
                         @php $total = 0; @endphp
                         @foreach(session('cart') as $id => $details)
-                            @php 
-                                $productOriginal = \App\Models\Product::find($id); 
+                            @php
+                                $productOriginal = \App\Models\Product::find($id);
                                 $realStock = $productOriginal ? $productOriginal->stock_quantity : 10;
                                 $subtotal = $details['price'] * $details['stock_quantity'];
                                 $total += $subtotal;
                             @endphp
                             <tr data-id="{{ $id }}">
                                 <td>
+                                    @if(!empty($productOriginal->image))
+                                        <img src="{{ asset('images/products/'.($productOriginal->image ?? 'default-product.jpg')) }}"
+                                             alt="{{ $details['name'] }}"
+                                             class="img-thumbnail"
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                    @else
+                                        <div class="bg-light d-flex align-items-center justify-content-center"
+                                             style="width: 80px; height: 80px;">
+                                            <i class="fa-solid fa-image text-muted"></i>
+                                        </div>
+                                    @endif
+                                </td>
+                                <td>
                                     <strong>{{ $details['name'] }}</strong>
                                     <br><small class="text-muted">Mã: {{ $productOriginal->sku ?? 'N/A' }}</small>
                                 </td>
                                 <td>{{ number_format($details['price']) }}đ</td>
                                 <td>
-                                    <input type="number" value="{{ $details['stock_quantity'] }}" 
-                                           class="form-control update-cart-quantity" 
+                                    <input type="number" value="{{ $details['stock_quantity'] }}"
+                                           class="form-control update-cart-quantity"
                                            min="1" max="{{ $realStock }}">
                                 </td>
                                 <td class="subtotal-price fw-bold text-primary">{{ number_format($subtotal) }}đ</td>
@@ -42,7 +56,7 @@
                                     </button>
                                 </td>
                             </tr>
-                        @endforeach  
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -117,7 +131,7 @@
         data: {
             _token: '{{ csrf_token() }}',
             id: id,
-            stock_quantity: quantity 
+            stock_quantity: quantity
         },
         success: function (response) {
             // Cập nhật giá từng dòng và tổng bill ngay lập tức mà không load lại trang
@@ -155,7 +169,7 @@ $(document).on('click', '.remove-from-cart', function (e) {
                     }
                 });
                 // 2. Cập nhật lại con số Tổng tiền hiển thị trên trang từ dữ liệu server trả về
-                $(".total-cart-price").text(response.total); 
+                $(".total-cart-price").text(response.total);
                 // 3. Cập nhật số lượng trên Badge (biểu tượng giỏ hàng) để khớp với thực tế
                 $('.badge.bg-danger').text(response.cart_count);
             },
@@ -166,6 +180,6 @@ $(document).on('click', '.remove-from-cart', function (e) {
         });
     }
 });
-    
+
 </script>
 @endsection
