@@ -13,9 +13,14 @@ class GymPackageController extends Controller
      * CHỨC NĂNG: HIỂN THỊ DANH SÁCH
      * Trả về trang quản lý với danh sách các gói tập đã phân trang.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $packages = GymPackage::orderBy('id', 'desc')->paginate(10);
+        $search = $request->input('search');
+        $query = GymPackage::query();
+        if ($search) {
+            $query->where('package_name', 'like', "%{$search}%");
+        }
+        $packages = $query->orderBy('id', 'desc')->paginate(10);
         return view('admin.packages', compact('packages'));
 }
 

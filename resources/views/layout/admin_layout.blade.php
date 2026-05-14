@@ -23,6 +23,7 @@
                 <a href="/admin/packages"><i class="fas fa-box"></i> Quản lý gói tập</a>
                 <a href="/admin/members"><i class="fas fa-users"></i> Hội viên</a>
                 <a href="/admin/checkin"><i class="fas fa-checkin"></i>Điểm danh hội viên</a>
+                <a href="/admin/gym-classes">Quản lý lớp học</a>
             </div>
             <div class="col-md-10">
                 @yield('content') 

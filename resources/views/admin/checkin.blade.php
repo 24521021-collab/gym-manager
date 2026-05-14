@@ -9,6 +9,18 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
+            <!-- Form Tìm kiếm -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <form action="{{ route('admin.checkin') }}" method="GET" class="d-flex">
+                        <input type="text" name="search" class="form-control me-2" placeholder="Tìm tên hội viên..." value="{{ request('search') }}">
+                        <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                        @if(request('search'))
+                            <a href="{{ route('admin.checkin') }}" class="btn btn-outline-secondary ms-1 text-nowrap">Xóa lọc</a>
+                        @endif
+                    </form>
+                </div>
+            </div>
             <table class="table table-hover">
                 <thead class="table-light">
                     <tr>
@@ -28,7 +40,7 @@
                 </tbody>
             </table>
             <div class="d-flex justify-content-center mt-3">
-                {{ $recentCheckins->links() }}
+                {{ $recentCheckins->appends(request()->query())->links() }}
             </div>
         </div>
     </div>

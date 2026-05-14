@@ -12,10 +12,18 @@ use Carbon\Carbon;
 class CheckInController extends Controller
 {
     // 1. Hiển thị trang quét cho Admin
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $query = CheckIn::with('user');
+
+        if ($search) {
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%");
+            });
+        }
         // Lấy 10 lượt check-in mới nhất, kèm thông tin User (Eager Loading) để hiện danh sách phía dưới
-        $recentCheckins = CheckIn::with('user')->orderBy('check_in_time', 'desc')->paginate(10);
+        $recentCheckins = $query->orderBy('check_in_time', 'desc')->paginate(10);
         return view('admin.checkin', compact('recentCheckins'));
     }
 

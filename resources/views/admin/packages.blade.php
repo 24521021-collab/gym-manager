@@ -11,6 +11,18 @@
                     </button>
                 </div>
                 <div class="card-body">
+                    <!-- Form Tìm kiếm -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <form action="{{ route('packages.index') }}" method="GET" class="d-flex">
+                                <input type="text" name="search" class="form-control me-2" placeholder="Tìm tên gói tập..." value="{{ request('search') }}">
+                                <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                                @if(request('search'))
+                                    <a href="{{ route('packages.index') }}" class="btn btn-outline-secondary ms-1 text-nowrap">Xóa lọc</a>
+                                @endif
+                            </form>
+                        </div>
+                    </div>
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -46,7 +58,7 @@
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-center">
-                        {{ $packages->links() }}
+                        {{ $packages->appends(request()->query())->links() }}
                     </div>
                 </div>
             </div>

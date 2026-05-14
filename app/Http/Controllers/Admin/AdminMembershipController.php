@@ -14,9 +14,10 @@ class AdminMembershipController extends Controller
     /**
      * Hàm hiển thị danh sách hội viên cho Admin
      */
-    public function index()
+    public function index(Request $request)
     {
         // 1. Lấy thời gian hiện tại
+        $search = $request->input('search');
         $today = Carbon::now();
 
         // 2. TỰ ĐỘNG CẬP NHẬT: Quét Database, nếu ai đang 'Active' mà ngày hết hạn 
@@ -28,8 +29,16 @@ class AdminMembershipController extends Controller
         // 3. LẤY DANH SÁCH: 
         // - with(['user', 'package']): Kéo theo thông tin người dùng và gói tập để hiện tên
         // - paginate(10): Chỉ lấy 10 dòng mỗi trang để web chạy nhanh
-        $memberships = Membership::with(['user', 'package'])
-            ->orderBy('created_at', 'desc')
+        $query = Membership::with(['user', 'package']);
+
+        if ($search) {
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $memberships = $query->orderBy('created_at', 'desc')
             ->paginate(10);
 
         // 4. DỮ LIỆU ĐỔ VÀO MODAL: 

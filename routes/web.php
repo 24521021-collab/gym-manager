@@ -10,7 +10,9 @@ use App\Http\Controllers\Admin\AdminMembershipController;
 use App\Http\Controllers\BodyMetricController;
 use App\Http\Controllers\Admin\CheckInController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\Admin\ClassController; // Đảm bảo import đúng
 
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
@@ -43,6 +45,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     // Các route quản lý gói tập khác của bạn...
     // route quản lý gói tặp CRUD của admin
     Route::resource('packages',GymPackageController::class);
+    //trang admin quản lý các lớp học 
+    Route::resource('gym-classes', ClassController::class)->names('admin.gym-classes');
 });
 // Route lưu gói tập khách hàng 
 Route::post('/register-package', [UserMembershipController::class, 'register'])->name('membership.register');
@@ -75,7 +79,6 @@ use App\Http\Controllers\CartController;
 // Route này nhận ID của lớp học để biết đang đăng ký lớp nào
 Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store');
 //
-use App\Http\Controllers\ProductController;
 
 // Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -95,6 +98,7 @@ Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
 Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
+
 // ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
 Route::get('/classes',           [BookingController::class, 'index'])->name('classes.index');
 Route::post('/classes/book',     [BookingController::class, 'store'])->name('classes.store')->middleware('auth');
