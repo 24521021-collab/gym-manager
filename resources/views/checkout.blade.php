@@ -13,6 +13,14 @@
         </label>
     </div>
     
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="radio" name="payment_method" id="bank_qr" value="Bank_QR">
+        <label class="form-check-label" for="bank_qr">
+            <strong>Chuyển khoản qua mã QR Ngân hàng (VietQR)</strong>
+            <p class="text-muted small">Quét mã QR để thanh toán nhanh qua ứng dụng Ngân hàng.</p>
+        </label>
+    </div>
+
     <div class="form-check">
         <input class="form-check-input" type="radio" name="payment_method" id="vnpay" value="VNPAY">
         <label class="form-check-label" for="vnpay">

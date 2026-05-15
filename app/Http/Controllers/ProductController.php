@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Product; // Nạp Model Product để lấy dữ liệu từ bảng products
 
@@ -43,7 +42,14 @@ class ProductController extends Controller
         'products' => $products
         ]);
     }
+    // 
     public function store(Request $request){
+        $request->validate([
+        'name' => 'required',
+        'sku' => 'required|unique:products',
+        'price' => 'required|numeric',
+        'image' => 'image|mimes:jpeg,png,jpg|max:2048' // Validate file ảnh
+    ]);
     $data = $request->all();
     if ($request->hasFile('image')) {
     $file = $request->file('image');
@@ -53,6 +59,9 @@ class ProductController extends Controller
     $newName = 'product_'.time() . '.' . $ext;
     // Lưu file vào folder public/images/products
     $file->move(public_path('images/products'), $newName);
+    $data['image'] = $newName;
         }
+        Product::create($data);
+        return redirect()->back()->with('success', 'Thêm sản phẩm thành công!');
     }
 }

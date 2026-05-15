@@ -160,7 +160,12 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-clock info-icon me-2 fa-fw"></i>
                                     <span class="small">
-                                        {{ \Carbon\Carbon::parse($class->schedule_time)->format('d/m/Y H:i') }}
+                                        <strong>
+                                            {{ \Carbon\Carbon::parse($class->schedule_time)->format('H:i') }} - 
+                                            {{ \Carbon\Carbon::parse($class->end_time)->format('H:i') }}
+                                        </strong>
+                                        <br>
+                                        <span class="text-muted">{{ \Carbon\Carbon::parse($class->schedule_time)->format('d/m/Y') }}</span>
                                     </span>
                                 </div>
                                 <div class="d-flex align-items-center">

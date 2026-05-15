@@ -39,7 +39,8 @@
                 <a href="/admin/packages"><i class="fas fa-box"></i> Quản lý gói tập</a>
                 <a href="/admin/members"><i class="fas fa-users"></i> Gói tập Hội viên</a>
                 <a href="/admin/checkin">Điểm danh hội viên</a>
-                <a href="#">Quản lý sản phẩm </a>
+                <a href="/admin/products">Quản lý sản phẩm </a>
+                <a href="{{ route('admin.orders') }}"><i class="fas fa-shopping-cart"></i> Quản lý đơn hàng</a>
                 <a href="/admin/gym-classes">Quản lý lớp học</a>
             </div>
             <div class="col-md-10">

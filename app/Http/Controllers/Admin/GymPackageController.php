@@ -13,8 +13,7 @@ class GymPackageController extends Controller
      * CHỨC NĂNG: HIỂN THỊ DANH SÁCH
      * Trả về trang quản lý với danh sách các gói tập đã phân trang.
      */
-    public function index(Request $request)
-    {
+    public function index(Request $request){
         $search = $request->input('search');
         $query = GymPackage::query();
         if ($search) {
@@ -44,7 +43,6 @@ class GymPackageController extends Controller
 
         // 3. Lưu vào Database
         $package = GymPackage::create($data);
-
         return response()->json([
             'success' => true,
             'message' => 'Đã thêm gói tập mới thành công!',
@@ -56,8 +54,7 @@ class GymPackageController extends Controller
      * CHỨC NĂNG: CẬP NHẬT
      * Dùng GymPackage $package thay vì $id. Laravel sẽ tự tìm bản ghi tương ứng.
      */
-    public function update(Request $request, GymPackage $package)
-    {
+    public function update(Request $request, GymPackage $package){
         // 1. Validate dữ liệu
         // Lưu ý: unique phải loại trừ ID hiện tại: 'unique:bảng,cột,ID_ngoại_lệ'
         $request->validate([
@@ -70,10 +67,8 @@ class GymPackageController extends Controller
         // 2. Cập nhật Slug nếu tên thay đổi
         $data = $request->all();
         $data['slug'] = Str::slug($request->package_name);
-
         // 3. Lưu thay đổi
         $package->update($data);
-
         return response()->json([
             'success' => true,
             'message' => 'Cập nhật thông tin thành công!',

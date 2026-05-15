@@ -45,7 +45,11 @@
                         <td><strong>{{ $item->name }}</strong></td>
                         <td>{{ $item->pt->user->full_name ?? 'N/A' }}</td>
                         <td>{{ $item->room_name }}</td>
-                        <td>{{ date('d/m/Y H:i', strtotime($item->schedule_time)) }}</td>
+                        <td>
+                            <span class="text-primary">{{ date('H:i', strtotime($item->schedule_time)) }}</span> - 
+                            <span class="text-danger">{{ date('H:i', strtotime($item->end_time)) }}</span>
+                            <br><small class="text-muted">{{ date('d/m/Y', strtotime($item->schedule_time)) }}</small>
+                        </td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-warning" 
                                     onclick="editClass({{ json_encode($item) }})"
@@ -101,13 +105,17 @@
                             <label class="form-label fw-semibold">Sức chứa tối đa</label>
                             <input type="number" name="max_capacity" id="max_capacity" class="form-control" required>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-8 mb-3">
                             <label class="form-label fw-semibold">Phòng tập</label>
                             <input type="text" name="room_name" id="room_name" class="form-control" required>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-semibold">Thời gian</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Giờ bắt đầu</label>
                             <input type="datetime-local" name="schedule_time" id="schedule_time" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Giờ kết thúc</label>
+                            <input type="datetime-local" name="end_time" id="end_time" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -151,6 +159,11 @@
             let date = new Date(data.schedule_time);
             let formattedDate = date.toISOString().slice(0, 16);
             document.getElementById('schedule_time').value = formattedDate;
+        }
+        if(data.end_time) {
+            let dateEnd = new Date(data.end_time);
+            let formattedDateEnd = dateEnd.toISOString().slice(0, 16);
+            document.getElementById('end_time').value = formattedDateEnd;
         }
     }
 </script>

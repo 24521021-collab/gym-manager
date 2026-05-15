@@ -39,9 +39,13 @@
                         <label class="form-label fw-semibold">Phòng tập (room_name)</label>
                         <input type="text" name="room_name" class="form-control" placeholder="Phòng A, Studio B..." value="">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Thời gian (schedule_time)</label>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Giờ bắt đầu</label>
                         <input type="datetime-local" name="schedule_time" class="form-control" value="">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Giờ kết thúc</label>
+                        <input type="datetime-local" name="end_time" class="form-control" value="">
                     </div>
                     <div class="col-12 text-end mt-4">
                         <button type="reset" class="btn btn-light border px-4">Làm mới Form</button>
@@ -64,7 +68,7 @@
                             <th>PT ID</th>
                             <th>Sức chứa</th>
                             <th>Phòng</th>
-                            <th>Thời gian</th>
+                            <th>Lịch học</th>
                             <th class="text-center pe-4">Thao tác</th>
                         </tr>
                     </thead>
@@ -75,7 +79,10 @@
                             <td><span class="badge bg-secondary">PT #10</span></td>
                             <td>15 người</td>
                             <td>Phòng Studio A</td>
-                            <td>14:00 15/05/2026</td>
+                            <td>
+                                14:00 - 15:30
+                                <br><small>15/05/2026</small>
+                            </td>
                             <td class="text-center pe-4">
                                 <button type="button" class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i> Sửa

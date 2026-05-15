@@ -17,6 +17,7 @@ return new class extends Migration
         $table->foreignId('pt_id')->constrained('pt_profiles')->onDelete('cascade');
         $table->integer('max_capacity');
         $table->timestamp('schedule_time');
+        $table->timestamp('end_time')->nullable();
         $table->string('room_name');
         $table->timestamps();
         });

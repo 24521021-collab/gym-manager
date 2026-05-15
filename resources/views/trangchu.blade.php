@@ -49,10 +49,6 @@
         </div>
                 <div class="navbar-nav ms-auto d-flex align-items-center">
                     @guest
-                    <div class="d-flex align-items-center">
-                        <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-1" style="text-decoration: none;">
-                        <i class="fa fa-shopping-cart" style="font-size: 20px;"></i>
-                    </div>
                         <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
                         <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
                     @else
@@ -75,7 +71,7 @@
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                                 <li><a class="dropdown-item" href="{{route ('body.metric') }}"><i class="fas fa-user-circle me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
                                 <li><a class="dropdown-item" href="{{route('my.membership')}}"><i class="fas fa-dumbbell me-2 text-muted"></i> Gói tập của tôi</a></li>
-                                <li><a class="dropdown-item" href="{{route('products.index')}}"><i class="fas fa-shopping-basket me-2 text-muted"></i> giỏ hàng</a></li>
+                                <li><a class="dropdown-item" href="{{route('orders.index')}}"><i class="fas fa-shopping-basket me-2 text-muted"></i> giỏ hàng của tôi</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form action="{{route('logout')}}" method="POST">

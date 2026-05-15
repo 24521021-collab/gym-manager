@@ -33,7 +33,8 @@ class ClassController extends Controller
             'name' => 'required|string|max:255',
             'pt_id' => 'required|exists:pt_profiles,id',
             'max_capacity' => 'required|numeric',
-            'schedule_time' => 'required',
+            'schedule_time' => 'required|date',
+            'end_time' => 'required|date|after:schedule_time',
             'room_name' => 'required'
         ]);
         GymClass::create($data);
@@ -46,7 +47,8 @@ class ClassController extends Controller
             'name' => 'required|string|max:255',
             'pt_id' => 'required|exists:pt_profiles,id',
             'max_capacity' => 'required|numeric',
-            'schedule_time' => 'required',
+            'schedule_time' => 'required|date',
+            'end_time' => 'required|date|after:schedule_time',
             'room_name' => 'required'
         ]);
         $class->update($data);

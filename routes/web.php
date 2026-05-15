@@ -7,12 +7,16 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Admin\GymPackageController;
 use App\Http\Controllers\UserMembershipController;
 use App\Http\Controllers\Admin\AdminMembershipController;
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\BodyMetricController;
 use App\Http\Controllers\Admin\CheckInController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Admin\ClassController; // Đảm bảo import đúng
+use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\UserOrderController;
 
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
@@ -36,7 +40,6 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::get('/dashboard', function () {
         return view('admin_dashboard');
     })->name('admin.dashboard');
-
     // CRUD Hội viên 
     // 1. Route chính cho admin quản lý hội viên (Index, Store, Update, Destroy)
     // Tên route sẽ tự động là: memberships.index, memberships.store, v.v...
@@ -47,7 +50,16 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::resource('packages',GymPackageController::class);
     //trang admin quản lý các lớp học 
     Route::resource('gym-classes', ClassController::class)->names('admin.gym-classes');
+    //trang admin quản lý sản phẩm
+    Route::resource('products',AdminProductController::class)->names('admin.products');
+    // trang admin quản lý các đơn hàng
+    // trang admin quản lý các trạng thái đơn hàng
+    Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
+    Route::put('/orders/update-status/{id}',[AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
+
+
 // Route lưu gói tập khách hàng 
 Route::post('/register-package', [UserMembershipController::class, 'register'])->name('membership.register');
 //route CRUD thông tin gói tập khách hàng cho admin
@@ -57,13 +69,21 @@ Route::post('/register-package', [UserMembershipController::class, 'register'])-
 Route::middleware('auth')->group(function () {
     Route::get('/body_metric', [BodyMetricController::class, 'index'])->name('body.metric');
     Route::put('/body_metric/update', [BodyMetricController::class, 'update'])->name('metric.update');
+    // route để xem đơn hàng người dùng 
+    Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
 });
+
+
 // route để người dùng thực hiện checkins
 Route::get('/admin/checkin', [CheckInController::class, 'index'])->name('admin.checkin');
 Route::post('/admin/checkin/store', [CheckInController::class,'store'])->name('admin.checkin.store');
+
+
     /// test 
     Route::get('/test-data', function() {return \App\Models\GymPackage::all();});
-//// route để đăng nhập vào google
+
+// route để đăng nhập vào google
 // 1. Đường dẫn để nhấn nút "Đăng nhập bằng Google"
 Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
 
@@ -73,8 +93,6 @@ Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallbac
 Route::get('auth/facebook', [LoginController::class, 'redirectToFacebook'])->name('facebook.login');
 Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCallback']);
 
-
-use App\Http\Controllers\CartController;
 
 // Route này nhận ID của lớp học để biết đang đăng ký lớp nào
 Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store');
@@ -97,6 +115,7 @@ Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 // trang checkout, xác nhận hình thức thanh toán 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+Route::get('/checkout/bank-qr/{order_id}', [CheckoutController::class, 'showBankQR'])->name('checkout.bank_qr');
 Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
 // ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
