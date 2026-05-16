@@ -7,17 +7,28 @@ use App\Models\GymPackage;
 use Illuminate\Support\Facades\Auth;
 class UserMembershipController extends Controller
 {
-    public function MyMembership(){
-    $userId = auth::id();
-    // 2. Lấy danh sách các gói tập của người này, kèm theo thông tin chi tiết của gói đó
-    // dùng 'with' để lấy luôn tên gói, giá tiền từ bảng gym_packages
-    $memberships = Membership::with('package')
-                    ->where('user_id', $userId)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+    public function MyMembership(Request $request){
+        $userId = Auth::id();
+        $status = $request->query('status');
 
-    // 3. Trả về view
-    return view('my_membership', compact('memberships'));
+        // Tự động cập nhật các gói đã hết hạn cho người dùng này trước khi hiển thị
+        Membership::where('user_id', $userId)
+            ->where('status', 'Active')
+            ->whereDate('end_date', '<', now())
+            ->update(['status' => 'Expired']);
+
+        // Khởi tạo query lấy danh sách gói tập
+        $query = Membership::with('package')
+                        ->where('user_id', $userId);
+
+        // Thực hiện lọc theo trạng thái nếu có yêu cầu (Active hoặc Expired)
+        if (in_array($status, ['Active', 'Expired'])) {
+            $query->where('status', $status);
+        }
+
+        $memberships = $query->orderBy('created_at', 'desc')->get();
+
+        return view('my_membership', compact('memberships'));
     }
     // lưu thông tin gói tập người dùng đăng 
     public function register(Request $request){

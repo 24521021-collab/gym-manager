@@ -2,6 +2,19 @@
 @section('content')
 <div class="container py-5">
     <h3 class="fw-bold mb-4">Đơn hàng của tôi</h3>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <!-- Bộ lọc trạng thái -->
+    <div class="mb-4 d-flex gap-2">
+        <a href="{{ route('orders.index') }}" class="btn btn-sm {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">Tất cả</a>
+        <a href="{{ route('orders.index', ['status' => 'Pending']) }}" class="btn btn-sm {{ request('status') == 'Pending' ? 'btn-warning' : 'btn-outline-warning' }}">Chờ xử lý</a>
+        <a href="{{ route('orders.index', ['status' => 'Paid']) }}" class="btn btn-sm {{ request('status') == 'Paid' ? 'btn-success' : 'btn-outline-success' }}">Đã thanh toán</a>
+        <a href="{{ route('orders.index', ['status' => 'Cancelled']) }}" class="btn btn-sm {{ request('status') == 'Cancelled' ? 'btn-danger' : 'btn-outline-danger' }}">Đã hủy</a>
+    </div>
+
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <table class="table align-middle mb-0">
@@ -30,13 +43,22 @@
                             @endif
                         </td>
                         <td class="text-end pe-3">
-                            <button onclick="viewOrderDetails({{ $order->id }})" 
-                            class="btn btn-sm btn-dark"
-                            data-bs-toggle="modal" 
-                            data-bs-target="#userOrderDetailModal"
-                            >
-                                Xem chi tiết
-                            </button>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button onclick="viewOrderDetails({{ $order->id }})" 
+                                class="btn btn-sm btn-dark"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#userOrderDetailModal"
+                                >
+                                    Xem chi tiết
+                                </button>
+                                @if($order->payment_status == 'Pending')
+                                <form action="{{ route('orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Hủy đơn</button>
+                                </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @endforeach

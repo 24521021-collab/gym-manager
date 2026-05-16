@@ -2,7 +2,14 @@
 @section('content')
 <div class="container py-5">
     <h3 class="mb-4">Gói tập của tôi</h3>
-    
+
+    <!-- Bộ lọc trạng thái -->
+    <div class="mb-4 d-flex gap-2">
+        <a href="{{ route('my.membership') }}" class="btn btn-sm {{ !request('status') ? 'btn-dark' : 'btn-outline-dark' }}">Tất cả</a>
+        <a href="{{ route('my.membership', ['status' => 'Active']) }}" class="btn btn-sm {{ request('status') == 'Active' ? 'btn-success' : 'btn-outline-success' }}">Còn hạn</a>
+        <a href="{{ route('my.membership', ['status' => 'Expired']) }}" class="btn btn-sm {{ request('status') == 'Expired' ? 'btn-danger' : 'btn-outline-danger' }}">Hết hạn</a>
+    </div>
+
     @if($memberships->isEmpty())
         <div class="alert alert-info">Bạn chưa đăng ký gói tập nào. <a href="/">Đăng ký ngay!</a></div>
     @else

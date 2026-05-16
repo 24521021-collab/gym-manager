@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin\ClassController; // Đảm bảo import đúng
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserOrderController;
-
+use App\Http\Controllers\Admin\DashboardController;
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
 //home( trang chủ )
@@ -36,10 +36,10 @@ Route::post('/logout',[LoginController::class,'logout'])->name('logout');
 Route::get('/my_membership',[UserMembershipController::class,'MyMembership'])->name('my.membership');
 // Gom nhóm tất cả route bắt đầu bằng /admin
 Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function () {
-    // Trang chủ Admin
-    Route::get('/dashboard', function () {
-        return view('admin_dashboard');
-    })->name('admin.dashboard');
+    // Trang chủ Admin gồm biểu đồ doanh thu
+    Route::get('/dashboard',[DashboardController::class,'index'])->name('admin.dashboard');
+    // API phục vụ cho hàm fetchProductData() trong file Blade
+    Route::get('/dashboard/filter-products', [DashboardController::class, 'filterProducts']);
     // CRUD Hội viên 
     // 1. Route chính cho admin quản lý hội viên (Index, Store, Update, Destroy)
     // Tên route sẽ tự động là: memberships.index, memberships.store, v.v...
@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     // route để xem đơn hàng người dùng 
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{id}/cancel', [UserOrderController::class, 'cancel'])->name('orders.cancel');
 });
 
 
