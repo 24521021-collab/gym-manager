@@ -1,5 +1,4 @@
 @extends('layout.frontend')
-
 @section('content')
 <style>
     .class-card {
@@ -73,8 +72,8 @@
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
                 <div class="d-inline-block bg-white bg-opacity-20 rounded-3 px-4 py-3 text-center">
-                    <div class="fs-2 fw-bold" style="color:#dc3545">{{ $classes->count() }}</div>
-                    <div class="small opacity-75" style="color:#dc3545">Lớp học có sẵn</div>
+                    <div class="fs-2 fw-bold">{{ $classes->count() }}</div>
+                    <div class="small opacity-75">Lớp học có sẵn</div>
                 </div>
             </div>
         </div>
@@ -113,7 +112,6 @@
                    placeholder="🔍 Tìm lớp học..." style="min-width:200px;">
         </div>
     </div>
-
     {{-- Danh sách --}}
     @if($classes->isEmpty())
         <div class="text-center py-5">
@@ -139,6 +137,12 @@
                      data-name="{{ strtolower($class->name) }}">
                     <div class="class-card card h-100 position-relative">
                         <div class="card-top-bar {{ $isBooked ? 'booked' : ($isFull ? 'full' : '') }}"></div>
+                        <div class="card-img-top-wrapper" style="height: 200px; overflow: hidden;">
+                            <img src="{{ asset('images/products/' . ($class->image ?? 'default-class.jpg')) }}"
+                                 class="card-img-top w-100 h-100"
+                                 style="object-fit: cover;"
+                                 alt="{{ $class->name }}">
+                        </div>
 
                         @if($isBooked)
                             <span class="status-badge badge-booked">
@@ -149,31 +153,25 @@
                                 <i class="fas fa-ban me-1"></i>Hết chỗ
                             </span>
                         @endif
-
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-1">{{ $class->name }}</h5>
-                            <p class="text-muted small mb-3">
-                                <i class="fas fa-door-open info-icon me-1"></i>{{ $class->room_name }}
+                            <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 10; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ $class->description }}
                             </p>
-
                             <div class="d-flex flex-column gap-2 mb-3">
                                 <div class="d-flex align-items-center">
-                                    <i class="fas fa-clock info-icon me-2 fa-fw"></i>
-                                    <span class="small">
-                                        <strong>
-                                            {{ \Carbon\Carbon::parse($class->schedule_time)->format('H:i') }} - 
-                                            {{ \Carbon\Carbon::parse($class->end_time)->format('H:i') }}
-                                        </strong>
-                                        <br>
-                                        <span class="text-muted">{{ \Carbon\Carbon::parse($class->schedule_time)->format('d/m/Y') }}</span>
-                                    </span>
+                                    <i class="fas fa-calendar-check info-icon me-2 fa-fw"></i>
+                                    <span class="small">Thời lượng: <strong>{{ $class->total_sessions }} buổi</strong></span>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-user-tie info-icon me-2 fa-fw"></i>
                                     <span class="small">PT: <strong>{{ $ptName }}</strong></span>
                                 </div>
+                                <div class="mt-2">
+                                    <span class="h5 fw-bold text-primary">{{ number_format($class->price) }}đ</span>
+                                    <span class="text-muted small">/ khóa</span>
+                                </div>
                             </div>
-
                             {{-- Thanh chỗ --}}
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between small mb-1">

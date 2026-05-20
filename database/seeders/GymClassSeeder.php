@@ -4,83 +4,68 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\GymClass;
-use App\Models\PtProfile;
-use App\Models\User;
+use App\Models\PTProfile;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
 
 class GymClassSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // 1. Tạo các HLV mẫu (PT)
-        // Chúng ta tạo User trước, sau đó tạo PtProfile tương ứng
-        $pt1 = User::firstOrCreate(
-            ['email' => 'pt_anh@gympro.com'],
-            [
-                'full_name' => 'Nguyễn Văn Anh (HLV Yoga)',
-                'password' => Hash::make('12345678'),
-                'role' => 'pt'
-            ]
-        );
+        $pts = PTProfile::all();
+        if ($pts->isEmpty()) {
+            return;
+        }
 
-        $profile1 = PtProfile::firstOrCreate(
-            ['user_id' => $pt1->id],
+        $data = [
             [
-                'specialization' => 'Yoga & Meditation',
-                'bio' => 'Chuyên gia Yoga với hơn 5 năm kinh nghiệm giảng dạy.',
-                'rating' => 5.0
-            ]
-        );
-
-        $pt2 = User::firstOrCreate(
-            ['email' => 'pt_cuong@gympro.com'],
-            [
-                'full_name' => 'Trần Mạnh Cường (HLV Thể Hình)',
-                'password' => Hash::make('12345678'),
-                'role' => 'pt'
-            ]
-        );
-
-        $profile2 = PtProfile::firstOrCreate(
-            ['user_id' => $pt2->id],
-            [
-                'specialization' => 'Bodybuilding & Powerlifting',
-                'bio' => 'Chuyên đào tạo các vận động viên thể hình chuyên nghiệp.',
-                'rating' => 4.8
-            ]
-        );
-
-        // 2. Tạo danh sách lớp học mẫu
-        $classes = [
-            [
-                'name' => 'Yoga Chào Ngày Mới',
-                'pt_id' => $profile1->id,
-                'max_capacity' => 20,
-                'schedule_time' => Carbon::now()->addDays(1)->setTime(6, 30),
-                'room_name' => 'Phòng Studio A',
+                'name' => 'Lớp Gym Cơ Bản Tăng Cơ',
+                'pt_id' => $pts[0]->id,
+                'max_capacity' => 4,
+                'description' => 'Lớp học tập trung vào các kỹ thuật căn bản giúp kích thích phát triển cơ bắp, phù hợp cho người mới bắt đầu hoặc muốn củng cố nền tảng.',
+                'total_sessions' => 12,
+                'price' => 2400000,
+                'image' => 'default-class.jpg',
             ],
             [
-                'name' => 'Zumba Sôi Động',
-                'pt_id' => $profile1->id,
-                'max_capacity' => 25,
-                'schedule_time' => Carbon::now()->addDays(1)->setTime(18, 00),
-                'room_name' => 'Phòng Studio B',
+                'name' => 'Yoga Phục Hồi Chuyên Sâu',
+                'pt_id' => $pts->get(1)->id ?? $pts[0]->id,
+                'max_capacity' => 4,
+                'description' => 'Tập trung vào hơi thở và các tư thế thư giãn, giúp giảm căng thẳng và phục hồi năng lượng sau những giờ làm việc mệt mỏi.',
+                'total_sessions' => 24,
+                'price' => 3500000,
+                'image' => 'default-class.jpg',
             ],
             [
-                'name' => 'Tập Cơ Bụng Chuyên Sâu',
-                'pt_id' => $profile2->id,
-                'max_capacity' => 12,
-                'schedule_time' => Carbon::now()->addDays(2)->setTime(17, 30),
-                'room_name' => 'Khu vực Tạ',
+                'name' => 'Kickboxing Đốt Mỡ Cấp Tốc',
+                'pt_id' => $pts->get(2)->id ?? $pts[0]->id,
+                'max_capacity' => 4,
+                'description' => 'Sự kết hợp hoàn hảo giữa võ thuật và cardio cường độ cao. Đốt cháy hàng nghìn calo trong mỗi buổi tập.',
+                'total_sessions' => 10,
+                'price' => 1800000,
+                'image' => 'default-class.jpg',
             ],
+            [
+                'name' => 'HIIT - Thử Thách Sức Bền',
+                'pt_id' => $pts->get(3)->id ?? $pts[0]->id,
+                'max_capacity' => 4,
+                'description' => 'Tăng cường sức mạnh tim mạch và sự dẻo dai thông qua các bài tập cường độ cao ngắt quãng.',
+                'total_sessions' => 15,
+                'price' => 2000000,
+                'image' => 'default-class.jpg',
+            ],
+            [
+                'name' => 'Pilates Cân Bằng Cơ Thể',
+                'pt_id' => $pts->get(4)->id ?? $pts[0]->id,
+                'max_capacity' => 4,
+                'description' => 'Tập trung vào vùng lõi (core) để cải thiện tư thế, sự linh hoạt và sức mạnh toàn thân một cách tinh tế.',
+                'total_sessions' => 20,
+                'price' => 4200000,
+                'image' => 'default-class.jpg',
+            ]
         ];
 
-        foreach ($classes as $classData) {
-            GymClass::create($classData);
+        foreach ($data as $item) {
+            GymClass::create($item);
         }
     }
 }

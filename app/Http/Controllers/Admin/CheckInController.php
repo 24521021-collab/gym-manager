@@ -31,6 +31,10 @@ class CheckInController extends Controller
     public function store(Request $request)
     {
         // Lấy user_id từ dữ liệu quét được (JavaScript gửi lên qua AJAX)
+        $request->validate([
+            'user_id' => 'required|integer|exists:user,id', // Validate user_id
+        ]);
+
         $userId = $request->user_id;
 
         // BƯỚC A: Kiểm tra xem User có tồn tại không

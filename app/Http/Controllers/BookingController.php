@@ -18,7 +18,7 @@ class BookingController extends Controller
             ->withCount(['bookings as booked_count' => function ($query) {
                 $query->where('status', '!=', 'cancelled');
             }])
-            ->orderBy('schedule_time', 'asc')
+            ->orderBy('id', 'asc')
             ->get();
 
         $bookedClassIds = [];
@@ -81,6 +81,10 @@ class BookingController extends Controller
      */
     public function cancel(Request $request)
     {
+        $request->validate([
+            'class_id' => 'required|integer|exists:gym_classes,id',
+        ]);
+
         $booking = Booking::where('user_id', Auth::id())
             ->where('class_id', $request->class_id)
             ->where('status', '!=', 'cancelled')

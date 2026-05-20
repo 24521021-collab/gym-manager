@@ -60,7 +60,6 @@
         </div>
     </div>
 </div>
-
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
     let html5QrcodeScanner = null;
@@ -84,20 +83,16 @@
         // Tự động tải lại trang (F5) để bảng danh sách bên ngoài cập nhật người vừa check-in
         location.reload(); 
     }
-
     /** * 3. XỬ LÝ KHI QUÉT TRÚNG MÃ QR
      * decodedText: Chính là ID người dùng chứa trong mã QR
      */
     // Biến cờ (flag) để ngăn việc gửi nhiều yêu cầu cùng lúc khi đang xử lý
 let isProcessing = false;
-
 function onScanSuccess(decodedText) {
     // Nếu đang xử lý một mã rồi thì thoát ra, không làm gì cả
     if (isProcessing) return;
-
     // Đánh dấu bắt đầu xử lý
     isProcessing = true;
-
     // Gửi ID lên Server
     fetch("{{ route('admin.checkin.store') }}", {
         method: "POST",
@@ -111,18 +106,15 @@ function onScanSuccess(decodedText) {
     .then(data => {
         let resDiv = document.getElementById('result');
         resDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
-
         if(data.success) {
             resDiv.classList.add('alert-success');
             resDiv.innerHTML = `✅ ${data.user_name}: Thành công!`;
-
             // --- ĐOẠN QUAN TRỌNG: TỰ ĐỘNG TẮT MODAL ---
             // Đợi 1 giây để Admin kịp nhìn thấy chữ "Thành công" rồi mới tắt
             setTimeout(() => {
                 // Lấy đối tượng Modal hiện tại
                 let myModalEl = document.getElementById('qrModal');
                 let modal = bootstrap.Modal.getInstance(myModalEl);
-                
                 if (modal) {
                     modal.hide(); // Tắt ô quét QR
                 }

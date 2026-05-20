@@ -13,26 +13,20 @@ class CheckRole
      * Handle an incoming request.
      *
      * @param  Closure(Request): (Response)  $next
+     * @param  string  $role
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $role): Response
     {
-         {
+        // 1. Kiểm tra người dùng đã đăng nhập chưa
         if (!Auth::check()) {
-            return redirect('/');
+            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập trước.');
         }
 
-        $userRole = Auth::user()->role;
-
-        if (empty($roles)) {
-            $roles = ['admin','user','trainer'];
-        }
-
-        // Kiểm tra xem role của user
-        if (in_array($userRole, $roles)) {
+        // 2. Kiểm tra vai trò của người dùng có khớp với vai trò yêu cầu từ Route không
+        if (Auth::user()->role === $role) {
             return $next($request);
         }
-        
+
         abort(403, 'Bạn không có quyền truy cập chức năng này.');
-    }
     }
 }

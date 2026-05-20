@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController; // Import Controller mới
+use App\Http\Controllers\ProfileController; // Import ProfileController
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RegisterController;
@@ -17,7 +19,9 @@ use App\Http\Controllers\Admin\ClassController; // Đảm bảo import đúng
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserOrderController;
+use App\Http\Controllers\PtBookingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Pt\PtDashboardController;
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
 //home( trang chủ )
@@ -59,6 +63,20 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::put('/orders/update-status/{id}',[AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
 
+// Nhóm Route dành riêng cho PT
+Route::middleware(['auth', 'CheckRole:pt'])->prefix('pt')->group(function () {
+    Route::get('/dashboard', [PtDashboardController::class, 'index'])->name('pt.dashboard');
+    
+    // Quản lý lớp học (CRUD)
+    Route::get('/classes', [PtDashboardController::class, 'classes'])->name('pt.classes.index');
+    Route::post('/classes/store', [PtDashboardController::class, 'storeClass'])->name('pt.classes.store');
+    Route::post('/classes/update/{id}', [PtDashboardController::class, 'updateClass'])->name('pt.classes.update');
+    Route::delete('/classes/destroy/{id}', [PtDashboardController::class, 'destroyClass'])->name('pt.classes.destroy');
+
+    // Quản lý đặt lịch riêng
+    Route::get('/bookings', [PtDashboardController::class, 'bookings'])->name('pt.bookings.index');
+    Route::patch('/bookings/{id}/status', [PtDashboardController::class, 'updateBookingStatus'])->name('pt.bookings.updateStatus');
+});
 
 // Route lưu gói tập khách hàng 
 Route::post('/register-package', [UserMembershipController::class, 'register'])->name('membership.register');
@@ -73,7 +91,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{id}/cancel', [UserOrderController::class, 'cancel'])->name('orders.cancel');
+ // ─── ĐẶT LỊCH RIÊNG PT (THÊM VÀO ĐÂY) ───────
+    Route::get('/booking-pt', [PtBookingController::class, 'index'])->name('booking.pt.index');
+    Route::get('/api/pt-booked-slots', [PtBookingController::class, 'getBookedSlots'])->name('api.pt.booked_slots');
+    Route::post('/booking-pt', [PtBookingController::class, 'store'])->name('booking.pt.store');
+
+    // Quên & Đổi mật khẩu
+    Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
 });
+
+// Route quên mật khẩu công khai
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetEmail'])->name('password.forgot.post');
 
 
 // route để người dùng thực hiện checkins
@@ -120,6 +148,6 @@ Route::get('/checkout/bank-qr/{order_id}', [CheckoutController::class, 'showBank
 Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
 // ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
-Route::get('/classes',           [BookingController::class, 'index'])->name('classes.index');
-Route::post('/classes/book',     [BookingController::class, 'store'])->name('classes.store')->middleware('auth');
-Route::delete('/classes/cancel', [BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');
+Route::get('/classes',[BookingController::class, 'index'])->name('classes.index');
+Route::post('/classes/book',[BookingController::class, 'store'])->name('classes.store')->middleware('auth');
+Route::delete('/classes/cancel',[BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');

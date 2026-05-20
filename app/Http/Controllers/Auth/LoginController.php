@@ -28,6 +28,9 @@ class LoginController extends Controller
         if($user->role =='admin'){
             return redirect()->route('admin.dashboard');
         }
+        if($user->role =='pt'){
+            return redirect()->route('pt.dashboard');
+        }
         // D. Chuyển hướng người dùng về trang chủ
         return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
     }

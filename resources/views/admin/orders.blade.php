@@ -5,12 +5,12 @@
 
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
-            <form action="{{ route('admin.orders') }}" method="GET" class="row g-3">
+            <form id="orderSearchForm" onsubmit="event.preventDefault(); loadOrders();" class="row g-3">
                 <div class="col-md-3">
-                    <input type="text" name="search" class="form-control" placeholder="Mã đơn hoặc tên khách..." value="{{ request('search') }}">
+                    <input type="text" id="orderSearchInput" class="form-control" placeholder="Mã đơn hoặc tên khách...">
                 </div>
                 <div class="col-md-3">
-                    <select name="status" class="form-select">
+                    <select id="orderStatusFilter" class="form-select" onchange="loadOrders()">
                         <option value="">-- Tất cả trạng thái --</option>
                         <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Chờ thanh toán (Pending)</option>
                         <option value="Paid" {{ request('status') == 'Paid' ? 'selected' : '' }}>Đã thanh toán (Paid)</option>
@@ -18,7 +18,7 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-dark w-100">Lọc đơn</button>
+                    <button type="submit" class="btn btn-dark w-100">Tìm kiếm</button>
                 </div>
             </form>
         </div>
@@ -37,33 +37,13 @@
                         <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach($orders as $order)
-                    <tr>
-                        <td class="ps-4">#{{ $order->id }}</td>
-                        <td>{{ $order->user->full_name ?? 'Khách lạ' }}</td>
-                        <td>{{ date('d/m/Y H:i', strtotime($order->order_date)) }}</td>
-                        <td class="fw-bold text-primary">{{ number_format($order->total_amount) }}đ</td>
-                        <td>
-                            @if($order->payment_status == 'Paid')
-                                <span class="badge bg-success">Đã thanh toán</span>
-                            @elseif($order->payment_status == 'Cancelled')
-                                <span class="badge bg-danger">Đã hủy</span>
-                            @else
-                                <span class="badge bg-warning text-dark">Chờ thanh toán</span>
-                            @endif
-                        </td>
-                        <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-outline-dark" 
-                            onclick="openOrderDetail({{ $order->id }})"
-                            data-bs-toggle="modal" data-bs-target="#orderDetailModal">
-                             Chi tiết & Trạng thái
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
+                <tbody id="orderTableBody">
+                    <tr><td colspan="6" class="text-center py-4">Đang tải dữ liệu đơn hàng...</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div class="card-footer bg-white border-top-0 py-3">
+            <div id="orderPagination" class="d-flex justify-content-center"></div>
         </div>
     </div>
 </div>
@@ -98,7 +78,7 @@
                     </tfoot>
                 </table>
 
-                <form id="updateOrderForm" method="POST">
+                <form id="updateOrderForm" onsubmit="saveOrderStatus(event)">
                     @csrf @method('PUT')
                     <div class="mt-4 p-3 bg-light rounded">
                         <label class="form-label fw-bold text-primary">Cập nhật trạng thái đơn hàng:</label>
@@ -117,42 +97,127 @@
     </div>
 </div>
 <script>
+window.cachedOrders = [];
+// 1. Hàm tải dữ liệu (LoadData)
+function loadOrders(page = 1) {
+    const search = document.getElementById('orderSearchInput').value;
+    const status = document.getElementById('orderStatusFilter').value;
+    let url = `/admin/orders?page=${page}&search=${encodeURIComponent(search)}&status=${status}`;
+
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(res => res.json())
+        .then(data => {
+            window.cachedOrders = data.data; // Lưu dữ liệu vào cache
+            renderOrderTable(window.cachedOrders);
+            renderPagination(data.links);
+        })
+        .catch(err => console.error("Lỗi tải đơn hàng:", err));
+}
+
+// 2. Hàm vẽ bảng (Render Table)
+function renderOrderTable(orders) {
+    const tbody = document.getElementById('orderTableBody');
+    if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">Không có dữ liệu đơn hàng.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = orders.map(order => {
+        let statusBadge = '';
+        if(order.payment_status === 'Paid') statusBadge = '<span class="badge bg-success">Đã thanh toán</span>';
+        else if(order.payment_status === 'Cancelled') statusBadge = '<span class="badge bg-danger">Đã hủy</span>';
+        else statusBadge = '<span class="badge bg-warning text-dark">Chờ thanh toán</span>';
+
+        return `
+            <tr id="order-row-${order.id}">
+                <td class="ps-4">#${order.id}</td>
+                <td>${escapeHtml(order.user ? order.user.full_name : 'Khách lạ')}</td>
+                <td>${new Date(order.order_date).toLocaleString('vi-VN')}</td>
+                <td class="fw-bold text-primary">${new Intl.NumberFormat('vi-VN').format(order.total_amount)}đ</td>
+                <td>${statusBadge}</td>
+                <td class="text-end pe-4">
+                    <button class="btn btn-sm btn-outline-dark" onclick="openOrderDetail(${order.id})">
+                        Chi tiết & Trạng thái
+                    </button>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
+// 3. Hàm phân trang (Render Pagination)
+function renderPagination(links) {
+    const container = document.getElementById('orderPagination');
+    if (!links || links.length <= 3) { container.innerHTML = ''; return; }
+    container.innerHTML = `<nav><ul class="pagination pagination-sm mb-0">` +
+        links.map(link => {
+            const page = link.url ? new URL(link.url).searchParams.get('page') : 1;
+            return `<li class="page-item ${link.active ? 'active' : ''} ${!link.url ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); ${link.url && !link.active ? `loadOrders(${page})` : ''}">${link.label}</a>
+            </li>`;
+        }).join('') + `</ul></nav>`;
+}
+
+// 4. Hàm xem chi tiết (PrepareEdit - Sử dụng Cached Data)
 function openOrderDetail(orderId) {
-    // 1. Dùng Fetch API để gọi hàm show() trong Controller
-    fetch(`/admin/orders/${orderId}`)
-        .then(response => response.json())
-        .then(order => {
-            // 2. Đổ thông tin cơ bản
-            document.getElementById('det_order_id').innerText = order.id;
-            document.getElementById('det_user_name').innerText = order.user ? order.user.full_name : 'Khách vãng lai';
-            document.getElementById('det_total_price').innerText = new Intl.NumberFormat('vi-VN').format(order.total_amount) + 'đ';
-            document.getElementById('det_status_select').value = order.payment_status;
-            document.getElementById('updateOrderForm').action = `/admin/orders/update-status/${order.id}`;
-            // 3. Vẽ danh sách sản phẩm
-            let itemsHtml = '';
-            order.items.forEach(item => {
-                let productName = item.product ? item.product.name : 'Sản phẩm đã xóa';
-                // Kiểm tra nếu sản phẩm có ảnh, nếu không thì dùng ảnh mặc định
-                 let productImg = (item.product && item.product.image) ? `/images/products/${item.product.image}` : '/images/products/default-product.jpg';
-                 // Tính đơn giá dựa trên thành tiền và số lượng vì DB không lưu cột price riêng lẻ
-                 let unitPrice = item.quantity > 0 ? (item.subtotal / item.quantity) : 0;
-                itemsHtml += `
-                    <tr>
-                        <td class="text-center">
-                        <img src="${productImg}" width="50" height="50" class="rounded border" style="object-fit: cover;">
-                        </td>
-                        <td>${productName}</td>
-                        <td class="text-center">${item.quantity}</td>
-                        <td class="text-end">${new Intl.NumberFormat('vi-VN').format(unitPrice)}đ</td>
-                        <td class="text-end fw-bold">${new Intl.NumberFormat('vi-VN').format(item.subtotal)}đ</td>
-                    </tr>
-                `;
-            });
-            document.getElementById('order_items_list').innerHTML = itemsHtml;
-            // 4. Mở Modal
-            var myModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
-            myModal.show();
-        });
+    // Tìm đối tượng trong cache thay vì gọi API mới
+    const order = window.cachedOrders.find(o => o.id === orderId);
+    if (!order) return;
+
+    document.getElementById('det_order_id').innerText = order.id;
+    document.getElementById('det_user_name').innerText = order.user ? order.user.full_name : 'Khách vãng lai';
+    document.getElementById('det_total_price').innerText = new Intl.NumberFormat('vi-VN').format(order.total_amount) + 'đ';
+    document.getElementById('det_status_select').value = order.payment_status;
+    
+    let itemsHtml = order.items.map(item => {
+        const productName = item.product ? item.product.name : 'Sản phẩm đã xóa';
+        const productImg = (item.product && item.product.image) ? `/images/products/${item.product.image}` : '/images/products/default-product.jpg';
+        const unitPrice = item.quantity > 0 ? (item.subtotal / item.quantity) : 0;
+        return `
+            <tr>
+                <td class="text-center"><img src="${productImg}" width="50" height="50" class="rounded border" style="object-fit: cover;"></td>
+                <td>${escapeHtml(productName)}</td>
+                <td class="text-center">${item.quantity}</td>
+                <td class="text-end">${new Intl.NumberFormat('vi-VN').format(unitPrice)}đ</td>
+                <td class="text-end fw-bold">${new Intl.NumberFormat('vi-VN').format(item.subtotal)}đ</td>
+            </tr>`;
+    }).join('');
+    
+    document.getElementById('order_items_list').innerHTML = itemsHtml;
+    
+    const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+    modal.show();
+}
+
+// 5. Hàm cập nhật trạng thái (SaveData)
+function saveOrderStatus(event) {
+    event.preventDefault();
+    const orderId = document.getElementById('det_order_id').innerText;
+    const status = document.getElementById('det_status_select').value;
+    
+    fetch(`/admin/orders/update-status/${orderId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ payment_status: status, _method: 'PUT' })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('orderDetailModal')).hide();
+            loadOrders(); // Tải lại danh sách để cập nhật giao diện
+            alert(data.message);
+        }
+    })
+    .catch(err => alert('Có lỗi xảy ra khi cập nhật trạng thái!'));
+}
+
+document.addEventListener('DOMContentLoaded', () => loadOrders());
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 </script>
 @endsection

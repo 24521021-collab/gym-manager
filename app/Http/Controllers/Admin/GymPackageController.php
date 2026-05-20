@@ -20,6 +20,11 @@ class GymPackageController extends Controller
             $query->where('package_name', 'like', "%{$search}%");
         }
         $packages = $query->orderBy('id', 'desc')->paginate(10);
+
+        // Nếu là request AJAX, trả về JSON
+        if ($request->ajax()) {
+            return response()->json($packages);
+        }
         return view('admin.packages', compact('packages'));
 }
 

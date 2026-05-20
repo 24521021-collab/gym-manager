@@ -17,6 +17,7 @@ return new class extends Migration
         $table->text('bio')->nullable();
         $table->string('specialization');
         $table->decimal('rating', 3, 2)->default(0);
+        $table->decimal('commission', 12, 2)->default(0); // Số tiền nhận được mỗi buổi dạy
         $table->timestamps();
         });
     }

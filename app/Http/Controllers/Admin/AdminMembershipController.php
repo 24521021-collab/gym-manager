@@ -9,71 +9,45 @@ use App\Models\User;       // Model chứa thông tin người dùng
 use Illuminate\Http\Request;
 use Carbon\Carbon;         // Thư viện xử lý thời gian chuyên nghiệp
 
-class AdminMembershipController extends Controller
-{
-    /**
-     * Hàm hiển thị danh sách hội viên cho Admin
-     */
-    public function index(Request $request)
-    {
-        // 1. Lấy thời gian hiện tại
+class AdminMembershipController extends Controller{
+    public function index(Request $request){
         $search = $request->input('search');
         $today = Carbon::now();
-
-        // 2. TỰ ĐỘNG CẬP NHẬT: Quét Database, nếu ai đang 'Active' mà ngày hết hạn 
-        // nhỏ hơn (trước) ngày hôm nay thì chuyển họ sang trạng thái 'Expired' (Hết hạn).
+        // 1. TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI HẾT HẠN TRƯỚC KHI TRẢ VỀ DỮ LIỆU
         Membership::where('status', 'Active')
             ->whereDate('end_date', '<', $today)
             ->update(['status' => 'Expired']);
-        
-        // 3. LẤY DANH SÁCH: 
-        // - with(['user', 'package']): Kéo theo thông tin người dùng và gói tập để hiện tên
-        // - paginate(10): Chỉ lấy 10 dòng mỗi trang để web chạy nhanh
+        // 2. XÂY DỰNG QUERY TÌM KIẾM THEO TÊN HOẶC EMAIL KHÁCH HÀNG
         $query = Membership::with(['user', 'package']);
-
         if ($search) {
             $query->whereHas('user', function($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
             });
         }
+        
+        // 3. PHÂN TRANG (10 bản ghi một trang giống hệt product)
+        $memberships = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        $memberships = $query->orderBy('created_at', 'desc')
-            ->paginate(10);
-
-        // 4. DỮ LIỆU ĐỔ VÀO MODAL: 
-        // - Lấy danh sách User có quyền là 'member' để Admin chọn khi thêm mới
+        // NẾU LÀ REQUEST ASYNC TỪ FETCH API -> TRẢ VỀ JSON LUÔN
+        if ($request->ajax()) {
+            return response()->json($memberships);
+        }
+        // 4. LẤY DỮ LIỆU ĐỂ ĐỔ VÀO CÁC Ô SELECT BOX TRONG MODAL (Chỉ load lần đầu)
         $users = User::where('role', 'member')->select('id', 'full_name')->get();
-        // - Lấy danh sách các gói tập để Admin chọn
         $packages = GymPackage::all();
-
-        // 5. Trả dữ liệu ra file View
-        return view('admin.members', compact('memberships','users','packages'));
+        return view('admin.members', compact('memberships', 'users', 'packages'));
     }
-
-    /**
-     * Hàm xử lý khi Admin tự tay thêm hội viên mới
-     */
-    public function store(Request $request)
-    {
-        // 1. KIỂM TRA DỮ LIỆU: Đảm bảo ID user và ID gói tập phải tồn tại trong DB
+    public function store(Request $request){
         $request->validate([
-            'user_id' => 'required|exists:user,id',
+            'user_id' => 'required|exists:user,id', // Sửa lại thành 'user' theo đúng tên bảng trong DB của bạn
             'package_id' => 'required|exists:gym_packages,id',
             'start_date' => 'required|date',
         ]);
-
-        // 2. LẤY THÔNG TIN GÓI TẬP: Tìm gói tập mà Admin vừa chọn
         $package = GymPackage::findOrFail($request->package_id);
-        
-        // 3. XỬ LÝ NGÀY THÁNG: Chuyển ngày bắt đầu từ chữ sang kiểu dữ liệu Thời gian
         $startDate = Carbon::parse($request->start_date);
-        
-        // 4. TÍNH NGÀY HẾT HẠN: Lấy ngày bắt đầu cộng thêm số ngày quy định của gói đó
         $endDate = $startDate->copy()->addDays($package->duration_days);
-
-        // 5. LƯU VÀO DATABASE: Tạo bản ghi mới trong bảng memberships
-        Membership::create([
+        $membership = Membership::create([
             'user_id' => $request->user_id,
             'package_id' => $request->package_id,
             'start_date' => $startDate,
@@ -81,41 +55,41 @@ class AdminMembershipController extends Controller
             'status' => 'Active'
         ]);
 
-        // 6. PHẢN HỒI: Quay lại trang trước và hiện thông báo thành công
-        return redirect()->back()->with('success', 'Đã thêm hội viên mới thành công!');
+        return response()->json(['success' => true, 'data' => $membership]);
     }
-
     /**
-     * Hàm cập nhật trạng thái (ví dụ Admin muốn khoá thẻ hoặc kích hoạt lại)
+     * Xử lý cập nhật thông tin và trạng thái hội viên bằng Fetch API
      */
-    public function update(Request $request, $id)
-    {
-        // 1. Kiểm tra trạng thái gửi lên có nằm trong danh sách cho phép không
+    public function update(Request $request, $id){
         $request->validate([
+            'user_id' => 'required|exists:user,id', // Sửa lại thành 'user'
+            'package_id' => 'required|exists:gym_packages,id',
+            'start_date' => 'required|date',
             'status' => 'required|in:Active,Inactive,Expired,Cancelled'
         ]);
-
-        // 2. Tìm hội viên theo ID, nếu không thấy sẽ báo lỗi 404
         $membership = Membership::findOrFail($id);
-        
-        // 3. Cập nhật trạng thái mới
-        $membership->update(['status' => $request->status]);
+        // Tính toán lại ngày hết hạn phòng trường hợp Admin đổi gói tập hoặc ngày bắt đầu
+        $package = GymPackage::findOrFail($request->package_id);
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = $startDate->copy()->addDays($package->duration_days);
 
-        return redirect()->back()->with('success', 'Đã cập nhật trạng thái hội viên!');
+        $membership->update([
+            'user_id' => $request->user_id,
+            'package_id' => $request->package_id,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'status' => $request->status
+        ]);
+
+        return response()->json(['success' => true, 'data' => $membership]);
     }
-
     /**
-     * Hàm xoá vĩnh viễn một bản ghi đăng ký tập
+     * Xử lý xóa vĩnh viễn (Giữ nguyên cơ chế API cũ của bạn)
      */
-    public function destroy($id)
-    {
-        // 1. Tìm bản ghi cần xoá
+    public function destroy($id){
         $membership = Membership::findOrFail($id);
-        
-        // 2. Thực hiện lệnh xoá khỏi Database
         $membership->delete();
 
-        // 3. Trả về kết quả kiểu JSON để JavaScript (AJAX) xử lý xoá hàng trên giao diện mà không load lại trang
-        return response()->json(['success' => true, 'message' => 'Đã xoá hội viên thành công']);
+        return response()->json(['success' => true, 'message' => 'Đã xoá hồ sơ đăng ký tập thành công!']);
     }
 }

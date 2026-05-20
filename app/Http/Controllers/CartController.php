@@ -15,12 +15,12 @@ class CartController extends Controller
         return view('cart',compact('cart'));
     }
     public function add($id){
-        // Dùng ID từ đường dẫn để tìm sản phẩm trong DB.
+        // Dùng ID từ tham số URL để tìm sản phẩm trong DB.
         // Nếu ID bậy bạ không có trong DB, hàm này sẽ báo lỗi 404 ngay
         $product = Product::findOrFail($id);
         // KIỂM TRA: Nếu cột stock_quantity trong DB <= 0 thì thông báo hết hàng
         if ($product->stock_quantity < 1) {
-            return redirect()->back()->with('error', 'Sản phẩm này đã cháy hàng!');
+            return response()->json(['error' => 'Sản phẩm này đã cháy hàng!'], 400);
         }
         // Lấy giỏ hàng hiện tại trong máy người dùng ra (Session)
         $cart = session()->get('cart', []);
@@ -28,14 +28,14 @@ class CartController extends Controller
         if(isset($cart[$id])) {
             // Nếu có rồi, kiểm tra xem nếu cộng thêm 1 thì có lố số lượng trong kho không
             if ($cart[$id]['stock_quantity'] + 1 > $product->stock_quantity) {
-                return redirect()->back()->with('error', 'Kho chỉ còn ' . $product->stock_quantity . ' sản phẩm!');
+                return response()->json(['error' => 'Kho chỉ còn ' . $product->stock_quantity . ' sản phẩm!'], 400);
             }
             // Nếu ổn, tăng số lượng của sản phẩm đó trong giỏ lên 1
             $cart[$id]['stock_quantity']++;
         } else {
             // Nếu sản phẩm CHƯA có trong giỏ, tạo mới một "món hàng" với các thông tin từ DB
             $cart[$id] = [
-                "name"     => $product->name,
+                "name" => $product->name,
                 "sku"      => $product->sku,
                 "stock_quantity" => 1,
                 "price"    => $product->price,
@@ -88,6 +88,9 @@ class CartController extends Controller
     }
     public function remove(Request $request){
     // Kiểm tra xem request gửi lên có ID sản phẩm không
+    $request->validate([
+        'id' => 'required|integer|exists:products,id',
+    ]);
     if($request->id) {
         // Lấy danh sách giỏ hàng hiện tại từ Session
         $cart = session()->get('cart');

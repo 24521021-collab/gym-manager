@@ -43,8 +43,9 @@
                     <li class="nav-item"><a class="nav-link active" href="#">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="#pricing">Gói tập</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('classes.index') }}">Lớp học</a></li> 
+                    <li class="nav-item"><a class="nav-link" href="{{route('booking.pt.index')}}">Đặt lịch với PT</a></li>
                 </ul>
-                <div class="mt-3">
+            <div class="mt-3">
 
         </div>
                 <div class="navbar-nav ms-auto d-flex align-items-center">
@@ -186,11 +187,43 @@
                                 <a href="{{ route('auth.google') }}" class="btn btn-danger w-50 mb-2">
                                     <i class="fab fa-google"></i> Đăng nhập bằng Google
                                 </a>
+
+                            <div class="text-end mb-2">
+                                <a href="#" class="text-muted small" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-bs-dismiss="modal">Quên mật khẩu?</a>
+                            </div>
+
                             <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-dark fw-bold py-2">ĐĂNG NHẬP</button>
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Quên mật khẩu -->
+        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold">KHÔI PHỤC MẬT KHẨU</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form onsubmit="sendDefaultPassword(event)">
+                        @csrf
+                        <div class="modal-body p-4">
+                            <p class="small text-muted mb-3">Nhập email của bạn, chúng tôi sẽ gửi mật khẩu mặc định mới qua email.</p>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Email của bạn</label>
+                                <input type="email" id="forgot_email" class="form-control" placeholder="example@gmail.com" required>
+                            </div>
+                            <!-- Vùng hiển thị thông báo lỗi nhanh -->
+                            <div id="forgot-msg" class="mt-2 small"></div>
+                        </div>
+                        <div class="modal-footer border-0 p-4 pt-0">
+                            <button type="submit" id="btnForgot" class="btn btn-warning fw-bold w-100 py-2">GỬI YÊU CẦU</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -201,6 +234,53 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    /**
+     * Xử lý gửi yêu cầu cấp mật khẩu mặc định qua Fetch API
+     */
+    async function sendDefaultPassword(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnForgot');
+        const msg = document.getElementById('forgot-msg');
+        const email = document.getElementById('forgot_email').value;
+
+        // Hiệu ứng Loading & Chống spam click
+        btn.disabled = true;
+        const originalText = btn.innerText;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang gửi mail...';
+        msg.innerHTML = '';
+
+        try {
+            const response = await fetch("{{ route('password.forgot.post') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email: email })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                // Đóng modal sau khi thành công
+                bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
+            } else {
+                msg.className = "mt-2 small text-danger";
+                msg.innerText = data.message;
+            }
+        } catch (error) {
+            msg.className = "mt-2 small text-danger";
+            msg.innerText = "Lỗi kết nối máy chủ, vui lòng thử lại sau.";
+        } finally {
+            // Khôi phục trạng thái nút
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    }
+    </script>
 </body>
 </html>
 // lệnh xử lý nút đăng ký gói tập//
