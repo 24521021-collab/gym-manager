@@ -34,7 +34,8 @@ class AdminMembershipController extends Controller{
             return response()->json($memberships);
         }
         // 4. LẤY DỮ LIỆU ĐỂ ĐỔ VÀO CÁC Ô SELECT BOX TRONG MODAL (Chỉ load lần đầu)
-        $users = User::where('role', 'member')->select('id', 'full_name')->get();
+        // Lấy cả guest và member để Admin có thể gán gói tập cho khách mới
+        $users = User::whereIn('role', ['member', 'guest'])->select('id', 'full_name')->get();
         $packages = GymPackage::all();
         return view('admin.members', compact('memberships', 'users', 'packages'));
     }

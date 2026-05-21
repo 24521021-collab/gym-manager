@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\GymClass;
+use App\Models\GymPackage;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -14,107 +17,168 @@ class CartController extends Controller
         // compact('cart') giúp chuyển biến $cart sang bên file giao diện để hiển thị
         return view('cart',compact('cart'));
     }
-    public function add($id){
-        // Dùng ID từ tham số URL để tìm sản phẩm trong DB.
-        // Nếu ID bậy bạ không có trong DB, hàm này sẽ báo lỗi 404 ngay
-        $product = Product::findOrFail($id);
-        // KIỂM TRA: Nếu cột stock_quantity trong DB <= 0 thì thông báo hết hàng
-        if ($product->stock_quantity < 1) {
-            return response()->json(['error' => 'Sản phẩm này đã cháy hàng!'], 400);
-        }
-        // Lấy giỏ hàng hiện tại trong máy người dùng ra (Session)
+    /**
+     * Thêm sản phẩm/gói tập/lớp học vào giỏ hàng session.
+     * @param Request $request Gồm 'id' và 'type'
+     */
+    public function add(Request $request){
+        $request->validate([
+            'id'   => 'required|integer',
+            'type' => 'required|string|in:product,package,class',
+        ]);
+        $id   = $request->id;
+        $type = $request->type;
+        $rowId = $type . '_' . $id; // Tạo key duy nhất cho item trong giỏ hàng
         $cart = session()->get('cart', []);
-        // KIỂM TRA: Sản phẩm này đã có trong giỏ chưa? (Dựa vào ID làm chìa khóa)
-        if(isset($cart[$id])) {
-            // Nếu có rồi, kiểm tra xem nếu cộng thêm 1 thì có lố số lượng trong kho không
-            if ($cart[$id]['stock_quantity'] + 1 > $product->stock_quantity) {
-                return response()->json(['error' => 'Kho chỉ còn ' . $product->stock_quantity . ' sản phẩm!'], 400);
-            }
-            // Nếu ổn, tăng số lượng của sản phẩm đó trong giỏ lên 1
-            $cart[$id]['stock_quantity']++;
-        } else {
-            // Nếu sản phẩm CHƯA có trong giỏ, tạo mới một "món hàng" với các thông tin từ DB
-            $cart[$id] = [
-                "name" => $product->name,
-                "sku"      => $product->sku,
-                "stock_quantity" => 1,
-                "price"    => $product->price,
-                "image"    => $product->image ?? null,
-            ];
+        $itemDetails = [];
+        $quantity = 1; // Mặc định số lượng là 1
+        switch ($type) {
+            case 'product':
+                $product = Product::findOrFail($id);
+                // Kiểm tra số lượng tồn kho
+                if ($product->stock_quantity < 1) {
+                    return response()->json(['error' => 'Sản phẩm này đã hết hàng!'], 400);
+                }
+                // Nếu sản phẩm đã có trong giỏ, tăng số lượng
+                if (isset($cart[$rowId])) {
+                    $quantity = $cart[$rowId]['quantity'] + 1;
+                    if ($quantity > $product->stock_quantity) {
+                        return response()->json(['error' => 'Kho chỉ còn ' . $product->stock_quantity . ' sản phẩm!'], 400);
+                    }
+                }
+                $itemDetails = [
+                    "row_id"   => $rowId,
+                    "item_id"   => $product->id,
+                    "item_type" => "product",
+                    "name"     => $product->name,
+                    "price"    => $product->price,
+                    "quantity" => $quantity,
+                    "image"    => $product->image ?? null,
+                    "stock_quantity" => $product->stock_quantity // Lưu stock để kiểm tra sau này
+                ];
+                break;
+            case 'package':
+                $package = GymPackage::findOrFail($id);
+                // Gói tập chỉ cho phép đăng ký 1 lần
+                if (isset($cart[$rowId])) {
+                    return response()->json(['error' => 'Gói tập này đã có trong giỏ hàng!'], 400);
+                }
+                $itemDetails = [
+                    "row_id"   => $rowId,
+                    "item_id"   => $package->id,
+                    "item_type" => "package",
+                    "name"     => $package->package_name,
+                    "price"    => $package->price,
+                    "quantity" => 1, // Gói tập luôn là 1
+                    "image"    => null, // Gói tập thường không có ảnh riêng
+                ];
+                break;
+            case 'class':
+                $gymClass = GymClass::findOrFail($id);
+                // Lớp học chỉ cho phép đăng ký 1 lần
+                if (isset($cart[$rowId])) {
+                    return response()->json(['error' => 'Lớp học này đã có trong giỏ hàng!'], 400);
+                }
+                $itemDetails = [
+                    "row_id"   => $rowId,
+                    "item_id"   => $gymClass->id,
+                    "item_type" => "class",
+                    "name"     => $gymClass->name,
+                    "price"    => $gymClass->price,
+                    "quantity" => 1, // Lớp học luôn là 1
+                    "image"    => $gymClass->image ?? null,
+                ];
+                break;
         }
-        // Lưu lại cái mảng giỏ hàng đã thay đổi vào lại Session
-        // Giải thích: "Cất danh sách đồ khách vừa chọn vào bộ nhớ tạm (Session) của máy chủ để khi khách chuyển trang khác, món hàng vẫn còn nằm trong giỏ."
+        $cart[$rowId] = $itemDetails;
         session()->put('cart', $cart);
         return response()->json([
             'success' => 'Đã thêm!',
             'cart_count' => count($cart),
-            'cart_data' => $cart // Trả về dữ liệu để JS vẽ lại Modal
-            ]);
-    }
-    public function update(Request $request){
-    // 1. Validate (Cũng đổi tên biến kiểm tra thành stock_quantity)
-    $request->validate([
-        'id' => 'required|exists:products,id',
-        'stock_quantity' => 'required|integer|min:1|max:99',
-    ]);
-    if($request->id && $request->stock_quantity) {
-        $cart = session()->get('cart');
-
-        // KIỂM TRA: Nếu sản phẩm không có trong giỏ thì không làm gì cả hoặc báo lỗi
-        if(!isset($cart[$request->id])) {
-            return response()->json(['error' => 'Sản phẩm không tồn tại trong giỏ hàng!'], 404);
-        }
-
-        $product = Product::find($request->id);
-        if($request->stock_quantity > $product->stock_quantity) {
-            return response()->json(['error' => 'Kho không đủ!'], 400);
-        }
-        // Cập nhật Session
-        $cart[$request->id]["stock_quantity"] = $request->stock_quantity;
-        session()->put('cart', $cart);
-        // TÍNH TOÁN GIÁ TRỊ MỚI ĐỂ TRẢ VỀ
-        $subtotal = number_format($cart[$request->id]['price'] * $cart[$request->id]['stock_quantity']) . 'đ';
-        $total = 0;
-        foreach($cart as $item) {
-            $total += $item['price'] * $item['stock_quantity'];
-        }
-        $total_formatted = number_format($total) . 'đ';
-        return response()->json([
-            'success' => true,
-            'subtotal' => $subtotal,        // Thành tiền của 1 món
-            'total' => $total_formatted     // Tổng tiền cả giỏ hàng
+            'cart_data' => $cart
         ]);
-         }
     }
-    public function remove(Request $request){
-    // Kiểm tra xem request gửi lên có ID sản phẩm không
-    $request->validate([
-        'id' => 'required|integer|exists:products,id',
-    ]);
-    if($request->id) {
-        // Lấy danh sách giỏ hàng hiện tại từ Session
-        $cart = session()->get('cart');
 
-        // Nếu sản phẩm tồn tại trong giỏ hàng thì dùng hàm unset để loại bỏ
-        if(isset($cart[$request->id])) {
-            unset($cart[$request->id]);
-            // Lưu lại mảng giỏ hàng mới (đã mất đi 1 món) vào lại Session
+    /**
+     * Cập nhật số lượng item trong giỏ hàng.
+     * @param Request $request Gồm 'row_id' và 'quantity'
+     */
+    public function update(Request $request){
+        $request->validate([
+            'row_id'   => 'required|string',
+            'quantity' => 'required|integer|min:1',
+        ]);
+        $cart = session()->get('cart');
+        $rowId = $request->row_id;
+        $newQuantity = $request->quantity;
+
+        if (!isset($cart[$rowId])) {
+            return response()->json(['error' => 'Item không tồn tại trong giỏ hàng!'], 404);
+        }
+
+        $itemType = $cart[$rowId]['item_type'];
+        $itemId   = $cart[$rowId]['item_id'];
+
+        // Xử lý logic số lượng dựa trên loại mặt hàng
+        if ($itemType === 'product') {
+            $product = Product::find($itemId);
+            if (!$product) {
+                return response()->json(['error' => 'Sản phẩm không tồn tại!'], 404);
+            }
+            if ($newQuantity > $product->stock_quantity) {
+                return response()->json(['error' => 'Kho chỉ còn ' . $product->stock_quantity . ' sản phẩm!'], 400);
+            }
+            $cart[$rowId]['quantity'] = $newQuantity;
+        } elseif ($itemType === 'package' || $itemType === 'class') {
+            // Gói tập và lớp học luôn có số lượng là 1, không cho phép thay đổi
+            if ($newQuantity !== 1) {
+                return response()->json(['error' => 'Không thể thay đổi số lượng cho ' . $itemType . '!'], 400);
+            }
+            $cart[$rowId]['quantity'] = 1;
+        }
+
+        session()->put('cart', $cart);
+
+        // Tính toán lại tổng tiền
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+
+        return response()->json([
+            'success'  => true,
+            'subtotal' => number_format($cart[$rowId]['price'] * $cart[$rowId]['quantity']) . 'đ',
+            'total'    => number_format($total) . 'đ',
+        ]);
+    }
+
+    /**
+     * Xóa item khỏi giỏ hàng.
+     * @param Request $request Gồm 'row_id'
+     */
+    public function remove(Request $request){
+        $request->validate([
+            'row_id' => 'required|string',
+        ]);
+
+        $cart = session()->get('cart');
+        $rowId = $request->row_id;
+
+        if (isset($cart[$rowId])) {
+            unset($cart[$rowId]);
             session()->put('cart', $cart);
         }
 
-        // Tính toán lại tổng số tiền của các món còn lại để gửi về cho giao diện
+        // Tính toán lại tổng tiền
         $total = 0;
-        foreach($cart as $details) {
-            // Tổng = Giá * Số lượng
-            $total += $details['price'] * $details['stock_quantity'];
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
         }
 
-        // Trả về một phản hồi dạng JSON (đúng chuẩn API)
         return response()->json([
-            'message' => 'Đã xóa sản phẩm thành công!', // Thông báo
-            'total' => number_format($total) . 'đ',     // Tổng tiền mới đã định dạng
-            'cart_count' => count($cart)               // Số lượng món hàng còn lại
-            ]);
-        }
+            'message'    => 'Đã xóa sản phẩm thành công!',
+            'total'      => number_format($total) . 'đ',
+            'cart_count' => count($cart),
+        ]);
     }
 }

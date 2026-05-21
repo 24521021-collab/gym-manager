@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Membership;
+use App\Http\Controllers\CartController; // Import CartController
 use App\Models\GymPackage;
 use Illuminate\Support\Facades\Auth;
 class UserMembershipController extends Controller
@@ -33,21 +34,26 @@ class UserMembershipController extends Controller
     // lưu thông tin gói tập người dùng đăng 
     public function register(Request $request){
       // 1. Lấy thông tin gói tập từ DB
-    $package = \App\Models\GymPackage::findOrFail($request->package_id);
-    // 2. Tạo bản ghi mới trong bảng memberships (Đây là lúc gói tập "bay" vào trang của khách)
-    \App\Models\Membership::create([
-        'user_id'    => auth::id(), // ID ông khách đang đăng nhập
-        'package_id' => $package->id, // ID gói tập vừa bấm
-        'start_date' => now(),        // Ngày bắt đầu là hôm nay
-        'end_date'   => now()->addDays($package->duration_days), // Tự tính ngày hết hạn
-        'status'     => 'Active'      // Trạng thái mặc định là đang hoạt động
-    ]);
+    $id = $request->package_id;
+    $package = \App\Models\GymPackage::findOrFail($id);
+    $rowId = 'package_' . $id;
+    $cart = session()->get('cart', []);
+    
+    // 2. Đưa vào giỏ hàng thay vì session đơn lẻ
+    $cart[$rowId] = [
+        "row_id"   => $rowId,
+        "item_id"   => $package->id,
+        "item_type" => "package",
+        "name"     => $package->package_name,
+        "price"    => $package->price,
+        "quantity" => 1,
+        "image"    => null,
+    ];
+    session()->put('cart', $cart);
 
-    // 3. Trả về phản hồi cho AJAX (Không trả về view)
     return response()->json([
         'success' => true,
-        'message' => 'Đăng ký thành công!'
+        'redirect_url' => route('cart.index')
     ]);
-
     }
 }

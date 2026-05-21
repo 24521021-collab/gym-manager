@@ -236,7 +236,8 @@
     });
 
     // 2. BIỂU ĐỒ TRÒN 1
-    const structureColors = [colors.purple, colors.success];
+    // Cập nhật: Thêm màu thứ 3 (colors.info) để khớp với 3 nhãn: Gói tập, Sản phẩm, Lớp học
+    const structureColors = [colors.purple, colors.success, colors.info];
     const ctxStructure = document.getElementById('revenueStructureChart');
     @if(array_sum($structureData['data']) > 0)
         new Chart(ctxStructure, {

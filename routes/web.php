@@ -21,6 +21,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserOrderController;
 use App\Http\Controllers\PtBookingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\PT\PtClassController;
 use App\Http\Controllers\Pt\PtDashboardController;
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
@@ -67,11 +68,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
 Route::middleware(['auth', 'CheckRole:pt'])->prefix('pt')->group(function () {
     Route::get('/dashboard', [PtDashboardController::class, 'index'])->name('pt.dashboard');
     
-    // Quản lý lớp học (CRUD)
-    Route::get('/classes', [PtDashboardController::class, 'classes'])->name('pt.classes.index');
-    Route::post('/classes/store', [PtDashboardController::class, 'storeClass'])->name('pt.classes.store');
-    Route::post('/classes/update/{id}', [PtDashboardController::class, 'updateClass'])->name('pt.classes.update');
-    Route::delete('/classes/destroy/{id}', [PtDashboardController::class, 'destroyClass'])->name('pt.classes.destroy');
+    // Quản lý lớp học (Sử dụng Resource để rút gọn)
+    Route::resource('classes', PtClassController::class)->names('pt.classes')->only(['index', 'store', 'update', 'destroy']);
 
     // Quản lý đặt lịch riêng
     Route::get('/bookings', [PtDashboardController::class, 'bookings'])->name('pt.bookings.index');
@@ -91,6 +89,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{id}/cancel', [UserOrderController::class, 'cancel'])->name('orders.cancel');
+
+    // ─── Thanh toán (Checkout) ──────────────────────────────────────────
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/checkout/bank-qr/{order_id}', [CheckoutController::class, 'showBankQR'])->name('checkout.bank_qr');
+    Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
+
  // ─── ĐẶT LỊCH RIÊNG PT (THÊM VÀO ĐÂY) ───────
     Route::get('/booking-pt', [PtBookingController::class, 'index'])->name('booking.pt.index');
     Route::get('/api/pt-booked-slots', [PtBookingController::class, 'getBookedSlots'])->name('api.pt.booked_slots');
@@ -124,7 +129,7 @@ Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCal
 
 
 // Route này nhận ID của lớp học để biết đang đăng ký lớp nào
-Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store');
+Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store')->middleware('auth');
 //
 
 // Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
@@ -138,14 +143,6 @@ Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remo
 Route::post('cart/checkout', [CartController::class, 'checkout'])->middleware('auth')->name('cart.checkout');
 // Route lấy API giỏ hàng để tìm kiếm sản phẩm
 Route::get('/search-products', [ProductController::class, 'getProductsApi']);
-
-    // (Tương lai) Trang thanh toán
-    // Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout')
-// trang checkout, xác nhận hình thức thanh toán 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
-Route::get('/checkout/bank-qr/{order_id}', [CheckoutController::class, 'showBankQR'])->name('checkout.bank_qr');
-Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
 // ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
 Route::get('/classes',[BookingController::class, 'index'])->name('classes.index');

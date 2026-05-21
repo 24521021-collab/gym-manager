@@ -21,6 +21,7 @@ return new class extends Migration
         $table->date('booking_date'); // Ngày khách muốn đặt
         $table->time('start_time');   // Giờ bắt đầu ca tập (Ví dụ: 09:00:00)
         $table->time('end_time');     // Giờ kết thúc ca tập (Ví dụ: 10:00:00)        
+        $table->decimal('price', 12, 2)->default(0); // Giá cho một buổi tập
         // Trạng thái lịch hẹn riêng
         $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
        

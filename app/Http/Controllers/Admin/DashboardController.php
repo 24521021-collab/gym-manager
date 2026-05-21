@@ -14,6 +14,7 @@ use App\Models\GymClass;
 use App\Models\GymPackage;
 use App\Models\Membership;
 use App\Models\OrderItem;
+use App\Models\PtBooking;
 
 class DashboardController extends Controller
 {
@@ -22,16 +23,33 @@ class DashboardController extends Controller
         $currentYear = Carbon::now()->year;
 
         // --- 1. CÁC CARD THỐNG KÊ (QUICK STATS) ---
-        // Doanh thu từ đơn hàng sản phẩm (Chỉ tính đơn đã thanh toán/hoàn thành)
-        $productRevenue = Order::where('payment_status', 'Paid')->sum('total_amount');
+        // Doanh thu chi tiết từ Sản phẩm
+        $productRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.payment_status', 'Paid')
+            ->where('order_items.item_type', 'product')
+            ->sum('order_items.subtotal');
+
+        // Doanh thu chi tiết từ Gói tập
+        $packageRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.payment_status', 'Paid')
+            ->where('order_items.item_type', 'package')
+            ->sum('order_items.subtotal');
+
+        // Lợi nhuận từ Lớp học & PT Booking (Số tiền lời phòng Gym nhận được)
+        // 1. Tổng tiền từ lớp học (Gym giữ 50%)
+        $grossClassRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.payment_status', 'Paid')
+            ->where('order_items.item_type', 'class')
+            ->sum('order_items.subtotal');
         
-        // Doanh thu từ đăng ký gói tập (Join với bảng packages để lấy giá)
-        $packageRevenue = Membership::join('gym_packages', 'memberships.package_id', '=', 'gym_packages.id')
-            ->where('memberships.status', 'Active')
-            ->sum('gym_packages.price'); 
-        
-        // Tổng doanh thu thực tế của phòng gym
-        $totalRevenue = $productRevenue + $packageRevenue;
+        // 2. Tổng tiền từ PT Booking riêng (Gym giữ 20%)
+        $grossPtBookingRevenue = PtBooking::whereIn('status', ['confirmed', 'completed'])->sum('price');
+
+        // Công thức: Doanh thu lớp học (Lợi nhuận gym) = (Tổng lớp * 50%) + (Tổng PT * 20%)
+        $classRevenue = ($grossClassRevenue * 0.5) + ($grossPtBookingRevenue * 0.2);
+
+        // Tổng lợi nhuận thực tế (Package + Product + Lợi nhuận lớp/PT)
+        $totalRevenue = $packageRevenue + $productRevenue + $classRevenue;
 
         // Số lớp học đang mở
         $totalClasses = GymClass::count();
@@ -87,8 +105,8 @@ class DashboardController extends Controller
 
         // --- 3. BIỂU ĐỒ TRÒN 1: CƠ CẤU DOANH THU (GÓI TẬP VS SẢN PHẨM) ---
         $structureData = [
-            'labels' => ['Đăng ký gói tập', 'Mua lẻ sản phẩm phụ kiện'],
-            'data'   => [(int)$packageRevenue, (int)$productRevenue]
+            'labels' => ['Gói tập', 'Sản phẩm', 'Lớp học'],
+            'data'   => [(int)$packageRevenue, (int)$productRevenue, (int)$classRevenue]
         ];
 
 

@@ -40,6 +40,11 @@ class BookingController extends Controller
         $request->validate([
             'class_id' => 'required|exists:gym_classes,id',
         ]);
+        // Kiểm tra vai trò: Chỉ member (đã mua gói tập) mới được đăng ký
+        if (Auth::user()->role !== 'member') {
+            return redirect()->route('classes.index')
+                ->with('error', 'Chỉ có hội viên mới đăng ký lớp học');
+        }
 
         $classId = $request->class_id;
         $userId  = Auth::id();
@@ -65,15 +70,23 @@ class BookingController extends Controller
                 ->with('error', 'Lớp học này đã đầy chỗ. Vui lòng chọn lớp khác.');
         }
 
-        Booking::create([
-            'user_id'      => $userId,
-            'class_id'     => $classId,
-            'booking_date' => now(),
-            'status'       => 'confirmed',
-        ]);
+        // Đẩy thông tin lớp học vào giỏ hàng chuẩn
+        $rowId = 'class_' . $classId;
+        $cart = session()->get('cart', []);
+        
+        $cart[$rowId] = [
+            "row_id"   => $rowId,
+            "item_id"   => $gymClass->id,
+            "item_type" => "class",
+            "name"     => $gymClass->name,
+            "price"    => $gymClass->price,
+            "quantity" => 1,
+            "image"    => $gymClass->image ?? null,
+        ];
+        
+        session()->put('cart', $cart);
 
-        return redirect()->route('classes.index')
-            ->with('success', 'Đăng ký lớp "' . $gymClass->name . '" thành công!');
+        return redirect()->route('cart.index')->with('success', 'Đã thêm lớp học vào giỏ hàng!');
     }
 
     /**

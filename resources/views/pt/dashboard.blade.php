@@ -47,5 +47,75 @@
             </div>
         </div>
     </div>
+
+    <div class="row g-4">
+        {{-- Biểu đồ hình tròn phân bổ học viên --}}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4" style="border-radius: 16px;">
+                <h5 class="fw-bold mb-4"><i class="fas fa-chart-pie me-2 text-primary"></i>Phân bổ học viên</h5>
+                <div style="position: relative; height: 300px;">
+                    <canvas id="ptStudentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Thống kê thu nhập --}}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="text-white d-flex flex-column h-100 justify-content-center">
+                    <h5 class="fw-bold mb-2 opacity-75">Tổng thu nhập dự kiến (Hoa hồng)</h5>
+                    <h1 class="display-4 fw-bold mb-0">{{ number_format($totalCommission) }} đ</h1>
+                    <div class="mt-4 p-3 bg-white bg-opacity-10 rounded-3">
+                        <p class="small mb-0">
+                            <i class="fas fa-info-circle me-1"></i> 
+                            Thu nhập bao gồm <strong>50%</strong> phí lớp học và <strong>80%</strong> phí khách đặt lịch riêng.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('ptStudentChart').getContext('2d');
+        
+        // Kiểm tra nếu không có dữ liệu để tránh biểu đồ trống
+        const hasData = ({{ $totalClassStudents }} + {{ $totalPrivateClients }}) > 0;
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Học viên lớp học', 'Khách đặt lịch riêng'],
+                datasets: [{
+                    data: [{{ $totalClassStudents }}, {{ $totalPrivateClients }}],
+                    // Sử dụng màu sắc tương phản rõ rệt
+                    backgroundColor: ['#4e73df', '#1cc88a'], 
+                    hoverBackgroundColor: ['#2e59d9', '#17a673'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    borderWidth: 5,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '70%', // Tạo lỗ rỗng ở giữa cho đẹp (Doughnut)
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: { size: 13 }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 @endsection

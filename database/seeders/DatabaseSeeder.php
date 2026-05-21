@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
             PTProfileSeeder::class,
             GymClassSeeder::class,
         ]);
+
     }
 }

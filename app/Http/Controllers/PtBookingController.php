@@ -64,6 +64,7 @@ class PtBookingController extends Controller
             'booking_date' => $request->booking_date,
             'start_time' => $startTime->format('H:i:s'),
             'end_time' => $endTime->format('H:i:s'),
+            'price' => 300000, // Giá mặc định cho 1 buổi tập PT riêng
             'status' => 'pending', // Chờ huấn luyện viên duyệt lịch
             'note' => $request->note,
         ]);

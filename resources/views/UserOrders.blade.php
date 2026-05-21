@@ -113,7 +113,7 @@ function viewOrderDetails(orderId) {
             // 3. Vẽ danh sách sản phẩm
             let html = '';
             order.items.forEach(item => {
-                let productName = item.product ? item.product.name : 'Sản phẩm không khả dụng';
+                let productName = item.name;
                 let img = (item.product && item.product.image) ? `/images/products/${item.product.image}` : '/images/products/default-product.jpg';
                 // Tính đơn giá tạm thời từ subtotal vì order_items không lưu price
                 let unitPrice = item.quantity > 0 ? (item.subtotal / item.quantity) : 0;

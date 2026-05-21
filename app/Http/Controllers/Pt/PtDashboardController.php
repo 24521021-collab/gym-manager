@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GymClass;
 use App\Models\PtBooking;
 use Illuminate\Http\Request;
+use App\Models\OrderItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 
@@ -32,15 +33,23 @@ class PtDashboardController extends Controller
 
         $totalClassStudents = $classes->sum('bookings_count');
 
-        // 2. Lấy danh sách khách hàng đặt lịch tập riêng (PT Booking)
-        $privateBookings = PtBooking::where('pt_id', $user->id)
-            ->with('customer')
-            ->orderBy('booking_date', 'desc')
-            ->get();
+        // 2. Tính toán tổng hoa hồng (Commission) cho PT
+        // Hoa hồng từ các lớp học phụ trách (50% mỗi học viên)
+        $classCommission = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('gym_classes', 'order_items.item_id', '=', 'gym_classes.id')
+            ->where('orders.payment_status', 'Paid')
+            ->where('order_items.item_type', 'class')
+            ->where('gym_classes.pt_id', $ptProfile->id)
+            ->sum('order_items.subtotal') * 0.5;
 
+        // Hoa hồng từ lịch đặt riêng (80% mỗi buổi)
+        $privateBookings = PtBooking::where('pt_id', $user->id)->get();
+        $privateCommission = $privateBookings->whereIn('status', ['confirmed', 'completed'])->sum('price') * 0.8;
+
+        $totalCommission = $classCommission + $privateCommission;
         $totalPrivateClients = $privateBookings->where('status', 'confirmed')->count();
 
-        return view('pt.dashboard', compact('classes', 'totalClassStudents', 'totalPrivateClients'));
+        return view('pt.dashboard', compact('classes', 'totalClassStudents', 'totalPrivateClients', 'totalCommission'));
     }
 
     /**

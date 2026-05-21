@@ -57,7 +57,7 @@
                         </p>
 
                         @if($product->stock_quantity > 0)
-                            <button type="button" class="btn btn-primary add-to-cart" data-id="{{ $product->id }}">Thêm vào giỏ hàng</button>
+                            <button type="button" class="btn btn-primary add-to-cart" data-id="{{ $product->id }}" data-type="product">Mua ngay</button>
                         @else
                             <button class="btn btn-secondary" disabled>Tạm hết hàng</button>
                         @endif
@@ -90,19 +90,19 @@
                         <tbody>
                         <!-- cập nhật số lượng sản phẩm còn trong kho -->
                          @php $total = 0; @endphp
-                        @foreach(session('cart') as $id => $details)
+                        @foreach(session('cart') as $rowId => $details)
                         @php 
-                        $productOriginal = \App\Models\Product::find($id); 
+                        $productOriginal = ($details['item_type'] === 'product') ? \App\Models\Product::find($details['item_id']) : null; 
                         $realStock = $productOriginal ? $productOriginal->stock_quantity : 10;
                         // Tính toán số tiền ngay tại đây
-                        $subtotal = $details['price'] * $details['stock_quantity'];
+                        $subtotal = $details['price'] * $details['quantity'];
                         $total += $subtotal;
                         @endphp
-                    <tr data-id="{{ $id }}">
+                    <tr data-id="{{ $rowId }}">
                         <td>{{ $details['name'] }}</td>
                         <td>{{ $details['price']}}đ</td>
-                        <td><input type="number" value="{{ $details['stock_quantity'] }}" class="form-control update-cart-quantity" min="1" max="{{ $realStock }}"></td>
-                        <td class="subtotal-price">{{ number_format($details['price'] * $details['stock_quantity']) }}đ</td>
+                        <td><input type="number" value="{{ $details['quantity'] }}" class="form-control update-cart-quantity" min="1" max="{{ $realStock }}" @if($details['item_type'] !== 'product') readonly @endif></td>
+                        <td class="subtotal-price">{{ number_format($details['price'] * $details['quantity']) }}đ</td>
                         <td>
                         {{-- Nút xóa sản phẩm --}}
                         <button type="button" class="btn btn-danger btn-sm remove-from-cart">
@@ -141,20 +141,21 @@
 <script>
   $(document).on('click', '.add-to-cart', function (e) {
     e.preventDefault(); // Chặn thẻ <a> hoặc button tự load trang
-    var productId = $(this).attr("data-id");
+    var itemId = $(this).data("id");
+    var itemType = $(this).data("type");
     var button = $(this);
+
     $.ajax({
-        url: '/cart/add/' + productId,
+        url: '/cart/add/' + itemId,
         method: 'POST',
         data: {
-            _token: '{{ csrf_token() }}'
+            _token: '{{ csrf_token() }}',
+            id: itemId,
+            type: itemType
         },
         success: function (response) {
-            // 1. Cập nhật số lượng trên Badge (nút giỏ hàng)
-            // Giả sử server trả về số lượng item mới trong response.cart_count
-            $('.badge.bg-danger').text(response.cart_count);
-            // 2. Thông báo cho người dùng (tùy chọn)
-            alert("Đã thêm sản phẩm vào giỏ hàng!");
+            // Chuyển hướng thẳng vào giỏ hàng theo yêu cầu
+            alert("Thêm vào giỏ hàng thành công");
         },
         error: function (xhr) {
             button.prop('disabled', false).text('Thêm vào giỏ');
@@ -183,8 +184,8 @@
         method: "patch",
         data: {
             _token: '{{ csrf_token() }}',
-            id: id,
-            stock_quantity: quantity 
+            row_id: id,
+            quantity: quantity 
         },
         success: function (response) {
             // Cập nhật giá từng dòng và tổng bill ngay lập tức mà không load lại trang
@@ -193,6 +194,11 @@
         },
         error: function(xhr) {
             console.log(xhr.responseText);
+            alert("Lỗi: " + (xhr.responseJSON ? xhr.responseJSON.error : "Không thể cập nhật số lượng."));
+            // Khôi phục số lượng cũ
+            ele.val(ele.data('old-quantity'));
+            // Cập nhật lại tổng tiền nếu có lỗi từ server (ví dụ vượt quá kho)
+            // loadCartData(); // Cần hàm để load lại toàn bộ giỏ hàng
         }
     });
 });
@@ -221,7 +227,7 @@ $(document).on('click', '.remove-from-cart', function (e) {
             method: "DELETE",
             data: {
                 _token: '{{ csrf_token() }}', 
-                id: productId
+                row_id: productId
             },
             success: function (response) {
                 // Hiệu ứng xóa dòng ngay lập tức trên giao diện
@@ -270,7 +276,7 @@ $(document).on('click', '.remove-from-cart', function (e) {
                     : `<span class="badge bg-danger">Hết hàng</span>`;
                 
                 const btnHtml = product.stock_quantity > 0 
-                    ? `<button type="button" class="btn btn-primary add-to-cart" data-id="${product.id}">Thêm vào giỏ</button>` 
+                    ? `<button type="button" class="btn btn-primary add-to-cart" data-id="${product.id}" data-type="product">Mua ngay</button>` 
                     : `<button class="btn btn-secondary" disabled>Tạm hết hàng</button>`;
 
                 const html = `

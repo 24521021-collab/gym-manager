@@ -20,7 +20,7 @@ class RegisterController extends Controller
             'full_name' =>$request->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'member',
+            'role' => 'guest', // Mặc định là khách vãng lai sau khi đăng ký
         ]);
 
         // 3. Chuyển hướng về trang chủ kèm thông báo

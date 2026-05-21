@@ -272,4 +272,37 @@ setTimeout(() => {
     document.querySelectorAll('.alert').forEach(a => new bootstrap.Alert(a).close());
 }, 4000);
 </script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    // Xử lý nút "Đăng Ký Ngay" cho lớp học
+    $('.form-book-class').on('submit', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let classId = form.find('input[name="class_id"]').val();
+
+        $.ajax({
+            url: form.attr('action'), // Sẽ là route('classes.store')
+            method: form.attr('method'),
+            data: form.serialize(),
+            success: function(res) {
+                if (res.success && res.redirect_url) {
+                    Swal.fire('Thành công!', res.message, 'success').then(() => {
+                        window.location.href = res.redirect_url;
+                    });
+                } else {
+                    Swal.fire('Thông báo!', res.message, 'info');
+                }
+            },
+            error: function(xhr) {
+                Swal.fire('Lỗi!', xhr.responseJSON.error || 'Không thể đăng ký lớp học.', 'error').then(() => {
+                    window.location.reload(); // Tải lại trang để cập nhật trạng thái
+                });
+            }
+        });
+    });
+});
+</script>
 @endsection

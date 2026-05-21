@@ -53,15 +53,20 @@ public function redirectToGoogle() {
 public function handleGoogleCallback() {
     $googleUser = Socialite::driver('google')->user();
 
-    // Tìm user có email này trong DB, nếu không có thì tạo mới
-    $user = User::updateOrCreate([
-        'google_id' => $googleUser->id,
-    ], [
-        'full_name' => $googleUser->name,
-        'role'=>'member',
-        'email' => $googleUser->email,
-        'password' => bcrypt('12345678'), // Mật khẩu ảo
-    ]);
+    // Tìm user theo email để tránh trùng lặp nếu họ đã đăng ký bằng form trước đó
+    $user = User::where('email', $googleUser->email)->first();
+
+    if (!$user) {
+        $user = User::create([
+            'google_id' => $googleUser->id,
+            'full_name' => $googleUser->name,
+            'role'      => 'guest', // Tài khoản mới từ Google mặc định là guest
+            'email'     => $googleUser->email,
+            'password'  => bcrypt('12345678'),
+        ]);
+    } elseif (!$user->google_id) {
+        $user->update(['google_id' => $googleUser->id]);
+    }
 
     Auth::login($user);
     return redirect('/'); // Đăng nhập xong vào thẳng Dashboard
@@ -73,8 +78,7 @@ public function redirectToFacebook()
 }
 
 // Hàm 2: Xử lý khi Facebook trả dữ liệu về
-public function handleFacebookCallback()
-{
+public function handleFacebookCallback(){
     try {
         $facebookUser = Socialite::driver('facebook')->user();
         // Logic tìm hoặc tạo User (giống hệt cách làm với Google)
@@ -84,7 +88,7 @@ public function handleFacebookCallback()
             $user = User::create([
                 'name'     => $facebookUser->name,
                 'email'    => $facebookUser->email,
-                'role'      =>'member',
+                'role'      => 'guest', // Tài khoản mới  mặc định là guest
                 'facebook_id' => $facebookUser->id,
                 'password' => bcrypt('12345678'),
             ]);

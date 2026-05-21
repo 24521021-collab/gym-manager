@@ -281,40 +281,31 @@
         }
     }
     </script>
-</body>
-</html>
-// lệnh xử lý nút đăng ký gói tập//
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('.btn-register').on('click', function() {
-        // 1. Lấy ID của gói tập từ cái nút vừa bấm
-        let packageId = $(this).data('id');
 
-        // 2. Gửi yêu cầu đăng ký lên Server
-        $.ajax({
-            url: "{{ route('membership.register') }}", // Đường dẫn đã khai báo trong web.php
-            method: "POST",
-            data: {
-                _token: "{{ csrf_token() }}", // Bắt buộc phải có để bảo mật
-                package_id: packageId
-            },
-            success: function(res) {
-                if(res.success) {
-                    alert(res.message);
-                    // 3. Chuyển hướng khách sang trang "Gói tập của tôi" để xem kết quả
-                    window.location.href = "{{ route('my.membership') }}";
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('.btn-register').on('click', function() {
+            let packageId = $(this).data('id');
+            $.ajax({
+                url: "{{ route('membership.register') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    package_id: packageId
+                },
+                success: function(res) {
+                    if(res.success && res.redirect_url) {
+                        window.location.href = res.redirect_url;
+                    }
+                },
+                error: function(xhr) {
+                    alert('Vui lòng đăng nhập để đăng ký gói tập!');
+                    window.location.href = "{{ route('login') }}";
                 }
-            },
-            error: function(xhr) {
-                if(xhr.status === 401) {
-                    alert('Bạn cần đăng nhập để đăng ký gói tập!');
-                    window.location.href = "/login";
-                } else {
-                    alert('Có lỗi xảy ra, vui lòng thử lại.');
-                }
-            }
+            });
         });
     });
-});
-</script>
+    </script>
+</body>
+</html>

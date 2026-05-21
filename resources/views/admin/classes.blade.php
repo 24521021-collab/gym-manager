@@ -31,11 +31,9 @@
                         <th class="ps-4">Ảnh</th>
                         <th>Tên lớp</th>
                         <th>PT</th>
-                        <th>Phòng</th>
-                        <th>Lịch học</th>
+                        <th>Sức chứa</th>
                         <th>Số buổi</th>
-                        <th>Thứ học</th>
-                        <th>Giá</th>
+                        <th>Giá trọn gói</th>
                         <th class="text-center">Thao tác</th>
                     </tr>
                 </thead>
@@ -85,34 +83,19 @@
                             <span class="text-danger error-text max_capacity_error"></span>
                         </div>
                         <div class="col-md-8 mb-3">
-                            <label class="form-label fw-semibold">Phòng tập</label>
-                            <input type="text" name="room_name" id="room_name" class="form-control" required>
-                            <span class="text-danger error-text room_name_error"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Giờ bắt đầu</label>
-                            <input type="datetime-local" name="schedule_time" id="schedule_time" class="form-control" required>
-                            <span class="text-danger error-text schedule_time_error"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-semibold">Giờ kết thúc</label>
-                            <input type="datetime-local" name="end_time" id="end_time" class="form-control" required>
-                            <span class="text-danger error-text end_time_error"></span>
-                        </div>
-                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">Tổng số buổi</label>
                             <input type="number" name="total_sessions" id="total_sessions" class="form-control" value="1" required>
                             <span class="text-danger error-text total_sessions_error"></span>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-semibold">Thứ học (VD: 2,4,6)</label>
-                            <input type="text" name="learning_days" id="learning_days" class="form-control" placeholder="Ví dụ: 2,4,6" required>
-                            <span class="text-danger error-text learning_days_error"></span>
-                        </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-12 mb-3">
                             <label class="form-label fw-semibold">Giá trọn gói (VNĐ)</label>
                             <input type="number" name="price" id="price" class="form-control" value="0" required>
                             <span class="text-danger error-text price_error"></span>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-semibold">Mô tả lớp học</label>
+                            <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+                            <span class="text-danger error-text description_error"></span>
                         </div>
                         <div class="col-12 mb-3">
                             <label class="form-label fw-semibold">Hình ảnh lớp học</label>
@@ -173,10 +156,8 @@
                             <td class="ps-4"><img src="${imgPath}" width="45" height="45" class="rounded object-fit-cover"></td>
                             <td class="fw-bold">${escapeHtml(c.name)}</td>
                             <td>${escapeHtml(ptName)}</td>
-                            <td>${escapeHtml(c.room_name)}</td>
-                            <td><small>${new Date(c.schedule_time).toLocaleString('vi-VN')}</small></td>
+                            <td>${c.max_capacity} người</td>
                             <td>${c.total_sessions} buổi</td>
-                            <td>${escapeHtml(c.learning_days)}</td>
                             <td class="text-danger fw-bold">${Number(c.price).toLocaleString('vi-VN')}đ</td>
                             <td class="text-center">
                                 <button class="btn btn-sm btn-outline-dark" onclick="prepareEdit(${c.id})">Sửa<i class="fas fa-edit"></i></button>
@@ -223,15 +204,9 @@
         document.getElementById('name').value = c.name;
         document.getElementById('pt_id').value = c.pt_id;
         document.getElementById('max_capacity').value = c.max_capacity;
-        document.getElementById('room_name').value = c.room_name;
         document.getElementById('total_sessions').value = c.total_sessions;
-        document.getElementById('learning_days').value = c.learning_days;
         document.getElementById('price').value = c.price;
-
-        // Format datetime-local
-        const formatDateTime = (str) => str ? new Date(str).toISOString().slice(0, 16) : '';
-        document.getElementById('schedule_time').value = formatDateTime(c.schedule_time);
-        document.getElementById('end_time').value = formatDateTime(c.end_time);
+        document.getElementById('description').value = c.description || '';
 
         if (c.image) {
             document.getElementById('imagePreview').src = `/images/products/${c.image}`;

@@ -3,6 +3,13 @@
 <div class="container-fluid py-4">
     <h4 class="fw-bold mb-4">Quản lý Đơn hàng</h4>
 
+    <div class="d-flex gap-2 mb-4">
+        <button class="btn btn-dark filter-type-btn active" onclick="filterByType('', this)">Tất cả đơn hàng</button>
+        <button class="btn btn-outline-secondary filter-type-btn" onclick="filterByType('product', this)"><i class="fas fa-box me-1"></i> Đơn hàng Sản phẩm</button>
+        <button class="btn btn-outline-info filter-type-btn" onclick="filterByType('package', this)"><i class="fas fa-id-card me-1"></i> Đơn hàng Gói tập</button>
+        <button class="btn btn-outline-primary filter-type-btn" onclick="filterByType('class', this)"><i class="fas fa-chalkboard-teacher me-1"></i> Đơn hàng Lớp học</button>
+    </div>
+
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form id="orderSearchForm" onsubmit="event.preventDefault(); loadOrders();" class="row g-3">
@@ -55,28 +62,27 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <h6><b>Khách hàng:</b> <span id="det_user_name"></span></h6>
-                <hr>
-                <label class="fw-bold mb-2">Sản phẩm đã mua:</label>
+                <div class="row mb-3">
+                    <div class="col-md-6"><b>Khách hàng:</b> <span id="det_user_name"></span></div>
+                    <div class="col-md-6 text-md-end"><b>Trạng thái:</b> <span id="det_status_badge"></span></div>
+                </div>
+
                 <table class="table table-bordered align-middle">
-                    <thead class="bg-light">
+                    <thead class="table-light small">
                         <tr>
-                            <th class="text-center" style="width: 70px;">Ảnh sản phẩm </th>
-                            <th>Sản phẩm</th>
+                            <th>Hạng mục / Loại</th>
                             <th class="text-center">Số lượng</th>
                             <th class="text-end">Đơn giá</th>
                             <th class="text-end">Thành tiền</th>
                         </tr>
                     </thead>
-                    <tbody id="order_items_list">
-                        </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="3" class="text-end">Tổng cộng:</th>
-                            <th class="text-end text-danger" id="det_total_price"></th>
-                        </tr>
-                    </tfoot>
+                    <tbody id="det_items_body"></tbody>
                 </table>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 p-2 bg-light rounded">
+                    <span class="fw-bold">TỔNG CỘNG THANH TOÁN:</span>
+                    <span class="text-danger fw-bold fs-5" id="det_total_price"></span>
+                </div>
 
                 <form id="updateOrderForm" onsubmit="saveOrderStatus(event)">
                     @csrf @method('PUT')
@@ -98,11 +104,25 @@
 </div>
 <script>
 window.cachedOrders = [];
+let currentTypeFilter = '';
+
+// Hàm lọc theo loại (3 nút bấm mới)
+function filterByType(type, btn) {
+    currentTypeFilter = type;
+    document.querySelectorAll('.filter-type-btn').forEach(b => {
+        b.classList.replace('btn-dark', 'btn-outline-secondary');
+        b.classList.remove('active');
+    });
+    btn.classList.replace('btn-outline-secondary', 'btn-dark');
+    btn.classList.add('active');
+    loadOrders(1);
+}
+
 // 1. Hàm tải dữ liệu (LoadData)
 function loadOrders(page = 1) {
     const search = document.getElementById('orderSearchInput').value;
     const status = document.getElementById('orderStatusFilter').value;
-    let url = `/admin/orders?page=${page}&search=${encodeURIComponent(search)}&status=${status}`;
+    let url = `/admin/orders?page=${page}&search=${encodeURIComponent(search)}&status=${status}&type=${currentTypeFilter}`;
 
     fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
         .then(res => res.json())
@@ -167,22 +187,36 @@ function openOrderDetail(orderId) {
     document.getElementById('det_total_price').innerText = new Intl.NumberFormat('vi-VN').format(order.total_amount) + 'đ';
     document.getElementById('det_status_select').value = order.payment_status;
     
-    let itemsHtml = order.items.map(item => {
-        const productName = item.product ? item.product.name : 'Sản phẩm đã xóa';
-        const productImg = (item.product && item.product.image) ? `/images/products/${item.product.image}` : '/images/products/default-product.jpg';
-        const unitPrice = item.quantity > 0 ? (item.subtotal / item.quantity) : 0;
-        return `
-            <tr>
-                <td class="text-center"><img src="${productImg}" width="50" height="50" class="rounded border" style="object-fit: cover;"></td>
-                <td>${escapeHtml(productName)}</td>
-                <td class="text-center">${item.quantity}</td>
-                <td class="text-end">${new Intl.NumberFormat('vi-VN').format(unitPrice)}đ</td>
-                <td class="text-end fw-bold">${new Intl.NumberFormat('vi-VN').format(item.subtotal)}đ</td>
-            </tr>`;
+    // Hiển thị badge trạng thái trong modal
+    let statusBadge = '';
+    if(order.payment_status === 'Paid') statusBadge = '<span class="badge bg-success">Đã thanh toán (Paid)</span>';
+    else if(order.payment_status === 'Cancelled') statusBadge = '<span class="badge bg-danger">Đã hủy (Cancelled)</span>';
+    else statusBadge = '<span class="badge bg-warning text-dark">Chờ thanh toán (Pending)</span>';
+    document.getElementById('det_status_badge').innerHTML = statusBadge;
+
+    // Hiển thị danh sách item trong 1 bảng duy nhất (Khôi phục ban đầu)
+    const itemsHtml = order.items.map(item => {
+        const itemName = item.name || (item.product ? item.product.name : 'Mặt hàng');
+        let typeBadge = '';
+        if(item.item_type === 'package') typeBadge = '<span class="badge bg-info text-dark small ms-2">Gói tập</span>';
+        else if(item.item_type === 'class') typeBadge = '<span class="badge bg-primary small ms-2">Lớp học</span>';
+        else typeBadge = '<span class="badge bg-secondary small ms-2">Sản phẩm</span>';
+
+        const unitPrice = item.quantity > 0 ? (item.subtotal / item.quantity) : item.price;
+        
+        return `<tr>
+            <td>
+                <div class="fw-bold">${escapeHtml(itemName)}</div>
+                ${typeBadge}
+            </td>
+            <td class="text-center">${item.quantity}</td>
+            <td class="text-end">${new Intl.NumberFormat('vi-VN').format(unitPrice)}đ</td>
+            <td class="text-end fw-bold">${new Intl.NumberFormat('vi-VN').format(item.subtotal)}đ</td>
+        </tr>`;
     }).join('');
-    
-    document.getElementById('order_items_list').innerHTML = itemsHtml;
-    
+
+    document.getElementById('det_items_body').innerHTML = itemsHtml;
+
     const modal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
     modal.show();
 }
