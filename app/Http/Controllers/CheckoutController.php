@@ -15,26 +15,21 @@ use App\Models\GymPackage;
 use App\Models\Membership;
 use Carbon\Carbon;
 
-class CheckoutController extends Controller
-{
+class CheckoutController extends Controller{
     public function index(){
         // Giỏ hàng phải có ít nhất 1 item để tiến hành thanh toán
         if(!session('cart') || count(session('cart')) == 0) {
             return redirect()->route('products.index')->with('error', 'Giỏ hàng trống! Vui lòng thêm sản phẩm vào giỏ.');
         }
-
         return view('checkout');
     }
-
     public function processCheckout(Request $request) {
         $total = $this->calculateTotal();
-
         if ($request->payment_method == 'COD') {
             $order = $this->createOrder($total, 'Pending', 'COD');
             session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi tạo đơn
             return redirect()->route('products.index')->with('success', 'Đặt hàng thành công! Vui lòng chờ shipper.');
         } 
-
         if ($request->payment_method == 'Bank_QR') {
             $order = $this->createOrder($total, 'Pending', 'Bank_QR');
             session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi tạo đơn
@@ -47,7 +42,6 @@ class CheckoutController extends Controller
             $vnp_Returnurl = route('vnpay.return');
             $vnp_TmnCode = env('VNP_TMN_CODE', 'BA7TF3EI'); // Nên dùng env
             $vnp_HashSecret = env('VNP_HASH_SECRET', 'D1EDEE8F3UDW1SO2IHO8MN2R3Q54T47E'); 
-
             $vnp_TxnRef = time(); // Mã đơn hàng
             $vnp_OrderInfo = "Thanh toan don hang GymPro";
             $vnp_OrderType = "billpayment";
@@ -55,7 +49,6 @@ class CheckoutController extends Controller
             $vnp_Locale = "vn";
             $vnp_BankCode = "";
             $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
-
             $inputData = array(
                 "vnp_Version" => "2.1.0",
                 "vnp_TmnCode" => $vnp_TmnCode,
@@ -70,7 +63,6 @@ class CheckoutController extends Controller
                 "vnp_ReturnUrl" => $vnp_Returnurl,
                 "vnp_TxnRef" => $vnp_TxnRef
             );
-
             ksort($inputData);
             $query = "";
             $i = 0;
@@ -110,7 +102,6 @@ class CheckoutController extends Controller
         return DB::transaction(function () use ($total, $status, $method) {
             $type = session('checkout_type', 'cart');
             $data = session('checkout_data');
-
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total_amount' => $total,
@@ -118,7 +109,6 @@ class CheckoutController extends Controller
                 'payment_method' => $method,
                 'order_date' => now()
             ]);
-
             foreach(session('cart', []) as $rowId => $details) {
                 // Lưu vết vào bảng order_items (cho tất cả các loại mặt hàng)
                 // Mục đích: để có thể xem lại đơn hàng đã mua những gì, và tính tổng tiền
@@ -134,7 +124,6 @@ class CheckoutController extends Controller
                     'quantity'   => $details['quantity'],
                     'subtotal'   => $details['price'] * $details['quantity']
                 ]);
-
                 // Xử lý logic riêng cho từng loại mặt hàng sau khi thanh toán
                 if ($details['item_type'] === 'product') {
                     // Trừ kho sản phẩm
@@ -147,7 +136,6 @@ class CheckoutController extends Controller
                     $package = GymPackage::findOrFail($details['item_id']);
                     // Nếu thanh toán xong (Paid) thì kích hoạt Active, ngược lại Inactive
                     $membershipStatus = ($status === 'Paid') ? 'Active' : 'Inactive';
-                    
                     Membership::create([
                         'user_id'    => Auth::id(),
                         'package_id' => $package->id,
@@ -155,7 +143,6 @@ class CheckoutController extends Controller
                         'end_date'   => now()->addDays($package->duration_days),
                         'status'     => $membershipStatus
                     ]);
-
                     // Nâng cấp Role cho User nếu thanh toán thành công và đang là guest
                     if ($status === 'Paid') {
                         $user = Auth::user();
@@ -175,11 +162,9 @@ class CheckoutController extends Controller
                     ]);
                 }
             }
-
             return $order;
         });
     }
-
     /**
      * Tính tổng tiền của tất cả các item trong giỏ hàng session.
      */

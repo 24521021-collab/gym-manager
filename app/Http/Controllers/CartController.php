@@ -19,14 +19,13 @@ class CartController extends Controller
     }
     /**
      * Thêm sản phẩm/gói tập/lớp học vào giỏ hàng session.
-     * @param Request $request Gồm 'id' và 'type'
+     * @param Request $request, $id
      */
-    public function add(Request $request){
+    public function add(Request $request, $id){
         $request->validate([
-            'id'   => 'required|integer',
             'type' => 'required|string|in:product,package,class',
         ]);
-        $id   = $request->id;
+        
         $type = $request->type;
         $rowId = $type . '_' . $id; // Tạo key duy nhất cho item trong giỏ hàng
         $cart = session()->get('cart', []);
@@ -92,10 +91,23 @@ class CartController extends Controller
         }
         $cart[$rowId] = $itemDetails;
         session()->put('cart', $cart);
+
+        // Tính toán tổng tiền & tổng số lượng món đồ thực tế
+        $total = 0;
+        $cartCount = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+            $cartCount += $item['quantity']; // Đếm tổng số lượng thay vì đếm số dòng mặt hàng
+        }
+
+        // Chỉ giữ lại một lệnh return duy nhất và trả về đầy đủ thông tin cần thiết
         return response()->json([
-            'success' => 'Đã thêm!',
-            'cart_count' => count($cart),
-            'cart_data' => $cart
+            'success' => true,
+            'message' => 'Đã thêm vào giỏ hàng thành công!',
+            'row_id' => $rowId,
+            'item' => $itemDetails, 
+            'total' => number_format($total) . 'đ',
+            'cart_count' => $cartCount
         ]);
     }
 
@@ -179,6 +191,7 @@ class CartController extends Controller
             'message'    => 'Đã xóa sản phẩm thành công!',
             'total'      => number_format($total) . 'đ',
             'cart_count' => count($cart),
+            'cart_data'  => $cart,
         ]);
     }
 }

@@ -9,12 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('image')->nullable()->default('default-product.jpg');
             $table->string('name');
+            $table->string('product_category')->default('all');
             $table->string('sku')->unique();
             $table->decimal('price');
             $table->integer('stock_quantity');

@@ -1,205 +1,212 @@
 @extends('layout.frontend')
+
 @section('content')
-<div class="container mt-5">
-    <h2 class="mb-4"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng của bạn</h2>
-    <div class="card shadow border-0 p-4">
-        @if(session('cart') && count(session('cart')) > 0)
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 100px;">Hình</th>
-                            <th>Sản phẩm</th>
-                            <th>Giá</th>
-                            <th style="width: 150px;">Số lượng</th>
-                            <th>Tổng</th>
-                            <th class="text-center">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $total = 0; @endphp
-                        @foreach(session('cart') as $id => $details)
-                            {{-- Lấy thông tin gốc của item để hiển thị ảnh và SKU/kiểm tra stock --}}
-                            @php
-                                $itemOriginal = null;
-                                $realStock = 9999; // Mặc định số lượng lớn cho gói tập/lớp học
-                                $imagePath = null;
-                                $sku = 'N/A';
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+    <h2 class="font-headline text-2xl uppercase tracking-wider text-white mb-6 flex items-center gap-2 italic">
+        <span class="material-symbols-outlined text-primary text-3xl">shopping_cart</span> Giỏ hàng & Thanh toán
+    </h2>
 
-                                if ($details['item_type'] === 'product') {
-                                    $itemOriginal = \App\Models\Product::find($details['item_id']);
-                                    $realStock = $itemOriginal ? $itemOriginal->stock_quantity : 0;
-                                    $imagePath = asset('images/products/'.($itemOriginal->image ?? 'default-product.jpg'));
-                                    $sku = $itemOriginal->sku ?? 'N/A';
-                                } elseif ($details['item_type'] === 'class') {
-                                    $itemOriginal = \App\Models\GymClass::find($details['item_id']);
-                                    $imagePath = asset('images/products/'.($itemOriginal->image ?? 'default-class.jpg')); // Giả sử lớp học có ảnh
-                                }
-                                // Gói tập thường không có ảnh riêng, có thể dùng ảnh mặc định
-                                $imagePath = $imagePath ?? asset('images/products/default-class.jpg');
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="mb-6 p-4 bg-primary/10 border border-primary/20 text-primary rounded-xl text-sm">
+            {{ session('error') }}
+        </div>
+    @endif
 
-                                $subtotal = $details['price'] * $details['quantity'];
-                                $total += $subtotal;
-                            @endphp
-                            <tr data-id="{{ $details['row_id'] }}">
-                                <td>
-                                    <img src="{{ $imagePath }}" alt="{{ $details['name'] }}"
-                                             class="img-thumbnail"
-                                             style="width: 80px; height: 80px; object-fit: cover;">
-                                </td>
-                                <td>
-                                    <strong>{{ $details['name'] }}</strong>
-                                    {{-- Badge phân biệt loại mặt hàng --}}
-                                    @if($details['item_type'] === 'product')
-                                        <span class="badge bg-dark ms-2">[Sản phẩm]</span>
-                                        <br><small class="text-muted">Mã: {{ $sku }}</small>
-                                    @elseif($details['item_type'] === 'package')
-                                        <span class="badge bg-success ms-2">[Gói tập]</span>
-                                    @elseif($details['item_type'] === 'class')
-                                        <span class="badge bg-primary ms-2">[Lớp học]</span>
-                                    @endif
-                                </td>
-                                <td>{{ number_format($details['price']) }}đ</td>
-                                <td>
-                                    <input type="number" value="{{ $details['quantity'] }}"
-                                           class="form-control update-cart-quantity"
-                                           min="1"
-                                           {{-- Vô hiệu hóa nút tăng - giảm nếu không phải sản phẩm --}}
-                                           @if($details['item_type'] === 'product') max="{{ $realStock }}" @else readonly @endif
-                                           {{-- Thêm class để dễ dàng style hoặc xử lý JS --}}
-                                           @if($details['item_type'] !== 'product') style="background-color: #e9ecef;" @endif
-                                           >
-                                </td>
-                                <td class="subtotal-price fw-bold text-primary">{{ number_format($details['price'] * $details['quantity']) }}đ</td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-outline-danger btn-sm remove-from-cart">
-                                        <i class="fa-solid fa-trash"></i> Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="row mt-4 align-items-center">
-                <div class="col-md-6">
-                    <a href="{{ url('/products') }}" class="btn btn-outline-dark">
-                        <i class="fa-solid fa-arrow-left"></i> Tiếp tục mua sắm
-                    </a>
-                </div>
-                <div class="col-md-6 text-end">
-                    <h3 class="mb-3">Tổng cộng: <span class="total-cart-price text-danger">{{ number_format($total) }}đ</span></h3>
-                    <a href="{{ route('checkout') }}" class="btn btn-primary btn-lg px-5">
-                        Xác nhận thanh toán
-                    </a>
+    <form action="{{ route('checkout.process') }}" method="POST">
+        @csrf
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="col-span-12 lg:col-span-8">
+                <div class="bg-[#1A1A1A] rounded-2xl p-6 border border-white/10 shadow-2xl">
+                    <h3 class="font-headline text-lg uppercase tracking-wider text-white border-b border-white/10 pb-3 mb-4">
+                        Chi tiết giỏ hàng
+                    </h3>
+
+                    @if(session('cart') && count(session('cart')) > 0)
+                        <div class="space-y-4 max-h-[450px] overflow-y-auto pr-2">
+                            @php $total = 0; @endphp
+                            @foreach(session('cart') as $id => $details)
+                                @php 
+                                    $total += $details['price'] * $details['quantity'];
+                                    // Kiểm tra loại hình để lấy đường dẫn ảnh chính xác
+                                    $imagePath = $details['item_type'] === 'product' 
+                                        ? asset('images/products/' . ($details['image'] ?? 'default-product.jpg'))
+                                        : asset('images/products/' . ($details['image'] ?? 'default-class.jpg'));
+                                @endphp
+                                <div data-id="{{ $id }}" class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-black/20 rounded-xl border border-white/5 gap-4">
+                                    <div class="flex items-center gap-4 flex-1">
+                                        <img src="{{ $imagePath }}" class="w-16 h-16 object-cover rounded-lg border border-white/10" alt="Item">
+                                        <div>
+                                            <h4 class="font-bold text-sm text-white line-clamp-1">{{ $details['name'] }}</h4>
+                                            <p class="text-[11px] text-gray-500 mt-0.5">
+                                                Loại: <span class="text-primary uppercase font-bold">{{ $details['item_type'] == 'product' ? 'Sản phẩm' : 'Lớp học / Gói tập' }}</span>
+                                            </p>
+                                            <p class="text-xs text-primary font-headline mt-1 sm:hidden">
+                                                {{ number_format($details['price']) }}đ
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-2 sm:pt-0 border-white/5">
+                                        <div class="hidden sm:block text-right">
+                                            <p class="text-xs text-gray-400 font-headline">{{ number_format($details['price']) }}đ</p>
+                                        </div>
+                                        
+                                        <div class="flex items-center">
+                                            <input type="number" value="{{ $details['quantity'] }}" min="1" max="100" class="update-cart-quantity w-16 bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-center text-xs text-white focus:outline-none focus:border-primary">
+                                        </div>
+
+                                        <div class="text-right min-w-[80px]">
+                                            <p class="text-sm font-headline text-white font-bold"><span class="subtotal-price">{{ number_format($details['price'] * $details['quantity']) }}</span>đ</p>
+                                        </div>
+
+                                        <button type="button" class="remove-from-cart text-gray-500 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-xl block">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <p class="text-gray-500 italic text-sm">Giỏ hàng đang trống.</p>
+                            <a href="/shop" class="inline-block mt-4 px-6 py-2.5 bg-white/5 border border-white/10 hover:border-primary text-white text-xs uppercase font-headline rounded-xl transition-all">Quay lại chọn gói</a>
+                        </div>
+                    @endif
                 </div>
             </div>
-        @else
-            <div class="text-center py-5">
-                <i class="fa-solid fa-cart-ghost fa-3x text-muted mb-3"></i>
-                <h4>Giỏ hàng đang trống, chưa có gì hết!</h4>
-                <a href="{{ url('/products') }}" class="btn btn-primary mt-3">Quay lại cửa hàng</a>
+
+            <div class="col-span-12 lg:col-span-4">
+                @if(session('cart') && count(session('cart')) > 0)
+                    <div class="space-y-6 sticky top-24">
+                        
+                        <div class="bg-[#1A1A1A] rounded-2xl p-5 border border-white/10 shadow-2xl space-y-4">
+                            <h3 class="font-headline text-base uppercase tracking-wider text-white border-b border-white/10 pb-3">
+                                Phương thức thanh toán
+                            </h3>
+                            <div class="space-y-3 text-xs">
+                                <label class="flex items-start gap-3 p-3 bg-black/20 border border-white/5 rounded-xl cursor-pointer hover:border-primary/40 transition-colors">
+                                    <input type="radio" name="payment_method" value="COD" checked class="mt-0.5 text-primary focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20">
+                                    <div>
+                                        <strong class="text-white block mb-0.5">Thanh toán trực tiếp (COD / Tại quầy)</strong>
+                                        <p class="text-gray-500 text-[10px]">Thanh toán tiền mặt tại quầy lễ tân hoặc khi nhận thẻ hội viên.</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-start gap-3 p-3 bg-black/20 border border-white/5 rounded-xl cursor-pointer hover:border-primary/40 transition-colors">
+                                    <input type="radio" name="payment_method" value="Bank_QR" class="mt-0.5 text-primary focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20">
+                                    <div>
+                                        <strong class="text-white block mb-0.5">Chuyển khoản nhanh qua VietQR</strong>
+                                        <p class="text-gray-500 text-[10px]">Quét mã QR hiển thị để thanh toán nhanh bằng Mobile Banking.</p>
+                                    </div>
+                                </label>
+
+                                <label class="flex items-start gap-3 p-3 bg-black/20 border border-white/5 rounded-xl cursor-pointer hover:border-primary/40 transition-colors">
+                                    <input type="radio" name="payment_method" value="VNPAY" class="mt-0.5 text-primary focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20">
+                                    <div>
+                                        <strong class="text-white block mb-0.5">Ứng dụng VNPAY / Thẻ ATM</strong>
+                                        <p class="text-gray-500 text-[10px]">Kết nối cổng VNPAY quét mã hoặc dùng thẻ ATM nội địa.</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#1A1A1A] rounded-2xl p-5 border border-white/10 shadow-2xl space-y-4">
+                            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                                <h2 class="font-headline text-base uppercase tracking-wider text-white">Tóm tắt thanh toán</h2>
+                                <span class="bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                    {{ count(session('cart')) }} Mục
+                                </span>
+                            </div>
+
+                            <div class="border-t border-white/10 pt-1 space-y-2 text-xs">
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Tạm tính</span>
+                                    <span class="total-cart-price">{{ number_format($total) }}đ</span>
+                                </div>
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Phí kích hoạt & VAT</span>
+                                    <span class="text-emerald-400">Miễn phí</span>
+                                </div>
+                                <div class="flex justify-between font-headline text-lg text-white border-t border-dashed border-white/10 pt-3 mt-1">
+                                    <span>Tổng số tiền</span>
+                                    <span class="text-primary-container total-cart-price">{{ number_format($total) }}đ</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full py-3 bg-primary hover:bg-red-700 text-white font-headline text-base uppercase rounded-xl transition-all shadow-lg shadow-primary/20 block text-center font-bold">
+                                Xác nhận đăng ký & Thanh toán
+                            </button>
+                        </div>
+
+                    </div>
+                @endif
             </div>
-        @endif
-    </div>
+
+        </div>
+    </form>
 </div>
-@endsection
-@section('scripts')
-{{-- Bạn copy các đoạn Script AJAX (Update, Remove, Checkout) từ file shop.blade.php sang đây --}}
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).on('change keyup', '.update-cart-quantity', function () {
-    var ele = $(this);
-    var rowId = ele.closest("tr").attr("data-id"); // Lấy row_id từ thuộc tính của dòng
-    var quantity = ele.val(); // Lấy số lượng vừa nhập
-    var maxStock = parseInt(ele.attr('max')); // Lấy số tồn kho từ thuộc tính max
+$(document).ready(function() {
+    // 1. AJAX thay đổi số lượng gói tập/sản phẩm
+    $(".update-cart-quantity").on('change keyup', function () {
+        var ele = $(this);
+        var id = ele.closest("div[data-id]").attr("data-id");
+        var quantity = ele.val();
 
-    // 1. Kiểm tra rỗng hoặc không phải số
-    if (quantity === "" || quantity < 1) return;
+        if (quantity === "" || quantity < 1) return;
 
-    // 2. Chặn ngay tại Frontend nếu nhập quá kho
-    if (maxStock && parseInt(quantity) > maxStock) {
-        alert("Kho chỉ còn " + maxStock + " sản phẩm!");
-        ele.val(maxStock);
-        quantity = maxStock; // Gán lại để gửi lên server đúng số max
-    }
-
-    // 3. Gửi AJAX
-    $.ajax({
-        url: '{{ route("cart.update") }}',
-        method: "patch",
-        data: {
-            _token: '{{ csrf_token() }}',
-            row_id: rowId,
-            quantity: quantity
-        },
-        success: function (response) {
-            // Cập nhật giá từng dòng và tổng bill ngay lập tức mà không load lại trang
-            ele.closest("tr").find(".subtotal-price").text(response.subtotal);
-            $(".total-cart-price").text(response.total);
-        },
-        error: function(xhr) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: xhr.responseJSON.error || 'Không thể cập nhật số lượng.',
-            });
-            // Khôi phục số lượng cũ nếu có lỗi
-            ele.val(ele.data('old-quantity'));
-        }
-        });
-    });
-// loại sản phẩm khỏi giỏ hàng
-// Lắng nghe sự kiện click vào nút có class .remove-from-cart
-$(document).on('click', '.remove-from-cart', function (e) {
-    e.preventDefault(); // Ngăn chặn hành động mặc định của thẻ (như load lại trang)
-    var ele = $(this);
-    var rowId = ele.closest("tr").attr("data-id"); // Lấy row_id từ thuộc tính data-id của dòng <tr>
-    Swal.fire({
-        title: 'Bạn có chắc chắn?',
-        text: "Bạn sẽ không thể hoàn tác hành động này!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Có, xóa nó đi!'
-    }).then((result) => {
-        if (result.isConfirmed) {
         $.ajax({
-            url: '{{ route("cart.remove") }}', // Đường dẫn API xử lý xóa (định nghĩa trong routes/web.php)
-            method: "DELETE", // Sử dụng phương thức DELETE theo đúng chuẩn RESTful API
+            url: '{{ route("cart.update") }}',
+            method: "patch",
             data: {
-                _token: '{{ csrf_token() }}', // Gửi mã bảo mật CSRF để Laravel cho phép thực hiện yêu cầu
-                row_id: rowId // Gửi row_id của item muốn xóa lên server
+                _token: '{{ csrf_token() }}',
+                row_id: id,
+                quantity: quantity
             },
             success: function (response) {
-                // Nếu server xử lý thành công:
-                // 1. Dùng hiệu ứng fadeOut (mờ dần) trong 0.3s để xóa dòng sản phẩm trên giao diện
-                ele.closest("tr").fadeOut(1000, function() {
-                    $(this).remove(); // Xóa hẳn phần tử HTML sau khi mờ dần xong
-                    Swal.fire(
-                        'Đã xóa!',
-                        'Sản phẩm của bạn đã được xóa khỏi giỏ hàng.',
-                        'success'
-                    ).then(() => {
-                        window.location.reload(); // Load lại trang để cập nhật tổng tiền và badge
-                    });
-                });
-                // 2. Cập nhật lại con số Tổng tiền hiển thị trên trang từ dữ liệu server trả về
-                $(".total-cart-price").text(response.total);
-                // 3. Cập nhật số lượng trên Badge (biểu tượng giỏ hàng) để khớp với thực tế
-                $('.badge.bg-danger').text(response.cart_count);
+                ele.closest("div[data-id]").find(".subtotal-price").text(response.subtotal);
+                $(".total-cart-price").text(response.total + "đ");
             },
-            error: function (xhr) {
-                // Nếu server báo lỗi (ví dụ lỗi mạng, lỗi code PHP)
-                Swal.fire(
-                    'Lỗi!',
-                    'Không thể xóa sản phẩm: ' + (xhr.responseJSON.message || 'Lỗi không xác định.'),
-                    'error'
-                );
+            error: function(xhr) {
+                alert("Lỗi: Không thể cập nhật số lượng.");
+                window.location.reload();
             }
         });
+    });
+
+    // 2. AJAX xóa nhanh gói tập khỏi giỏ hàng
+    $(".remove-from-cart").click(function (e) {
+        e.preventDefault();
+        var ele = $(this);
+        var id = ele.closest("div[data-id]").attr("data-id");
+
+        if(confirm("Bạn có chắc chắn muốn bỏ mục này khỏi giỏ hàng không?")) {
+            $.ajax({
+                url: '{{ route("cart.remove") }}',
+                method: "DELETE",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    row_id: id
+                },
+                success: function (response) {
+                    ele.closest("div[data-id]").fadeOut(400, function() {
+                        $(this).remove();
+                        window.location.reload();
+                    });
+                },
+                error: function (xhr) {
+                    alert("Lỗi: Không thể xóa mục này.");
+                }
+            });
         }
     });
 });

@@ -17,26 +17,19 @@ class ProductController extends Controller
       // tìm kiếm sản phẩm 
     public function getProductsApi(Request $request){
     // 1. Tiếp nhận các tham số từ trình duyệt gửi lên qua URL (Query Strings)
-    $search = $request->input('search');      // Từ khóa tìm kiếm tên sản phẩm
-    $minPrice = $request->input('min_price');  // Giá tối thiểu (sàn)
-    $maxPrice = $request->input('max_price');  // Giá tối đa (trần)
+    $search = $request->input('search');
+
     // 2. Khởi tạo đối tượng Query Builder từ Model Product
-    // Việc dùng query() giúp chúng ta có thể nối thêm các điều kiện WHERE một cách linh hoạt
     $query = Product::query();
-    // 3. Nếu có từ khóa tìm kiếm, thêm điều kiện tìm theo tên (LIKE %...%)
     if ($search) {
         $query->where('name', 'like', "%$search%");
         }
-    // 4. Nếu người dùng nhập giá tối thiểu, thêm điều kiện >=
-    if ($minPrice) {
-        $query->where('price', '>=', $minPrice);
-        }
-    // 5. Nếu người dùng nhập giá tối đa, thêm điều kiện <=
-    if ($maxPrice) {
-        $query->where('price', '<=', $maxPrice);
-        }
-    // 6. Thực hiện truy vấn và phân trang (10 sản phẩm/trang)
-    $products = $query->paginate(10);
+    // Lọc theo danh mục (sups / gear) gửi lên từ JS
+    if ($request->has('category') && $request->category != 'all') {
+        $query->where('product_category', $request->category);
+    }
+    // Phân trang đồng bộ 8 sản phẩm/trang
+    $products = $query->paginate(8);
     // 7. Trả về dữ liệu dưới dạng JSON để JavaScript có thể xử lý và vẽ lại giao diện
     return response()->json([
         'products' => $products
@@ -47,8 +40,10 @@ class ProductController extends Controller
         $request->validate([
         'name' => 'required',
         'sku' => 'required|unique:products',
+        'product_category' =>'required',
         'price' => 'required|numeric',
-        'image' => 'image|mimes:jpeg,png,jpg|max:2048' // Validate file ảnh
+        'stock_quantity' => 'required|integer|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' // Validate file ảnh
     ]);
     $data = $request->all();
     if ($request->hasFile('image')) {

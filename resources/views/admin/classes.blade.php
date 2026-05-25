@@ -290,7 +290,6 @@
             reader.readAsDataURL(file);
         }
     });
-
-    document.addEventListener('DOMContentLoaded', () => loadClasses());
+document.addEventListener('DOMContentLoaded', () => loadClasses());
 </script>
 @endsection

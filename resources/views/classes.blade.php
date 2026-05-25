@@ -1,5 +1,4 @@
-@extends('layout.frontend')
-@section('content')
+
 <style>
     .class-card {
         border: none;
@@ -163,8 +162,12 @@
                                     <i class="fas fa-calendar-check info-icon me-2 fa-fw"></i>
                                     <span class="small">Thời lượng: <strong>{{ $class->total_sessions }} buổi</strong></span>
                                 </div>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-user-tie info-icon me-2 fa-fw"></i>
+                                <div class="d-flex align-items-center mt-1">
+                                    @if($class->pt && $class->pt->image)
+                                        <img src="{{ asset('images/pt/' . ($class->pt->image ?? 'pt.jpg')) }}" class="rounded-circle me-2 border border-white/20" style="width: 24px; height: 24px; object-fit: cover;" alt="PT" onerror="this.src='{{ asset('images/pt/pt.jpg') }}'">
+                                    @else
+                                        <i class="fas fa-user-tie info-icon me-2 fa-fw"></i>
+                                    @endif
                                     <span class="small">PT: <strong>{{ $ptName }}</strong></span>
                                 </div>
                                 <div class="mt-2">
@@ -227,9 +230,7 @@
         </div>
     @endif
 </div>
-@endsection
 
-@section('scripts')
 <script>
 const items      = document.querySelectorAll('.class-item');
 const filterBtns = document.querySelectorAll('.filter-btn');
@@ -305,4 +306,3 @@ $(document).ready(function() {
     });
 });
 </script>
-@endsection
