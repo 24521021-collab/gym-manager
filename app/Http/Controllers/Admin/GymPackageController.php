@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GymPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
-class GymPackageController extends Controller
-{
+class GymPackageController extends Controller{
     /**
      * CHỨC NĂNG: HIỂN THỊ DANH SÁCH
      * Trả về trang quản lý với danh sách các gói tập đã phân trang.

@@ -39,6 +39,7 @@
                         <th class="ps-4">Mã đơn</th>
                         <th>Khách hàng</th>
                         <th>Ngày đặt</th>
+                        <th class="text-center">Số lượng</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>
                         <th class="text-end pe-4">Thao tác</th>
@@ -147,11 +148,14 @@ function renderOrderTable(orders) {
         else if(order.payment_status === 'Cancelled') statusBadge = '<span class="badge bg-danger">Đã hủy</span>';
         else statusBadge = '<span class="badge bg-warning text-dark">Chờ thanh toán</span>';
 
+        const totalQty = order.items.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+
         return `
             <tr id="order-row-${order.id}">
                 <td class="ps-4">#${order.id}</td>
                 <td>${escapeHtml(order.user ? order.user.full_name : 'Khách lạ')}</td>
                 <td>${new Date(order.order_date).toLocaleString('vi-VN')}</td>
+                <td class="text-center">${totalQty} món</td>
                 <td class="fw-bold text-primary">${new Intl.NumberFormat('vi-VN').format(order.total_amount)}đ</td>
                 <td>${statusBadge}</td>
                 <td class="text-end pe-4">

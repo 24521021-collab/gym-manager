@@ -15,6 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
         $table->text('bio')->nullable();
+         $table->string('image')->nullable();
         $table->string('specialization');
         $table->decimal('rating', 3, 2)->default(0);
         $table->decimal('commission', 12, 2)->default(0); // Số tiền nhận được mỗi buổi dạy

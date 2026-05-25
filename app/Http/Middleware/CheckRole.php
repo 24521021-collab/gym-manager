@@ -7,8 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckRole
-{
+class CheckRole{
     /**
      * Handle an incoming request.
      *
@@ -21,12 +20,10 @@ class CheckRole
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Bạn cần đăng nhập trước.');
         }
-
         // 2. Kiểm tra vai trò của người dùng có khớp với vai trò yêu cầu từ Route không
         if (Auth::user()->role === $role) {
             return $next($request);
         }
-
         abort(403, 'Bạn không có quyền truy cập chức năng này.');
     }
 }

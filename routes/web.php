@@ -124,9 +124,6 @@ Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('a
 // 2. Đường dẫn để Google trả dữ liệu về (phải khớp 100% với link đã khai báo trên Google Console)
 Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
 // route đăng nhập bằng fb
-Route::get('auth/facebook', [LoginController::class, 'redirectToFacebook'])->name('facebook.login');
-Route::get('auth/facebook/callback', [LoginController::class, 'handleFacebookCallback']);
-
 
 // Route này nhận ID của lớp học để biết đang đăng ký lớp nào
 Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking.store')->middleware('auth');

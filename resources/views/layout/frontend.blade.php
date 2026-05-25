@@ -1,133 +1,38 @@
-        <!DOCTYPE html>
-<html lang="vi">
+<!DOCTYPE html>
+<html class="dark" lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gym Center - Sức Khỏe & Vóc Dáng</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f7f6;
-        }
-        .navbar {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            background-color: #ffffff !important;
-        }
-        .nav-link {
-            font-weight: 500;
-            color: #333 !important;
-            transition: 0.3s;
-        }
-        .nav-link:hover {
-            color: #0d6efd !important;
-        }
-        .footer {
-            background-color: #212529;
-            color: white;
-            padding: 40px 0;
-            margin-top: 50px;
-        }
-    </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@yield('title', 'KOR GYM')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white">
 
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
-                <i class="fas fa-dumbbell"></i> GYM PRO
+<nav class="sticky top-0 z-50 bg-[#131313]/90 backdrop-blur-xl border-b border-white/10 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+        <a href="/" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic">KOR GYM</a>
+        
+        <div class="flex-1"></div>
+
+        <div class="flex items-center gap-5">
+            <a href="/shop" class="text-primary border-b-2 border-primary pb-1 font-headline text-lg uppercase tracking-tight hidden md:block">Cửa hàng</a>
+            <a href="/booking-pt" class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight hidden md:block">Đặt Lịch PT</a>
+            <a href="/notifications" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative ml-2">
+                <span class="material-symbols-outlined">notifications</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/') }}">Trang Chủ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Gói Tập</a>
-                    </li>
-                </ul>
-
-                <ul class="navbar-nav ms-auto">
-                    @auth
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle fw-bold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i> {{ Auth::user()->full_name }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('body.metric') }}">
-                                        <i class="fas fa-id-card me-2"></i> Hồ sơ & Body Metrics
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('classes.index') }}" class="dropdown-item">
-                                        <i class="fas fa-calendar-alt"></i> Lớp học của tôi
-                                    </a>
-                                </li>
-                                @if(Auth::user()->role == 'admin')
-                                    <li><a class="dropdown-item" href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield me-2"></i> Trang Quản Trị</a></li>
-                                @endif
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Đăng nhập</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary btn-sm ms-lg-2 rounded-pill px-3" href="#">Đăng ký</a>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
+            <a href="/profile" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden block hover:border-primary transition-colors">
+                <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
+            </a>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <main style="min-height: 80vh;">
-        @if(session('success'))
-            <div class="container mt-3">
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle"></i> {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            </div>
-        @endif
+<main class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+    @yield('content')
+</main>
 
-        @yield('content')
-    </main>
-
-    <footer class="footer text-center">
-        <div class="container">
-            <p class="mb-1 fw-bold text-uppercase">Phòng Tập Gym Công Nghệ 2026</p>
-            <p class="small text-secondary">Địa chỉ: 123 Đường Số 1, TP. Hồ Chí Minh</p>
-            <div class="mt-3">
-                <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
-                <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
-                <a href="#" class="text-white"><i class="fab fa-youtube fa-lg"></i></a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    @yield('scripts')
+@stack('scripts')
 </body>
 </html>
