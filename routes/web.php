@@ -145,3 +145,8 @@ Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 Route::get('/classes',[BookingController::class, 'index'])->name('classes.index');
 Route::post('/classes/book',[BookingController::class, 'store'])->name('classes.store')->middleware('auth');
 Route::delete('/classes/cancel',[BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');
+
+// Cấu hình route ảo để làm sạch lỗi của môi trường phát triển ngầm (IDX/Vite)
+Route::put('/', function () {
+    return response()->json(['status' => 'ok']);
+});

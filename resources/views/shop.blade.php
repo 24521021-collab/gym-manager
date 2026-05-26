@@ -35,6 +35,7 @@
                         <div class="p-1">
                             <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">{{ $product->name }}</h3>
                             <p class="text-[10px] text-gray-500 mt-0.5">Mã SKU: <strong>{{ $product->sku }}</strong></p>
+                            <p class="text-[10px] text-gray-500 mt-0.5">Kho còn: <strong class="{{ $product->stock_quantity > 0 ? 'text-emerald-400' : 'text-primary' }}">{{ $product->stock_quantity }}</strong></p>
                             <span class="text-[10px] text-gray-400 mt-1 block italic text-primary">
                                 {{ $product->product_category == 'sups' ? 'Thực phẩm bổ sung' : 'Phụ kiện tập luyện' }}
                             </span>
@@ -43,7 +44,7 @@
                     
                     <div class="p-1 mt-3 flex justify-between items-center">
                         <span class="font-headline text-base text-white">{{ number_format($product->price / 1000, 0) }}kđ</span>
-                        <button onclick="addItemToCart('{{ addslashes($product->name) }}', {{ $product->price }}, {{ $product->id }})" class="w-8 h-8 rounded-lg bg-white/5 text-primary hover:bg-primary hover:text-white transition-all flex items-center justify-center btn-glow">
+                        <button onclick="addItemToCart('{{ addslashes($product->name) }}', {{ $product->price }}, {{ $product->id }})" {{ $product->stock_quantity <= 0 ? 'disabled' : '' }} class="w-8 h-8 rounded-lg bg-white/5 text-primary {{ $product->stock_quantity > 0 ? 'hover:bg-primary hover:text-white btn-glow' : 'opacity-50 cursor-not-allowed' }} transition-all flex items-center justify-center">
                             <span class="material-symbols-outlined text-sm block">add_shopping_cart</span>
                         </button>
                     </div>
@@ -186,12 +187,13 @@
                             <div class="p-1">
                                 <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">${product.name}</h3>
                                 <p class="text-[10px] text-gray-500 mt-0.5">Mã SKU: <strong>${product.sku}</strong></p>
+                                <p class="text-[10px] text-gray-500 mt-0.5">Kho còn: <strong class="${product.stock_quantity > 0 ? 'text-emerald-400' : 'text-primary'}">${product.stock_quantity}</strong></p>
                                 <span class="text-[10px] text-gray-400 mt-1 block italic text-primary">${catText}</span>
                             </div>
                         </div>
                         <div class="p-1 mt-3 flex justify-between items-center">
                             <span class="font-headline text-base text-white">${new Intl.NumberFormat('vi-VN').format(product.price / 1000)}kđ</span>
-                            <button onclick="addItemToCart('${safeName}', ${product.price}, ${product.id})" class="w-8 h-8 rounded-lg bg-white/5 text-primary hover:bg-primary hover:text-white flex items-center justify-center"><span class="material-symbols-outlined text-sm">add_shopping_cart</span></button>
+                            <button onclick="addItemToCart('${safeName}', ${product.price}, ${product.id})" ${product.stock_quantity <= 0 ? 'disabled' : ''} class="w-8 h-8 rounded-lg bg-white/5 text-primary ${product.stock_quantity > 0 ? 'hover:bg-primary hover:text-white' : 'opacity-50 cursor-not-allowed'} flex items-center justify-center"><span class="material-symbols-outlined text-sm">add_shopping_cart</span></button>
                         </div>
                     </div>`;
                 productList.insertAdjacentHTML('beforeend', html);

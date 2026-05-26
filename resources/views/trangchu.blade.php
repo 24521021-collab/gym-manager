@@ -1,311 +1,300 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPro - Đánh thức sức mạnh trong bạn</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+@extends('layout.frontend') 
+@section('content')
+<main class="max-w-7xl mx-auto px-4 md:px-8 pt-8 space-y-8">
     
-    <style>
-        .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                        url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            height: 80vh;
-            display: flex;
-            align-items: center;
-            color: white;
+    <div class="flex justify-between items-end">
+        <div>
+            <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight">Cổng Hội Viên</h1>
+            <p class="text-sm text-gray-400 mt-1">Chào {{ Auth::check() ? Auth::user()->full_name : 'Hội viên' }}. Bạn đã sẵn sàng bứt phá giới hạn chưa?</p>
+        </div>
+        <div class="hidden md:flex items-center gap-2 text-gray-400">
+            <span class="material-symbols-outlined text-lg">calendar_today</span>
+            <span class="text-xs font-bold uppercase" id="current-date">Hôm nay</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="{{ Auth::check() ? 'md:col-span-8' : 'md:col-span-12' }} bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+            <div>
+                <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-4">Hồ sơ sức khỏe & Đề xuất toàn diện</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-surface-variant/30 p-3 rounded-xl border border-white/5">
+                        <label for="height-input" class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Chiều cao (cm)</label>
+                        <input type="number" id="height-input" value="{{ $latestMetric->height ?? '' }}" class="w-full bg-transparent border-none p-0 text-xl font-bold text-white focus:ring-0">
+                    </div>
+                    <div class="bg-surface-variant/30 p-3 rounded-xl border border-white/5">
+                        <label for="weight-input" class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Cân nặng (kg)</label>
+                        <input type="number" id="weight-input" value="{{ $latestMetric->weight ?? '' }}" class="w-full bg-transparent border-none p-0 text-xl font-bold text-white focus:ring-0">
+                    </div>
+                    <div class="bg-surface-variant/30 p-3 rounded-xl border border-white/5">
+                        <label for="fat-input" class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Tỷ lệ mỡ (Body Fat %)</label>
+                        <input type="number" id="fat-input" value="{{ $latestMetric->body_fat_percentage ?? '' }}" class="w-full bg-transparent border-none p-0 text-xl font-bold text-white focus:ring-0">
+                    </div>
+                </div>
+
+                <div id="bmi-panel" class="p-4 rounded-xl border transition-all duration-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="text-sm font-bold text-white">Chỉ số BMI của bạn: <span id="bmi-score" class="text-xl font-headline ml-1">--</span></div>
+                        <p id="bmi-status" class="text-xs text-gray-400 mt-1">Đang phân tích dữ liệu thể trạng...</p>
+                    </div>
+                    <div class="bg-black/40 px-4 py-3 rounded-lg border border-white/5 max-w-md">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Hệ thống đề xuất KOR-AI:</span>
+                        <p id="ai-suggestion" class="text-xs text-gray-300 leading-relaxed">Đang xử lý đề xuất giáo án tối ưu...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
+                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ $latestMetric ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span></span>
+                <button id="update-metrics-btn" class="bg-primary text-white text-xs font-bold uppercase py-2 px-4 rounded hover:bg-red-700 transition-colors">Cập nhật chỉ số</button>
+            </div>
+        </div>
+
+        @auth
+        {{-- Mã QR của khách hàng --}}
+        {{-- Chỉ hiển thị nếu người dùng đã đăng nhập --}}
+        <div class="md:col-span-4 bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
+            <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-5 w-full tracking-wide">Mã Check-in Thẻ</h2>
+            <div class="bg-white p-4 rounded-xl inline-block shadow-lg">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ Auth::id() }}" alt="QR Code" class="w-36 h-36">
+            </div>
+            <p class="text-xs text-gray-400 mt-5 leading-relaxed">Xuất trình mã này cho bộ phận lễ tân khi đến trung tâm để thực hiện check-in vào phòng tập.</p>
+        </div>
+        @endauth
+    </div>
+
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+        <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">newspaper</span> Chuyên mục kiến thức & Sự kiện phòng tập
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
+                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Dinh dưỡng"></div>
+                <div class="p-4 space-y-2">
+                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Dinh dưỡng đúng cách</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">Cách tính toán Calo sợi mì Ý và thực đơn tăng cơ nhịp nhàng</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">Hướng dẫn chi tiết phương pháp cân đo lượng calo trong mì Ý khô và cách kết hợp với Whey Protein Isolate phục vụ body recomposition.</p>
+                </div>
+            </div>
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
+                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Kỹ thuật"></div>
+                <div class="p-4 space-y-2">
+                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Kỹ thuật tập luyện</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">Mẹo tự đo tỷ lệ mỡ (Body Fat) chính xác tại nhà</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">Không cần máy InBody, bạn hoàn toàn có thể tự kiểm tra lượng mỡ cơ thể bằng thước dây và kẹp Caliper theo chuẩn y khoa.</p>
+                </div>
+            </div>
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
+                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sự kiện"></div>
+                <div class="p-4 space-y-2">
+                    <span class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Sự kiện độc quyền</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">KOR-Race 2026: Giải chạy việt dã bứt phá cự ly 25km</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">Chào mừng chuỗi sự kiện thường niên, giải chạy việt dã kết hợp sức bền kháng lực chính thức mở cổng đăng ký thẻ tham gia cho toàn bộ hội viên.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+        <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">rate_review</span> Hệ thống phản hồi & Chấm điểm dịch vụ KOR
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-5 bg-black/20 border border-white/5 p-4 rounded-xl space-y-4">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider">Để lại đánh giá buổi tập vừa qua</h3>
+                
+                <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chọn Huấn luyện viên / Sản phẩm</label>
+                    <select id="feedback-target" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary">
+                        <option value="HLV Hoàng Long">HLV Hoàng Long (Buổi tập Deadlift)</option>
+                        <option value="HLV Thu Thảo">HLV Thu Thảo (Lớp Yoga Core)</option>
+                        <option value="Sản phẩm Whey Gold">Whey Gold Standard (Đơn mua #9810)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chấm điểm chất lượng (Rating)</label>
+                    <div class="flex gap-1 text-yellow-500" id="star-rating-container">
+                        <span onclick="setStarRating(1)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(2)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(3)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(4)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(5)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Ý kiến bình luận nhận xét</label>
+                    <textarea id="feedback-comment" rows="2" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary placeholder:text-gray-600" placeholder="PT hướng dẫn nhiệt tình, cơ sở sạch sẽ..."></textarea>
+                </div>
+
+                <button onclick="submitFeedbackForm()" class="w-full py-2.5 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-lg shadow-md transition-all">Gửi phản hồi hệ thống</button>
+            </div>
+
+            <div class="md:col-span-7 space-y-3 max-h-[340px] overflow-y-auto pr-1" id="comments-display-list">
+                <div class="bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs">
+                    <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold font-headline flex items-center justify-center flex-shrink-0">LQ</div>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2"><span class="font-bold text-white">Lê Quân (Hội viên Elite)</span><span class="text-yellow-500">★★★★★</span></div>
+                        <p class="text-gray-300">Đơn hàng Whey Gold Standard giao siêu nhanh, đóng gói kỹ lồng tem chống hàng giả. Vị socola đôi rất dễ uống, không bị ngọt gắt.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Hàm tính toán và hiển thị BMI, gợi ý AI
+    function updateHealthMetricsDisplay(height, weight, bodyFat) {
+        const h = parseFloat(height) / 100;
+        const w = parseFloat(weight);
+        const bf = parseFloat(bodyFat);
+
+        let bmi = '--';
+        if (h && w) {
+            bmi = (w / (h * h)).toFixed(1);
         }
-        .card-gym:hover {
-            transform: translateY(-10px);
-            transition: 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .avatar-img {
-            width: 35px;
-            height: 35px;
-            object-fit: cover;
-        }
-    </style>
-</head>
-<body>
+        document.getElementById('bmi-score').innerText = bmi;
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow border-bottom border-secondary">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-warning" href="#">GYMPRO</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#pricing">Gói tập</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('classes.index') }}">Lớp học</a></li> 
-                    <li class="nav-item"><a class="nav-link" href="{{route('booking.pt.index')}}">Đặt lịch với PT</a></li>
-                </ul>
-            <div class="mt-3">
+        const panel = document.getElementById('bmi-panel');
+        const statusText = document.getElementById('bmi-status');
+        const aiText = document.getElementById('ai-suggestion');
 
-        </div>
-                <div class="navbar-nav ms-auto d-flex align-items-center">
-                    @guest
-                        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
-                        <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
-                    @else
-                    <div class="d-flex align-items-center">
-                        <a href="{{ route('products.index') }}" class="btn btn-link text-white position-relative me-3" style="text-decoration: none;">
-                            <i class="fa fa-shopping-cart" style="font-size: 20px;"></i>
-                            @if(session('cart') && count(session('cart')) > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px;">
-                            {{ count(session('cart')) }}
-                        </span>
-                    </div>
-                     @endif
-                            </a>
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=random&color=fff" 
-                                     class="rounded-circle avatar-img me-2" alt="user">
-                                <span class="text-white fw-medium">{{ Auth::user()->full_name }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li><a class="dropdown-item" href="{{route ('body.metric') }}"><i class="fas fa-user-circle me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
-                                <li><a class="dropdown-item" href="{{route('my.membership')}}"><i class="fas fa-dumbbell me-2 text-muted"></i> Gói tập của tôi</a></li>
-                                <li><a class="dropdown-item" href="{{route('orders.index')}}"><i class="fas fa-shopping-basket me-2 text-muted"></i> giỏ hàng của tôi</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{route('logout')}}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
-                                            <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    @endguest
-                </div>
-            </div>
-        </div>
-    </nav>
+        // Reset classes
+        panel.className = "p-4 rounded-xl border transition-all duration-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
 
-    <header class="hero-section text-center">
-        <div class="container">
-            <h1 class="display-3 fw-bold">NO PAIN, NO GAIN</h1>
-            <p class="lead">Hệ thống phòng tập hiện đại nhất khu vực với đội ngũ PT chuyên nghiệp.</p>
-            <a href="#pricing" class="btn btn-warning btn-lg fw-bold px-5">TẬP NGAY HÔM NAY</a>
-        </div>
-    </header>
-
-    <section id="pricing" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">CÁC GÓI TẬP LINH HOẠT</h2>
-                <p class="text-muted">Chọn gói phù hợp để bắt đầu hành trình thay đổi bản thân</p>
-            </div>
-            
-            <div class="row g-4">
-                @if(isset($goiTaps) && $goiTaps->count() > 0)
-                    @foreach($goiTaps as $item)
-                    <!-- hiển thị gói tập-->
-                    <div class="col-md-4">
-                        <div class="card h-100 border-0 card-gym text-center shadow-sm">
-                            <div class="card-body py-5 px-4">
-                                <h3 class="fw-bold text-dark">{{ $item->package_name }}</h3>
-                                <h2 class="text-warning my-4">{{ number_format($item->price) }} VNĐ</h2>
-                                <p class="badge bg-secondary mb-3">{{ $item->duration_days }} Ngày tập luyện</p>
-                                <p class="text-muted small">{{ $item->description }}</p>
-                                <!--btn-register" data-id="{{ $item->id }}"*-- java nút lưu gói tập-->
-                                <button class="btn btn-dark w-100 mt-3 py-2 fw-bold btn-register" data-id="{{ $item->id }}">ĐĂNG KÝ NGAY</button>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                @else
-                    <div class="col-12 text-center py-5">
-                        <p class="text-muted italic">Đang cập nhật các gói tập mới nhất...</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </section>
-
-    @guest
-        <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold">TẠO TÀI KHOẢN MỚI</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <form action="{{ route('register') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label class="form-label fw-medium">Tên của bạn</label>
-                                <input type="text" name="full_name" class="form-control" required placeholder="Ví dụ: Nguyễn Văn An">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-medium">Email / Số điện thoại</label>
-                                <input type="email" name="email" class="form-control" required placeholder="name@example.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-medium">Mật khẩu</label>
-                                <input type="password" name="password" class="form-control" required placeholder="********">
-                            </div>
-                                <a href="{{ route('auth.google') }}" class="btn btn-danger w-50 mb-2">
-                                     <i class="fab fa-google"></i> Đăng nhập bằng Google
-                                </a>
-                             <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-warning fw-bold py-2">ĐĂNG KÝ TÀI KHOẢN</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold">ĐĂNG NHẬP HỆ THỐNG</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <form action="{{ route('login.post') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label class="form-label fw-medium">Email</label>
-                                <input type="email" name="email" class="form-control" required placeholder="admin@gmail.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-medium">Mật khẩu</label>
-                                <input type="password" name="password" class="form-control" required placeholder="********">
-                            </div>
-                                <a href="{{ route('auth.google') }}" class="btn btn-danger w-50 mb-2">
-                                    <i class="fab fa-google"></i> Đăng nhập bằng Google
-                                </a>
-
-                            <div class="text-end mb-2">
-                                <a href="#" class="text-muted small" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-bs-dismiss="modal">Quên mật khẩu?</a>
-                            </div>
-
-                            <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-dark fw-bold py-2">ĐĂNG NHẬP</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Quên mật khẩu -->
-        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold">KHÔI PHỤC MẬT KHẨU</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form onsubmit="sendDefaultPassword(event)">
-                        @csrf
-                        <div class="modal-body p-4">
-                            <p class="small text-muted mb-3">Nhập email của bạn, chúng tôi sẽ gửi mật khẩu mặc định mới qua email.</p>
-                            <div class="mb-3">
-                                <label class="form-label fw-medium">Email của bạn</label>
-                                <input type="email" id="forgot_email" class="form-control" placeholder="example@gmail.com" required>
-                            </div>
-                            <!-- Vùng hiển thị thông báo lỗi nhanh -->
-                            <div id="forgot-msg" class="mt-2 small"></div>
-                        </div>
-                        <div class="modal-footer border-0 p-4 pt-0">
-                            <button type="submit" id="btnForgot" class="btn btn-warning fw-bold w-100 py-2">GỬI YÊU CẦU</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    @endguest
-
-    <footer class="bg-dark text-white py-4 mt-5 text-center border-top border-secondary">
-        <p class="mb-0">&copy; 2026 GymPro Fitness Center. All Rights Reserved.</p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-    /**
-     * Xử lý gửi yêu cầu cấp mật khẩu mặc định qua Fetch API
-     */
-    async function sendDefaultPassword(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btnForgot');
-        const msg = document.getElementById('forgot-msg');
-        const email = document.getElementById('forgot_email').value;
-
-        // Hiệu ứng Loading & Chống spam click
-        btn.disabled = true;
-        const originalText = btn.innerText;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang gửi mail...';
-        msg.innerHTML = '';
-
-        try {
-            const response = await fetch("{{ route('password.forgot.post') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ email: email })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                alert(data.message);
-                // Đóng modal sau khi thành công
-                bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
-            } else {
-                msg.className = "mt-2 small text-danger";
-                msg.innerText = data.message;
-            }
-        } catch (error) {
-            msg.className = "mt-2 small text-danger";
-            msg.innerText = "Lỗi kết nối máy chủ, vui lòng thử lại sau.";
-        } finally {
-            // Khôi phục trạng thái nút
-            btn.disabled = false;
-            btn.innerText = originalText;
+        if (bmi === '--' || isNaN(bmi)) {
+            statusText.innerText = "Đang phân tích dữ liệu thể trạng...";
+            aiText.innerText = "Đang xử lý đề xuất giáo án tối ưu...";
+            panel.classList.add('border-white/10');
+        } else if (bmi >= 25) {
+            statusText.innerText = "Trạng thái: Thừa cân - Lượng mỡ tích tụ cần giải phóng.";
+            aiText.innerText = "Khuyên dùng: Giáo án Cắt nét & Thâm hụt calo. Nên bổ sung Whey Isolate tinh khiết tại Cửa hàng để tối ưu khối cơ nách bắp.";
+            panel.classList.add('border-red-500/30', 'bg-red-500/5');
+        } else if (bmi < 18.5) {
+            statusText.innerText = "Trạng thái: Thiếu cân - Cần tích lũy dinh dưỡng và tập nặng.";
+            aiText.innerText = "Khuyên dùng: Giáo án Tăng cơ xả cơ cường độ cao. Nên ưu tiên chọn thực phẩm Mass Gainer năng lượng cao tại Store.";
+            panel.classList.add('border-yellow-500/30', 'bg-yellow-500/5');
+        } else {
+            statusText.innerText = "Trạng thái: Thể trạng cân đối lý tưởng - Phân bố cơ mỡ ổn định.";
+            aiText.innerText = "Khuyên dùng: Lộ trình Điêu khắc và giữ nét cơ. Duy trì cường độ tập, kết hợp dùng thêm Creatine để bứt phá sức mạnh nổ.";
+            panel.classList.add('border-green-500/30', 'bg-green-500/5');
         }
     }
-    </script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    $(document).ready(function() {
-        $('.btn-register').on('click', function() {
-            let packageId = $(this).data('id');
-            $.ajax({
-                url: "{{ route('membership.register') }}",
-                method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    package_id: packageId
+    // Hàm gửi dữ liệu lên server và cập nhật UI
+    document.getElementById('update-metrics-btn').addEventListener('click', async function() {
+        const height = document.getElementById('height-input').value;
+        const weight = document.getElementById('weight-input').value;
+        const bodyFat = document.getElementById('fat-input').value;
+        const btn = this;
+        const originalText = btn.innerHTML;
+
+        if (!height || !weight) {
+            showToastNotification("Vui lòng nhập đủ Chiều cao và Cân nặng.");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang cập nhật...';
+
+        try {
+            const response = await fetch("/body_metric/update", { // Tạm thời dùng URL cứng để kiểm tra
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json', // Quan trọng: Yêu cầu server trả về JSON
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                success: function(res) {
-                    if(res.success && res.redirect_url) {
-                        window.location.href = res.redirect_url;
-                    }
-                },
-                error: function(xhr) {
-                    alert('Vui lòng đăng nhập để đăng ký gói tập!');
-                    window.location.href = "{{ route('login') }}";
-                }
+                body: JSON.stringify({
+                    height: height,
+                    weight: weight,
+                    body_fat_percentage: bodyFat || null
+                })
             });
-        });
+
+            if (response.ok) {
+                const data = await response.json();
+                updateHealthMetricsDisplay(height, weight, bodyFat); // Cập nhật hiển thị ngay lập tức
+                document.getElementById('last-updated-date').innerText = new Date().toLocaleString('vi-VN');
+                showToastNotification(data.success ? data.message : "Cập nhật thành công!");
+            } else {
+                showToastNotification(data.message || "Có lỗi xảy ra khi cập nhật.");
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            showToastNotification("Lỗi kết nối server.");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
     });
-    </script>
-</body>
-</html>
+
+    let currentRatingScore = 5;
+    function setStarRating(score) {
+        currentRatingScore = score;
+        const stars = document.querySelectorAll('#star-rating-container .star-node');
+        stars.forEach((star, index) => {
+            if(index < score) {
+                star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+            } else {
+                star.style.fontVariationSettings = "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+            }
+        });
+    }
+
+    function submitFeedbackForm() {
+        const target = document.getElementById('feedback-target').value;
+        const comment = document.getElementById('feedback-comment').value.trim();
+        
+        if(!comment) {
+            showToastNotification("Vui lòng viết vài dòng ý kiến nhận xét trước khi gửi!");
+            return;
+        }
+
+        let starString = '';
+        for(let i=0; i<currentRatingScore; i++) { starString += '★'; }
+
+        const displayList = document.getElementById('comments-display-list');
+        const card = document.createElement('div');
+        card.className = "bg-primary/5 border border-primary/20 p-3 rounded-xl flex gap-3 items-start text-xs animate-fade-in";
+        card.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-primary text-white font-bold font-headline flex items-center justify-center flex-shrink-0">NT</div>
+            <div class="space-y-1">
+                <div class="flex items-center gap-2"><span class="font-bold text-white">Nguyễn Thanh Trí (Bạn)</span><span class="text-yellow-500">${starString}</span></div>
+                <p class="text-gray-400"><strong class="text-gray-500">[Đã chấm cho ${target}]:</strong> ${comment}</p>
+            </div>
+        `;
+        
+        displayList.insertBefore(card, displayList.firstChild);
+        document.getElementById('feedback-comment').value = '';
+        showToastNotification("Hệ thống: Đã ghi nhận nhận xét đánh giá của hội viên!");
+    }
+
+    function showToastNotification(msg) {
+        const t = document.createElement('div');
+        t.style.cssText = "position: fixed; bottom: 30px; left: 30px; background: #222; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index:9999; border: 1px solid rgba(255,255,255,0.1);";
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    function updateCurrentDateString() {
+        const today = new Date();
+        const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        const dayName = days[today.getDay()];
+        const dateStr = `${dayName}, ${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+        const dateTarget = document.getElementById('current-date');
+        if(dateTarget) {
+            dateTarget.innerText = dateStr;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Khi trang tải xong, cập nhật hiển thị với dữ liệu ban đầu
+        updateHealthMetricsDisplay(document.getElementById('height-input').value, document.getElementById('weight-input').value, document.getElementById('fat-input').value);
+        setStarRating(5); 
+        updateCurrentDateString();
+    });
+</script>
+@endsection

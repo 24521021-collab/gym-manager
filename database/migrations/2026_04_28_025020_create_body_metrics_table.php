@@ -16,6 +16,7 @@ return new class extends Migration
         $table->foreignId('user_id')->constrained('user');
         $table->decimal('weight', 5, 2);
         $table->decimal('height', 5, 2);
+        $table->float('body_fat_percentage')->nullable();
         $table->decimal('bmi', 5, 2);
         $table->timestamp('measured_at');
         $table->timestamps();
