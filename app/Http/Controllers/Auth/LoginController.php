@@ -71,36 +71,5 @@ public function handleGoogleCallback() {
     Auth::login($user);
     return redirect('/'); // Đăng nhập xong vào thẳng Dashboard
     }
-    // Hàm 1: Đưa người dùng sang Facebook
-public function redirectToFacebook()
-{
-    return Socialite::driver('facebook')->redirect();
-}
 
-// Hàm 2: Xử lý khi Facebook trả dữ liệu về
-public function handleFacebookCallback(){
-    try {
-        $facebookUser = Socialite::driver('facebook')->user();
-        // Logic tìm hoặc tạo User (giống hệt cách làm với Google)
-        $user = User::where('email', $facebookUser->email)->first();
-
-        if (!$user) {
-            $user = User::create([
-                'name'     => $facebookUser->name,
-                'email'    => $facebookUser->email,
-                'role'      => 'guest', // Tài khoản mới  mặc định là guest
-                'facebook_id' => $facebookUser->id,
-                'password' => bcrypt('12345678'),
-            ]);
-        } else {
-            // Nếu có user rồi thì cập nhật thêm facebook_id
-            $user->update(['facebook_id' => $facebookUser->id]);
-        }
-
-        Auth::login($user);
-        return redirect()->route('/'); // 
-    } catch (\Exception $e) {
-        return redirect()->route('login')->with('error', 'Lỗi kết nối Facebook!');
-    }
-}
 }

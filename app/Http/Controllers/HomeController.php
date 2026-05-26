@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\GymPackage; 
+use App\Models\BodyMetric;
+use Illuminate\Support\Facades\Auth;
 
 //1. Giải thích return view()
 //Đây là lệnh để chỉ định Laravel sẽ mở file giao diện (HTML) nào để hiển thị cho người dùng.
@@ -19,7 +21,13 @@ class HomeController extends Controller
 {
     // phần này chỉ hiện thị gói tập trên trang chủ 
     public function index() {
+        $latestMetric = null;
+        if (Auth::check()) {
+            $latestMetric = BodyMetric::where('user_id', Auth::id())
+                                      ->orderBy('measured_at', 'desc')
+                                      ->first();
+        }
         $goiTaps = GymPackage::all(); // 2. Ở đây chỉ cần gọi tên ngắn gọn
-        return view('trangchu', compact('goiTaps'));
+        return view('trangchu', compact('goiTaps', 'latestMetric'));
     }  
 }
