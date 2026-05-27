@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Hồ sơ Huấn luyện viên - KOR GYM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../assets/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white pb-12" style="font-family: 'Inter', sans-serif;">
+
+<nav class="sticky top-0 z-50 bg-[#131313]/90 backdrop-blur-xl border-b border-white/10 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+        <a href="../index.html" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic" style="font-family: 'Oswald', sans-serif;">KOR GYM</a>
+        
+        <div class="hidden md:flex gap-8 items-center font-headline text-lg uppercase tracking-tight">
+            <a class="text-gray-400 hover:text-primary transition-colors" href="shop.html" style="font-family: 'Oswald', sans-serif;">Cửa hàng</a>
+            <a class="text-gray-400 hover:text-primary transition-colors" href="booking.html" style="font-family: 'Oswald', sans-serif;">Đặt Lịch PT</a>
+            <a class="text-gray-400 hover:text-primary transition-colors" href="lophoc.html" style="font-family: 'Oswald', sans-serif;">Lớp Học Nhóm</a>
+            <a class="text-gray-400 hover:text-primary transition-colors" href="pt.html" style="font-family: 'Oswald', sans-serif;">Bảng Điều Khiển PT</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a href="profile.html" class="w-8 h-8 rounded-full border border-primary border-2 overflow-hidden block">
+                <img alt="PT Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=150"/>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 md:px-8 py-10 w-full flex-grow">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <section class="col-span-12 lg:col-span-4 bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 text-center relative overflow-hidden group shadow-xl">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-primary/10 blur-[40px] rounded-full pointer-events-none"></div>
+            
+            <h3 class="text-base uppercase text-gray-400 tracking-wider mb-4 font-bold" style="font-family: 'Oswald', sans-serif;">Thẻ Mã Vạch Huấn Luyện Viên</h3>
+            
+            <div class="bg-white p-4 rounded-2xl inline-block shadow-2xl mb-4 transition-transform duration-300 group-hover:scale-105">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=KOR-TRAINER-LONG" class="w-36 h-36 object-contain" alt="Trainer QR">
+            </div>
+            
+            <div class="space-y-1 relative z-10">
+                <p class="text-white text-xl uppercase tracking-wide font-bold" style="font-family: 'Oswald', sans-serif;">Hoàng Long</p>
+                <p class="text-xs text-primary font-bold tracking-widest uppercase">Mã PT: KOR-TRAINER-01</p>
+            </div>
+            
+            <div class="mt-6 pt-4 border-t border-white/5 grid grid-cols-2 gap-2 text-left text-[11px]">
+                <div>
+                    <span class="text-gray-500 block uppercase font-bold">Cấp bậc trực thuộc</span>
+                    <span class="text-primary-container font-bold uppercase">Master Coach</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 block uppercase font-bold">Trạng thái ca hẹn</span>
+                    <span class="text-green-400 font-bold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> Sẵn sàng
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-span-12 lg:col-span-8 space-y-6">
+            
+            <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
+                <h3 class="text-lg uppercase text-white border-b border-white/10 pb-3 tracking-wide font-bold" style="font-family: 'Oswald', sans-serif;">Thông tin chuyên môn</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
+                        <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Địa chỉ Email làm việc</span>
+                        <span class="text-white font-medium">hoanglong.coach@korgym.com</span>
+                    </div>
+                    <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
+                        <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Số điện thoại nội bộ</span>
+                        <span class="text-white font-medium">0912 ••• •99</span>
+                    </div>
+                    <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
+                        <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Lĩnh vực huấn luyện chính</span>
+                        <span class="text-primary font-bold uppercase">Gym / Kháng lực nâng cao / Body Recomp</span>
+                    </div>
+                    <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
+                        <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Bằng cấp & Chứng chỉ liên quan</span>
+                        <span class="text-white font-medium">Chứng chỉ Huấn luyện viên Quốc tế ISSA / NASM-CPT</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4">
+                <h3 class="text-lg uppercase text-white border-b border-white/10 pb-3 tracking-wide font-bold" style="font-family: 'Oswald', sans-serif;">Triết lý huấn luyện & Cam kết</h3>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-gray-400 leading-relaxed space-y-2">
+                    <p>"Kỷ luật không phải là sự ép buộc, kỷ luật chính là sự tự do giúp bạn làm chủ cơ thể và sức khỏe của chính mình."</p>
+                    <p class="pt-1">Với hơn 5 năm kinh nghiệm thực chiến trong bộ môn Kháng lực nâng cao và Tái cấu trúc cơ thể (Body Recomposition), tôi cam kết đồng hành thiết lập lộ trình giáo án khoa học, an toàn, tối ưu hóa mục tiêu hình thể cho từng học viên Elite VIP tại KOR GYM.</p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row gap-3">
+                <button onclick="alert('Chức năng cập nhật hồ sơ PT đang được bảo trì hệ thống!');" class="w-full bg-white/5 border border-white/10 hover:bg-primary/10 hover:text-primary hover:border-primary/30 text-gray-400 text-xs font-bold uppercase py-3 rounded-xl transition-all tracking-wider" style="font-family: 'Oswald', sans-serif;">
+                    Chỉnh sửa hồ sơ cá nhân
+                </button>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+</body>
+</html>

@@ -40,14 +40,22 @@
             <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> KOR Group Session
         </div>
         <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight font-extrabold">Lớp Học Nhóm Linh Hoạt</h1>
-        <p class="text-sm text-gray-400 max-w-xl">Hệ thống giám sát và quét mã tham gia các lớp tập nhóm được chốt lịch chủ động giữa PT và học viên.</p>
+        <p class="text-sm text-gray-400 max-w-xl">Hệ thống lựa chọn lớp tập nhóm bản quyền, tối ưu lộ trình kháng lực và tim mạch cùng Huấn luyện viên chuyên nghiệp.</p>
     </header>
 
-    <div class="flex flex-wrap items-center gap-2 pb-2">
-        <button onclick="filterClasses('all')" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all">Tất cả lớp</button>
-        <button onclick="filterClasses('yoga')" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Yoga & Pilates</button>
-        <button onclick="filterClasses('cardio')" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Cardio / Spinning</button>
-        <button onclick="filterClasses('boxing')" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Kickboxing & Combat</button>
+    <div class="flex flex-wrap items-center gap-3 pb-4 border-b border-white/10">
+        <button onclick="filterClasses('all')" class="filter-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary text-white border border-primary shadow-lg shadow-primary/20 transition-all">
+            Tất cả lớp
+        </button>
+        <button onclick="filterClasses('yoga')" class="filter-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#1A1A1A] text-gray-400 border border-white/10 hover:text-white hover:border-white/30 transition-all">
+            Yoga & Pilates
+        </button>
+        <button onclick="filterClasses('cardio')" class="filter-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#1A1A1A] text-gray-400 border border-white/10 hover:text-white hover:border-white/30 transition-all">
+            Cardio / Spinning
+        </button>
+        <button onclick="filterClasses('boxing')" class="filter-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#1A1A1A] text-gray-400 border border-white/10 hover:text-white hover:border-white/30 transition-all">
+            Kickboxing & Combat
+        </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -156,12 +164,16 @@
 
 <script>
     function filterClasses(category) {
+        // Trả các nút về màu nền tối cao cấp ban đầu
         const buttons = document.querySelectorAll('.filter-btn');
         buttons.forEach(btn => {
-            btn.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all";
+            btn.className = "filter-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#1A1A1A] text-gray-400 border border-white/10 hover:text-white hover:border-white/30 transition-all";
         });
-        event.currentTarget.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all";
+        
+        // Kích hoạt màu đỏ rực cho nút được chọn
+        event.currentTarget.className = "filter-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary text-white border border-primary shadow-lg shadow-primary/20 transition-all";
 
+        // Logic ẩn hiện các card theo danh mục
         const items = document.querySelectorAll('.class-item');
         items.forEach(item => {
             if (category === 'all' || item.getAttribute('data-category') === category) {

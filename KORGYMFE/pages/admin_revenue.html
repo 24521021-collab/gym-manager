@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KOR GYM - Admin Revenue Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../assets/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased" style="font-family: 'Inter', sans-serif;">
+
+<nav class="bg-[#1a1a1a] text-white hidden md:flex flex-col fixed left-0 top-0 h-screen w-64 z-50 border-r border-white/10 shadow-xl">
+    <div class="px-6 py-8 border-b border-white/10">
+        <h1 class="font-headline text-2xl text-primary font-black uppercase mb-1 tracking-wider" style="font-family: 'Oswald', sans-serif;">KOR GYM ADMIN</h1>
+        <p class="text-gray-400 text-xs uppercase font-bold tracking-widest">Hệ thống quản trị</p>
+    </div>
+    <div class="flex-1 flex flex-col gap-1 py-4">
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="admin.html">
+            <span class="material-symbols-outlined">analytics</span><span class="text-sm font-bold">Tổng quan & Phân tích</span>
+        </a>
+        <a class="bg-primary/20 text-primary border-l-4 border-primary px-6 py-3.5 flex items-center gap-3 transition-all" href="admin_revenue.html">
+            <span class="material-symbols-outlined">monetization_on</span><span class="text-sm font-bold">Thống kê Doanh thu</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="members.html">
+            <span class="material-symbols-outlined">group</span><span class="text-sm font-bold">Quản Quản lý Hội viên</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="inventory.html">
+            <span class="material-symbols-outlined">inventory_2</span><span class="text-sm font-bold">Kho Hàng & Sản phẩm</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="transactions.html">
+            <span class="material-symbols-outlined">receipt_long</span><span class="text-sm font-bold">Lịch sử Giao dịch</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="schedule.html">
+            <span class="material-symbols-outlined">calendar_month</span><span class="text-sm font-bold">Lịch HLV (Booking)</span>
+        </a>
+    </div>
+    <div class="p-6 border-t border-white/10 mt-auto flex flex-col gap-3">
+        <a href="../index.html" class="w-full bg-white/10 text-white text-xs font-bold uppercase py-3 px-4 rounded hover:bg-white/20 transition-all text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">open_in_new</span> VỀ APP HỘI VIÊN
+        </a>
+    </div>
+</nav>
+
+<main class="flex-1 md:ml-64 p-6 md:p-10 min-h-screen flex flex-col gap-8 w-full">
+    
+    <header>
+        <h2 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight" style="font-family: 'Oswald', sans-serif;">THỐNG KÊ DOANH THU <span class="text-primary">&</span> TÀI CHÍNH</h2>
+        <p class="text-gray-400 text-sm mt-1">Báo cáo tổng quan nguồn thu hệ thống phòng tập, doanh số bán hàng và hiệu suất tài chính.</p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-gradient-to-br from-[#1A1A1A] to-[#18251e] border border-green-500/20 rounded-xl p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 blur-xl rounded-full"></div>
+            <span class="material-symbols-outlined text-green-400 bg-green-500/10 p-2.5 rounded-xl text-xl mb-3 block w-fit">payments</span>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider" style="font-family: 'Oswald', sans-serif;">Doanh thu Gói tập thành viên</p>
+            <p class="text-2xl font-bold text-white font-mono mt-1">142.500.000đ</p>
+            <p class="text-[10px] text-green-400 mt-2 font-mono">● Gói Elite VIP chiếm tỷ trọng cao nhất</p>
+        </div>
+        <div class="bg-gradient-to-br from-[#1A1A1A] to-[#25181a] border border-primary/20 rounded-xl p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-primary/10 blur-xl rounded-full"></div>
+            <span class="material-symbols-outlined text-primary bg-primary/10 p-2.5 rounded-xl text-xl mb-3 block w-fit">shopping_bag</span>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider" style="font-family: 'Oswald', sans-serif;">Doanh số Cửa hàng (Shop)</p>
+            <p class="text-2xl font-bold text-white font-mono mt-1">38.900.000đ</p>
+            <p class="text-[10px] text-primary font-mono mt-2">● Thực phẩm bổ sung (Whey/Creatine) bán chạy</p>
+        </div>
+        <div class="bg-gradient-to-br from-[#1A1A1A] to-[#242518] border border-yellow-500/20 rounded-xl p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/10 blur-xl rounded-full"></div>
+            <span class="material-symbols-outlined text-yellow-500 bg-yellow-500/10 p-2.5 rounded-xl text-xl mb-3 block w-fit">sports_martial_arts</span>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider" style="font-family: 'Oswald', sans-serif;">Doanh thu Dịch vụ PT 1-Kèm-1</p>
+            <p class="text-2xl font-bold text-white font-mono mt-1">64.000.000đ</p>
+            <p class="text-[10px] text-yellow-500 mt-2">● Tăng trưởng 8.5% so với tháng trước</p>
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <section class="col-span-12 lg:col-span-7 space-y-6">
+            <div class="bg-[#1A1A1A] border border-white/10 rounded-xl p-6 shadow-md space-y-6">
+                <h3 class="font-headline text-base uppercase tracking-wider text-white font-bold border-b border-white/5 pb-3" style="font-family: 'Oswald', sans-serif;">Phân tích chỉ tiêu doanh số tháng 5</h3>
+                
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-300 font-medium">Mục tiêu gói tập Hội viên đạt mốc</span>
+                            <span class="text-white font-bold font-mono">142.5M / 150M (95%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                            <div class="h-full bg-green-500 rounded-full" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-300 font-medium">Mục tiêu doanh số Shop thực phẩm phụ kiện</span>
+                            <span class="text-white font-bold font-mono">38.9M / 50M (77.8%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full" style="width: 77.8%"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-300 font-medium">Mục tiêu doanh số booking Huấn luyện viên</span>
+                            <span class="text-white font-bold font-mono">64M / 80M (80%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-black/40 rounded-full overflow-hidden">
+                            <div class="h-full bg-yellow-500 rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-span-12 lg:col-span-5">
+            <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md space-y-4">
+                <h3 class="font-headline text-base uppercase tracking-wider text-white font-bold border-b border-white/10 pb-3" style="font-family: 'Oswald', sans-serif;">Các khoản chi chi phí vận hành dự kiến</h3>
+                
+                <div class="space-y-3">
+                    <div class="bg-black/20 p-3 rounded-lg border border-white/5 flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-white font-['Oswald'] text-xs uppercase tracking-wide">Chi trả lương & Hoa hồng PT</p>
+                            <p class="text-[10px] text-gray-500 font-mono">Quyết toán toàn bộ HLV tháng này</p>
+                        </div>
+                        <span class="text-primary font-bold font-mono text-right">-45.200đ</span>
+                    </div>
+
+                    <div class="bg-black/20 p-3 rounded-lg border border-white/5 flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-white font-['Oswald'] text-xs uppercase tracking-wide">Chi phí nhập hàng Supplement</p>
+                            <p class="text-[10px] text-gray-500 font-mono">Nhập kho lô Whey / Creatine mới</p>
+                        </div>
+                        <span class="text-primary font-bold font-mono text-right">-18.500đ</span>
+                    </div>
+
+                    <div class="bg-black/20 p-3 rounded-lg border border-white/5 flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-white font-['Oswald'] text-xs uppercase tracking-wide">Bảo trì máy móc cơ sở vật chất</p>
+                            <p class="text-[10px] text-gray-500 font-mono">Bảo dưỡng giàn cáp & thay bọc da ghế tạ</p>
+                        </div>
+                        <span class="text-primary font-bold font-mono text-right">-5.000đ</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+</body>
+</html>

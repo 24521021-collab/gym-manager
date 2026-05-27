@@ -18,11 +18,13 @@
         <div class="hidden md:flex gap-8 items-center font-headline text-lg uppercase tracking-tight">
             <a class="text-gray-400 hover:text-primary transition-colors" href="shop.html">Cửa hàng</a>
             <a class="text-primary border-b-2 border-primary pb-1" href="booking.html">Đặt Lịch PT</a>
+            <a class="text-gray-400 hover:text-primary transition-colors" href="lophoc.html">Lớp Học Nhóm</a>
         </div>
 
         <div class="flex items-center gap-4">
             <a href="notifications.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
                 <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
             </a>
             <a href="profile.html" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden block hover:border-primary transition-colors">
                 <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
@@ -45,7 +47,6 @@
                 <button onclick="filterPT('all')" class="pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all">Tất cả HLV</button>
                 <button onclick="filterPT('Gym')" class="pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Thể hình (Gym)</button>
                 <button onclick="filterPT('Yoga')" class="pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Yoga / Pilates</button>
-                <button onclick="filterPT('Boxing')" class="pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Võ thuật / Boxing</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pt-grid">
@@ -113,7 +114,6 @@
     let currentSelectedDate = "Thứ 2 - Ngày 25";
     let currentSelectedTime = "10:00 AM";
 
-    // 1. CHỨC NĂNG LỌC PT THEO CHUYÊN MÔN KHI CLICK BẬT NÚT CAPSULE
     function filterPT(spec) {
         const buttons = document.querySelectorAll('.pt-filter-btn');
         buttons.forEach(b => b.className = "pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all");
@@ -129,7 +129,6 @@
         });
     }
 
-    // 2. CHỨC NĂNG CLICK CHỌN ĐÍCH DANH PT TỪ GRID
     function selectPersonalTrainer(element, name, spec, imgUrl) {
         document.querySelectorAll('.pt-card').forEach(c => c.className = "pt-card bg-[#1A1A1A] rounded-xl border border-white/10 p-4 shadow-md flex gap-4 items-center cursor-pointer hover:border-primary transition-colors");
         element.className = "pt-card bg-[#1A1A1A] rounded-xl border-2 border-primary p-4 shadow-md flex gap-4 items-center cursor-pointer transition-colors";
@@ -141,7 +140,6 @@
         currentSelectedPT = name; 
     }
 
-    // 3. CHỨC NĂNG CHỌN NGÀY HẸN TRÊN KHUNG TÁC VỤ CALENDAR
     function selectDate(element, dateStr) {
         document.querySelectorAll('.date-btn').forEach(b => {
             b.className = "date-btn flex-1 bg-black/20 border border-white/5 rounded-xl p-2 text-center transition-all hover:bg-white/5";
@@ -156,7 +154,6 @@
         currentSelectedDate = dateStr;
     }
 
-    // 4. CHỨC NĂNG BỐC CHỌN GIỜ TRỰC TRỐNG CỦA HLV
     function selectTime(element, timeStr) {
         document.querySelectorAll('.time-btn').forEach(b => b.className = "time-btn py-2 text-xs font-bold border border-white/5 bg-black/20 text-white rounded-lg hover:bg-white/5 transition-colors");
         element.className = "time-btn py-2 text-xs font-bold border border-primary bg-primary/10 text-primary rounded-lg transition-colors";
@@ -164,13 +161,13 @@
         currentSelectedTime = timeStr;
     }
 
-    // 5. GỬI PHẢN HỒI THÔNG BÁO CHỐT CA HẸN TẬP LUYỆN KHÁNG LỰC THÀNH CÔNG
     function confirmBookingAppointment() {
         if(!currentSelectedPT) {
             alert("Lỗi tác vụ: Vui lòng click lựa chọn một Huấn luyện viên cá nhân trước khi chốt lịch tập!");
             return;
         }
-        alert(`Hệ thống Đặt lịch KOR GYM:\nXác nhận đặt lịch tập thành công!\n\nHLV hướng dẫn: ${currentSelectedPT}\nThời gian buổi hẹn: Khung ${currentSelectedTime} - ${currentSelectedDate}.\n\nLưu ý: Thông tin ca tập đã được đẩy vào mã QR Code trên Cổng Hội Viên của bạn. Vui lòng đến đúng giờ để check-in và bắt đầu buổi tập.`);
+        alert(`Hệ thống Đặt lịch KOR GYM:\nXác nhận đặt lịch tập thành công!\n\nHLV hướng dẫn: ${currentSelectedPT}\nThời gian buổi hẹn: Khung ${currentSelectedTime} - ${currentSelectedDate}.\n\nLưu ý: Thông tin ca tập đã được đẩy vào mã QR Code trên Cổng Hội Viên của bạn. Vui lòng quay lại Trang chủ để check-in.`);
+        window.location.href = "../index.html";
     }
 </script>
 </body>
