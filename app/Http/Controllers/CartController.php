@@ -150,13 +150,11 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
-
         // Tính toán lại tổng tiền
         $total = 0;
         foreach ($cart as $item) {
             $total += $item['price'] * $item['quantity'];
         }
-
         return response()->json([
             'success'  => true,
             'subtotal' => number_format($cart[$rowId]['price'] * $cart[$rowId]['quantity']) . 'đ',
@@ -169,29 +167,39 @@ class CartController extends Controller
      * @param Request $request Gồm 'row_id'
      */
     public function remove(Request $request){
+        // 1. Validate dữ liệu đầu vào: Đảm bảo 'row_id' được gửi lên và là kiểu chuỗi.
+        // 'row_id' là định danh duy nhất của mỗi mặt hàng trong giỏ hàng (ví dụ: product_1, package_5).
         $request->validate([
-            'row_id' => 'required|string',
+            'row_id' => 'required|string', // Yêu cầu 'row_id' phải có và là chuỗi.
         ]);
 
+        // 2. Lấy giỏ hàng hiện tại từ session.
+        // Nếu session 'cart' chưa tồn tại, nó sẽ trả về một mảng rỗng.
         $cart = session()->get('cart');
+
+        // 3. Lấy 'row_id' của mặt hàng cần xóa từ request.
         $rowId = $request->row_id;
 
+        // 4. Kiểm tra xem mặt hàng có 'row_id' tương ứng có tồn tại trong giỏ hàng không.
         if (isset($cart[$rowId])) {
+            // 5. Nếu tồn tại, xóa mặt hàng đó khỏi mảng giỏ hàng.
             unset($cart[$rowId]);
+            // 6. Cập nhật lại giỏ hàng trong session với mảng đã xóa mặt hàng.
             session()->put('cart', $cart);
         }
 
-        // Tính toán lại tổng tiền
+        // 7. Tính toán lại tổng tiền của giỏ hàng sau khi xóa.
         $total = 0;
         foreach ($cart as $item) {
             $total += $item['price'] * $item['quantity'];
         }
 
+        // 8. Trả về phản hồi JSON cho client (thường là JavaScript ở frontend).
         return response()->json([
-            'message'    => 'Đã xóa sản phẩm thành công!',
-            'total'      => number_format($total) . 'đ',
-            'cart_count' => count($cart),
-            'cart_data'  => $cart,
+            'message'    => 'Đã xóa sản phẩm thành công!', // Thông báo thành công.
+            'total'      => number_format($total) . 'đ', // Tổng tiền mới của giỏ hàng.
+            'cart_count' => count($cart), // Tổng số mặt hàng (dòng) còn lại trong giỏ hàng.
+            'cart_data'  => $cart, // Dữ liệu giỏ hàng đã cập nhật (tùy chọn, có thể không cần thiết nếu frontend tự quản lý).
         ]);
     }
 }

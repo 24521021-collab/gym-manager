@@ -56,6 +56,11 @@ public function orders() { return $this->hasMany(Order::class); }
 public function checkIns() { return $this->hasMany(CheckIn::class); }
 public function bodyMetrics() { return $this->hasMany(BodyMetric::class); }
 
+public function ptBookingsAsPt()
+{
+    return $this->hasMany(PtBooking::class, 'pt_id');
+}
+
 public function enrolledClasses()
 {
     // Kết nối với GymClass thông qua bảng bookings

@@ -10,7 +10,7 @@ class LoginController extends Controller
 {
     // hàm này giúp người dùng về trang login
     public function ShowLogin(){
-        return view('login');
+        return view('trangchu');
     }
     // hàm xử lý dữ liệu đăng nhập
     // dùng validate kiểm tra dữ liệu

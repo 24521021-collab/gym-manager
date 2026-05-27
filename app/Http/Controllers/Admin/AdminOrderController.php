@@ -46,7 +46,7 @@ class AdminOrderController extends Controller
         if ($request->ajax()) {
             return response()->json($orders);
         }
-        return view('admin.orders');
+        return view('admin.transaction');
     }
         // 1. Validate và Lọc theo trạng thái thanh toán
      public function getProductsData(Request $request){
