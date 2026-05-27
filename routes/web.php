@@ -23,6 +23,7 @@ use App\Http\Controllers\PtBookingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\PT\PtClassController;
 use App\Http\Controllers\Pt\PtDashboardController;
+use App\Http\Controllers\ReviewController;
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
 //home( trang chủ )
@@ -58,9 +59,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     //trang admin quản lý sản phẩm
     Route::resource('products',AdminProductController::class)->names('admin.products');
     // trang admin quản lý các đơn hàng
-    // trang admin quản lý các trạng thái đơn hàng
-    Route::get('orders', [AdminOrderController::class, 'index'])->name('admin.orders');
-    Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('transaction', [AdminOrderController::class, 'index'])->name('admin.transaction');
     Route::put('/orders/update-status/{id}',[AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 });
 
@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{id}/cancel', [UserOrderController::class, 'cancel'])->name('orders.cancel');
+// route để người dùng đánh giá
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/api/reviewable-targets', [ReviewController::class, 'getReviewableTargets'])->name('reviews.targets');
 
     // ─── Thanh toán (Checkout) ──────────────────────────────────────────
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
@@ -105,6 +108,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
 });
 
+// Route lấy tất cả phản hồi cho trang chủ (Công khai)
+Route::get('/api/all-reviews', [ReviewController::class, 'index'])->name('reviews.all');
+
 // Route quên mật khẩu công khai
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetEmail'])->name('password.forgot.post');
 
@@ -112,10 +118,6 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetEmai
 // route để người dùng thực hiện checkins
 Route::get('/admin/checkin', [CheckInController::class, 'index'])->name('admin.checkin');
 Route::post('/admin/checkin/store', [CheckInController::class,'store'])->name('admin.checkin.store');
-
-
-    /// test 
-    Route::get('/test-data', function() {return \App\Models\GymPackage::all();});
 
 // route để đăng nhập vào google
 // 1. Đường dẫn để nhấn nút "Đăng nhập bằng Google"

@@ -60,7 +60,57 @@ class UserSeeder extends Seeder
                     'password'  => Hash::make('123456'), // Mật khẩu mẫu đồng bộ theo code cũ của bạn
                     'role'      => 'pt', // Đảm bảo quyền là 'pt'
                 ]
+                );
+            }
+            $newAdminsData = [
+            ['full_name' => 'Admin Nguyễn Văn Thắng', 'email' => 'admin.thang@gmail.com'],
+            ['full_name' => 'Admin Lê Thị Hồng Đào', 'email' => 'admin.hongdao@gmail.com'],
+                ];
+        foreach ($newAdminsData as $admin) {
+        User::updateOrCreate(
+            ['email' => $admin['email']],
+            [
+                'full_name' => $admin['full_name'],
+                'password'  => Hash::make('123456'),
+                'role'      => 'admin',
+            ]
             );
         }
+        // Tạo tài khoản Hội viên ban đầu
+    User::updateOrCreate(
+        ['email' => 'khachhang@gmail.com'],
+        [
+            'full_name' => 'Nguyễn Văn Khách',
+            'password' => Hash::make('123456'),
+            'role' => 'member',
+        ]
+    );
+
+    // =========================================================================
+    // TẠO THÊM 10 TÀI KHOẢN HỘI VIÊN (MEMBER) MỚI
+    // =========================================================================
+    $newMembersData = [
+        ['full_name' => 'Phan Văn Hoàng', 'email' => 'phanhoang@gmail.com'],
+        ['full_name' => 'Trần Thị Mỹ Linh', 'email' => 'mylinh.tran@gmail.com'],
+        ['full_name' => 'Lê Hoàng Quốc Bảo', 'email' => 'quocbao.le@gmail.com'],
+        ['full_name' => 'Nguyễn Diệu Hương', 'email' => 'dieuhuong@gmail.com'],
+        ['full_name' => 'Đặng Anh Tuấn', 'email' => 'anhtuan.dang@gmail.com'],
+        ['full_name' => 'Bùi Minh Tuyết', 'email' => 'minhtuyet@gmail.com'],
+        ['full_name' => 'Phạm Đức Duy', 'email' => 'ducduy.pham@gmail.com'],
+        ['full_name' => 'Vũ Thu Trang', 'email' => 'thutrang.vu@gmail.com'],
+        ['full_name' => 'Đỗ Gia Bảo', 'email' => 'giabao.do@gmail.com'],
+        ['full_name' => 'Ngô Phương Thảo', 'email' => 'phuongthao.ngo@gmail.com'],
+    ];
+    foreach ($newMembersData as $member) {
+        User::updateOrCreate(
+            ['email' => $member['email']],
+            [
+                'full_name' => $member['full_name'],
+                'password'  => Hash::make('123456'),
+                'role'      => 'member',
+            ]
+        );
+    }
+
     }
 }

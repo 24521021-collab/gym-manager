@@ -103,11 +103,15 @@
                 <h3 class="text-xs font-bold text-white uppercase tracking-wider">Để lại đánh giá buổi tập vừa qua</h3>
                 
                 <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Loại đánh giá</label>
+                    <select id="feedback-type" onchange="switchReviewTarget()" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary mb-3">
+                        <option value="pt">Huấn luyện viên (PT)</option>
+                        <option value="product">Sản phẩm đã mua</option>
+                    </select>
+
                     <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chọn Huấn luyện viên / Sản phẩm</label>
                     <select id="feedback-target" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary">
-                        <option value="HLV Hoàng Long">HLV Hoàng Long (Buổi tập Deadlift)</option>
-                        <option value="HLV Thu Thảo">HLV Thu Thảo (Lớp Yoga Core)</option>
-                        <option value="Sản phẩm Whey Gold">Whey Gold Standard (Đơn mua #9810)</option>
+                        <option value="">Đang tải dữ liệu...</option>
                     </select>
                 </div>
 
@@ -131,13 +135,7 @@
             </div>
 
             <div class="md:col-span-7 space-y-3 max-h-[340px] overflow-y-auto pr-1" id="comments-display-list">
-                <div class="bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs">
-                    <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold font-headline flex items-center justify-center flex-shrink-0">LQ</div>
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2"><span class="font-bold text-white">Lê Quân (Hội viên Elite)</span><span class="text-yellow-500">★★★★★</span></div>
-                        <p class="text-gray-300">Đơn hàng Whey Gold Standard giao siêu nhanh, đóng gói kỹ lồng tem chống hàng giả. Vị socola đôi rất dễ uống, không bị ngọt gắt.</p>
-                    </div>
-                </div>
+                {{-- Dữ liệu phản hồi sẽ được load qua JavaScript fetchAllReviews() --}}
             </div>
         </div>
     </div>
@@ -243,32 +241,116 @@
         });
     }
 
-    function submitFeedbackForm() {
-        const target = document.getElementById('feedback-target').value;
+    async function fetchAllReviews() {
+        try {
+            const response = await fetch("{{ route('reviews.all') }}");
+            const data = await response.json();
+            if(data.success) {
+                const list = document.getElementById('comments-display-list');
+                list.innerHTML = '';
+                data.reviews.forEach(rev => {
+                    const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
+                    const name = rev.user ? rev.user.full_name : 'Hội viên';
+                    const target = rev.reviewable ? (rev.reviewable.name || rev.reviewable.full_name) : 'Dịch vụ';
+                    const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                    
+                    const div = document.createElement('div');
+                    div.className = "bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs mb-3 animate-fade-in";
+                    div.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold font-headline flex items-center justify-center flex-shrink-0">${initials}</div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2"><span class="font-bold text-white">${name}</span><span class="text-yellow-500">${stars}</span></div>
+                            <p class="text-gray-300"><strong class="text-gray-500 text-[10px] uppercase">[Đã đánh giá cho ${target}]:</strong><br>${rev.comment}</p>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+        } catch (e) { console.error("Lỗi tải phản hồi:", e); }
+    }
+
+    let reviewDataCache = { products: [], pts: [] };
+
+    async function fetchReviewableTargets() {
+        try {
+            const response = await fetch("{{ route('reviews.targets') }}");
+            const data = await response.json();
+            if(data.success) {
+                reviewDataCache = data;
+                switchReviewTarget(); // Render lần đầu cho PT
+            }
+        } catch (error) {
+            console.error("Lỗi tải danh sách đánh giá:", error);
+        }
+    }
+
+    function switchReviewTarget() {
+        const type = document.getElementById('feedback-type').value;
+        const targetSelect = document.getElementById('feedback-target');
+        targetSelect.innerHTML = '';
+
+        const list = type === 'pt' ? reviewDataCache.pts : reviewDataCache.products;
+        
+        if(list.length === 0) {
+            const opt = document.createElement('option');
+            opt.value = "";
+            opt.innerText = type === 'pt' ? "-- Chưa có HLV đã tập --" : "-- Chưa có sản phẩm đã mua --";
+            targetSelect.appendChild(opt);
+            return;
+        }
+
+        list.forEach(item => {
+            const opt = document.createElement('option');
+            // Value format: type_id để đồng bộ với logic ReviewController@store của bạn
+            opt.value = `${type}_${item.id}`; 
+            opt.innerText = item.full_name || item.name;
+            targetSelect.appendChild(opt);
+        });
+    }
+
+    async function submitFeedbackForm() {
+        const targetRaw = document.getElementById('feedback-target').value;
+        if(!targetRaw) {
+            showToastNotification("Vui lòng chọn đối tượng cần đánh giá!");
+            return;
+        }
+        const [type, id] = targetRaw.split('_');
         const comment = document.getElementById('feedback-comment').value.trim();
+        const targetName = document.getElementById('feedback-target').options[document.getElementById('feedback-target').selectedIndex].text;
         
         if(!comment) {
             showToastNotification("Vui lòng viết vài dòng ý kiến nhận xét trước khi gửi!");
             return;
         }
 
-        let starString = '';
-        for(let i=0; i<currentRatingScore; i++) { starString += '★'; }
+        try {
+            const response = await fetch("{{ route('reviews.store') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    rating: currentRatingScore,
+                    comment: comment,
+                    reviewable_type: type,
+                    reviewable_id: id
+                })
+            });
 
-        const displayList = document.getElementById('comments-display-list');
-        const card = document.createElement('div');
-        card.className = "bg-primary/5 border border-primary/20 p-3 rounded-xl flex gap-3 items-start text-xs animate-fade-in";
-        card.innerHTML = `
-            <div class="w-8 h-8 rounded-full bg-primary text-white font-bold font-headline flex items-center justify-center flex-shrink-0">NT</div>
-            <div class="space-y-1">
-                <div class="flex items-center gap-2"><span class="font-bold text-white">Nguyễn Thanh Trí (Bạn)</span><span class="text-yellow-500">${starString}</span></div>
-                <p class="text-gray-400"><strong class="text-gray-500">[Đã chấm cho ${target}]:</strong> ${comment}</p>
-            </div>
-        `;
-        
-        displayList.insertBefore(card, displayList.firstChild);
-        document.getElementById('feedback-comment').value = '';
-        showToastNotification("Hệ thống: Đã ghi nhận nhận xét đánh giá của hội viên!");
+            const data = await response.json();
+
+            if (data.success) {
+                fetchAllReviews(); // Tải lại danh sách sau khi gửi thành công
+                document.getElementById('feedback-comment').value = '';
+                showToastNotification(data.message);
+            } else {
+                showToastNotification(data.message || "Không thể gửi đánh giá.");
+            }
+        } catch (error) {
+            showToastNotification("Lỗi kết nối máy chủ.");
+        }
     }
 
     function showToastNotification(msg) {
@@ -295,6 +377,10 @@
         updateHealthMetricsDisplay(document.getElementById('height-input').value, document.getElementById('weight-input').value, document.getElementById('fat-input').value);
         setStarRating(5); 
         updateCurrentDateString();
+        fetchAllReviews(); // Tải tất cả phản hồi ngay khi mở trang
+        @auth
+            fetchReviewableTargets(); // Chỉ gọi API này khi người dùng đã đăng nhập thành công
+        @endauth
     });
 </script>
 @endsection

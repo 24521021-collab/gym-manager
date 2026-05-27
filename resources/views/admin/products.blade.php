@@ -1,281 +1,340 @@
 @extends('layout.admin_layout')
 @section('content')
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-dark">Quản lý kho hàng (Fetch API - Clean Route)</h4>
-        <button class="btn btn-dark px-4" data-bs-toggle="modal" data-bs-target="#modalProduct" onclick="prepareAdd()">
-            <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
-        </button>
-    </div>
-    
-    <div class="row mb-3">
+
+    <header>
+        <h2 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight">VẬN HÀNH <span class="text-primary">&</span> KHO HÀNG</h2>
+        <p class="text-gray-400 text-sm mt-1">Quản lý và thực thi các lệnh CRUD thêm, sửa, xóa sản phẩm trong kho.</p>
+    </header>
+
+    {{-- Bộ lọc & Tìm kiếm --}}
+    <div class="row mb-3 mt-4 max-w-md">
         <div class="col-md-4">
-            <form id="searchForm" onsubmit="event.preventDefault(); loadProducts();" class="d-flex">
-                <input type="text" id="searchInput" class="form-control me-2" placeholder="Tìm tên hoặc SKU..." value="{{ request('search') }}">
-                <button type="submit" class="btn btn-outline-dark">
-                    <i class="fas fa-search"></i> Tìm kiếm
+            <form id="searchForm" onsubmit="event.preventDefault(); loadProducts();" class="flex gap-2 text-xs">
+                <input type="text" id="searchInput" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Tìm tên hoặc SKU..." value="{{ request('search') }}">
+                <button type="submit" class="bg-white/10 text-white font-bold uppercase px-4 py-2.5 rounded-lg hover:bg-white/20 transition-colors whitespace-nowrap">
+                    Tìm kiếm
                 </button>
             </form>
         </div>
     </div>
-</div>
 
-<div class="card border-0 shadow-sm mx-3">
-    <div class="card-body p-0">
-        <table class="table align-middle mb-0">
-            <thead class="bg-light">
-                <tr>
-                    <th class="ps-4">Ảnh</th>
-                    <th>Tên sản phẩm</th>
-                    <th>SKU</th>
-                    <th>Giá</th>
-                    <th>Kho</th>
-                    <th class="text-end pe-4">Hành động</th>
-                </tr>
-            </thead>
-            <tbody id="productTableBody">
-                <tr>
-                    <td colspan="6" class="text-center py-4">Đang tải dữ liệu sản phẩm...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    {{-- Thêm phần phân trang --}}
-    <div class="card-footer bg-white border-top-0 py-3">
-        <div id="productPagination" class="d-flex justify-content-center">
-            <!-- Nút phân trang sẽ được render bởi JavaScript -->
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalProduct" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title fw-bold" id="modalTitle">Thêm sản phẩm mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="productForm" onsubmit="saveProduct(event)">
-                @csrf
-                <input type="hidden" id="product_id" name="id">
+    <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">
+        <h3 id="form-title" class="font-headline text-lg text-white uppercase mb-4 border-b border-white/10 pb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">edit_note</span> Cấu hình sản phẩm 
+        </h3>
+        
+        {{-- Form chuẩn hỗ trợ upload file đa phương tiện --}}
+        <form id="productForm" onsubmit="saveProductCRUD(event)" enctype="multipart/form-data">
+            @csrf
+            {{-- id sản phẩm ẩn dùng để phân biệt khi Thêm (rỗng) hoặc Sửa (có ID) --}}
+            <input type="hidden" id="product_id" name="id" value="">
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end text-xs">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Hình ảnh</label>
+                    <input id="prod-image" name="image" type="file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg text-gray-400 px-2 py-1.5 focus:ring-1 focus:ring-primary focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Tên sản phẩm</label>
+                    <input id="prod-name" name="name" type="text" placeholder="e.g. Whey Gold Standard" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Mã SKU</label>
+                    <input id="prod-sku" name="sku" type="text" placeholder="e.g. WHEY-ON-01" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary uppercase" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Giá bán (VND)</label>
+                    <input id="prod-price" name="price" type="number" placeholder="0" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" required>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Số lượng tồn kho</label>
+                    <input id="prod-qty" name="stock_quantity" type="number" placeholder="10" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" required>
+                </div>
                 
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label small text-muted fw-bold">Tên sản phẩm</label>
-                        <input type="text" id="prod_name" name="name" class="form-control" required placeholder="Nhập tên sản phẩm">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-muted fw-bold">Mã sản phẩm (SKU)</label>
-                        <input type="text" id="prod_sku" name="sku" class="form-control" required placeholder="Ví dụ: SP-001">
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <label class="form-label small text-muted fw-bold">Giá bán (VND)</label>
-                            <input type="number" id="prod_price" name="price" class="form-control" required placeholder="0">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label small text-muted fw-bold">Số lượng kho</label>
-                            <input type="number" id="prod_stock" name="stock_quantity" class="form-control" required placeholder="0">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-muted fw-bold">Hình ảnh sản phẩm</label>
-                        <input type="file" id="prod_image" name="image" class="form-control" accept="image/*">
-                        <div id="imagePreviewContainer" class="mt-2" style="display:none;">
-                            <img id="imagePreview" src="" alt="Preview" class="img-thumbnail" style="max-height: 80px;">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" id="btnSubmitForm" class="btn btn-dark px-4">Lưu sản phẩm</button>
-                </div>
-            </form>
+            </div>
+
+            {{-- Vùng xem trước ảnh thu nhỏ tương thích giao diện tối --}}
+            <div id="imagePreviewContainer" class="mt-3 flex items-center gap-3" style="display:none;">
+                <span class="text-[10px] uppercase font-bold text-gray-400">Ảnh hiện tại:</span>
+                <img id="imagePreview" src="" alt="Preview" class="rounded border border-white/10 bg-black/20 p-0.5" style="width: 120px; height: 120px; object-fit: cover;">
+            </div>
+
+            <div class="flex gap-2 justify-end mt-4 text-xs">
+                <button type="submit" class="bg-primary text-white font-bold uppercase px-6 py-2.5 rounded-lg hover:bg-red-700 transition-colors h-[38px]">Lưu sản phẩm</button>
+                <button type="button" onclick="clearCRUDForm()" class="bg-white/10 text-gray-400 font-bold uppercase p-2.5 rounded-lg hover:bg-white/20 hover:text-white transition-colors h-[38px]"><span class="material-symbols-outlined text-sm block">refresh</span></button>
+            </div>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-12 gap-6 mt-6">
+        <div class="col-span-12 bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                <h3 class="font-headline text-lg text-white uppercase">Danh sách kho hàng thực tế</h3>
+                <span class="material-symbols-outlined text-primary">inventory</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap text-sm" id="crud-table">
+                    <thead>
+                        <tr class="text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-white/10">
+                            <th class="py-3 px-3">Ảnh</th>
+                            <th class="py-3 px-3">Sản phẩm</th>
+                            <th class="py-3 px-3">Mã SKU</th>
+                            <th class="py-3 px-3 text-right">Giá bán</th>
+                            <th class="py-3 px-3 text-right">Tồn kho</th>
+                            <th class="py-3 px-3 text-center">Trạng thái</th>
+                            <th class="py-3 px-3 text-right pr-4">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5" id="inventory-tbody">
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-gray-500">Đang tải dữ liệu sản phẩm...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Vùng điều hướng phân trang Ajax --}}
+            <div id="productPagination" class="flex justify-center mt-4 text-xs"></div>
         </div>
     </div>
-</div>
+@endsection
 
 <script>
-// Hàm bảo mật chống tấn công XSS
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.toString()
-        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-// 1. READ & SEARCH: Lấy dữ liệu
-function loadProducts(page = 1) { // Thêm tham số page mặc định là 1
-    const searchKeyword = document.getElementById('searchInput').value;
-    let url = "{{ route('admin.products.index') }}"; 
-    const params = new URLSearchParams();
-    if (searchKeyword) {
-        params.append('search', searchKeyword);
-    }
-    if (page > 1) {
-        params.append('page', page);
-    }
-    if (params.toString()) {
-        url += `?${params.toString()}`;
+    // Hàm mã hóa ký tự đặc biệt phòng chống lỗi Stored XSS
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.toString()
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    fetch(url, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => {
-        if(!res.ok) throw new Error('Không thể tải danh sách sản phẩm.');
-        return res.json();
-    })
-    .then(data => {
-        const products = data.data; // Dữ liệu sản phẩm nằm trong thuộc tính 'data' của đối tượng phân trang
-        const tbody = document.getElementById('productTableBody');
-        if(!products || products.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Không tìm thấy sản phẩm nào.</td></tr>`;
+    // Khai báo đường dẫn gốc từ Laravel để JavaScript sử dụng chính xác
+    const BASE_PRODUCT_IMAGE_URL = "{{ asset('images/products') }}/";
+
+    // 1. READ: Tải danh sách sản phẩm động từ Cơ sở dữ liệu thông qua REST API
+    function loadProducts(page = 1) {
+        const searchKeyword = document.getElementById('searchInput').value;
+        let url = "{{ route('admin.products.index') }}"; 
+        const params = new URLSearchParams();
+        if (searchKeyword) params.append('search', searchKeyword);
+        if (page > 1) params.append('page', page);
+        if (params.toString()) url += `?${params.toString()}`;
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(res => {
+            if(!res.ok) throw new Error('Không thể tải danh sách sản phẩm từ máy chủ.');
+            return res.json();
+        })
+        .then(data => {
+            const products = data.data; 
+            const tbody = document.getElementById('inventory-tbody');
+            if(!products || products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">Không tìm thấy sản phẩm nào trong kho.</td></tr>`;
+                document.getElementById('productPagination').innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            products.forEach(p => {
+                const imgPath = p.image ? `/images/products/${p.image}` : '/images/products/default-product.jpg';   
+                
+                // Thuật toán kiểm tra số lượng tồn kho để sinh màu Badge đồng bộ
+                let statusBadge = '';
+                if(p.stock_quantity <= 0) {
+                    statusBadge = '<span class="inline-block px-2 py-0.5 bg-primary/20 text-primary border border-primary/30 font-bold text-[10px] uppercase rounded">Hết hàng</span>';
+                } else if(p.stock_quantity <= 15) {
+                    statusBadge = '<span class="inline-block px-2 py-0.5 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-bold text-[10px] uppercase rounded">Sắp hết</span>';
+                } else {
+                    statusBadge = '<span class="inline-block px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/20 font-bold text-[10px] uppercase rounded">Sẵn sàng</span>';
+                }
+
+                html += `
+                    <tr id="product-row-${p.id}" class="hover:bg-white/5 transition-colors">
+                        <td class="py-3 px-3">
+                            <img src="${imgPath}" alt="${escapeHtml(p.name)}" class="rounded border border-white/5" style="width: 60px; height: 60px; object-fit: cover;">
+                        </td>
+                        <td class="py-4 px-3 text-white font-bold prod-title-cell">${escapeHtml(p.name)}</td>
+                        <td class="py-4 px-3 text-gray-500 font-mono text-xs prod-sku-cell">${escapeHtml(p.sku)}</td>
+                        <td class="py-4 px-3 text-right font-bold text-gray-300">${Number(p.price).toLocaleString('vi-VN')}đ</td>
+                        <td class="py-4 px-3 text-right font-headline text-lg ${p.stock_quantity <= 2 ? 'text-primary' : 'text-white'} prod-qty-cell">${p.stock_quantity}</td>
+                        <td class="py-4 px-3 text-center status-cell">${statusBadge}</td>
+                        <td class="py-4 px-3 text-right pr-4 space-x-1 whitespace-nowrap">
+                            <button onclick="editProductRow(${p.id})" class="text-blue-400 p-1 hover:bg-blue-500/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">edit</span></button>
+                            <button onclick="deleteProductRow(${p.id})" class="text-primary p-1 hover:bg-primary/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">delete</span></button>
+                        </td>
+                    </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+            window.cachedProducts = products; // Lưu bộ nhớ đệm phục vụ gán dữ liệu nhanh lên form sửa
+            renderPagination(data.links); 
+        })
+        .catch(err => {
+            document.getElementById('inventory-tbody').innerHTML = `<tr><td colspan="7" class="text-center text-primary py-4">Lỗi hệ thống: ${err.message}</td></tr>`;
+            document.getElementById('productPagination').innerHTML = '';
+        });
+    }
+
+    // 1.5. PAGINATION: Tạo các nút bấm chuyển trang mềm mượt qua AJAX
+    function renderPagination(links) {
+        const container = document.getElementById('productPagination');
+        if (!links || links.length <= 3) { 
+            container.innerHTML = '';
             return;
         }
-        let html = '';
-        products.forEach(p => {
-            // Đồng bộ đường dẫn thư mục lưu ảnh public
-            const imgPath = p.image ? `/images/products/${p.image}` : '/images/products/default-product.jpg';   
+        let html = '<nav class="flex gap-1">';
+        links.forEach(link => {
+            const activeClass = link.active ? 'bg-primary text-white border-primary' : 'bg-black/40 text-gray-400 border-white/10 hover:bg-white/5';
+            const disabledClass = link.url === null ? 'opacity-40 pointer-events-none' : '';   
+            
+            let pageNum = 1;
+            if (link.url) {
+                const urlObj = new URL(link.url);
+                pageNum = urlObj.searchParams.get('page') || 1;
+            }
             html += `
-                <tr id="product-row-${p.id}">
-                    <td class="ps-4">
-                        <img src="${imgPath}" alt="${escapeHtml(p.name)}" class="rounded" style="width: 45px; height: 45px; object-fit: cover;">
-                    </td>
-                    <td><div class="fw-bold text-dark">${escapeHtml(p.name)}</div></td>
-                    <td><span class="badge bg-light text-dark border">${escapeHtml(p.sku)}</span></td>
-                    <td><b class="text-danger">${Number(p.price).toLocaleString('vi-VN')}đ</b></td>
-                    <td>
-                        <span class="badge ${p.stock_quantity > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}">
-                            ${p.stock_quantity} món
-                        </span>
-                    </td>
-                    <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-dark me-1" onclick="prepareEdit(${p.id})">
-                            <i class="fas fa-edit"></i> Sửa
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${p.id})">
-                            <i class="fas fa-trash"></i> Xóa
-                        </button>
-                    </td>
-                </tr>`;
+                <a href="#" onclick="event.preventDefault(); ${link.url && !link.active ? `loadProducts(${pageNum})` : ''}" 
+                   class="px-3 py-1.5 rounded-lg border font-bold uppercase transition-all ${activeClass} ${disabledClass}">
+                   ${link.label.replace('&laquo; Previous', 'Trước').replace('Next &raquo;', 'Sau')}
+                </a>`;
         });
-        tbody.innerHTML = html;
-        window.cachedProducts = products; // Lưu bộ nhớ cache mảng sản phẩm
+        html += '</nav>';
+        container.innerHTML = html;
+    }
 
-        renderPagination(data.links); // Vẽ các nút chuyển trang
-    })
-    .catch(err => {
-        document.getElementById('productTableBody').innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi: ${err.message}</td></tr>`;
-        document.getElementById('productPagination').innerHTML = '';
-    });
-}
-/**
- * 1.5 RENDER PAGINATION: Tạo các nút phân trang từ dữ liệu Laravel trả về
- */
-function renderPagination(links) {
-    const container = document.getElementById('productPagination');
-    if (!links || links.length <= 3) { // Chỉ có 1 trang (Prev, 1, Next) thì không cần hiện
-        container.innerHTML = '';
-        return;
-    }
-    let html = '<nav><ul class="pagination pagination-sm mb-0">';
-    links.forEach(link => {
-        const activeClass = link.active ? 'active' : '';
-        const disabledClass = link.url === null ? 'disabled' : '';   
-        // Trích xuất số trang từ URL link.url (ví dụ: ?page=2)
-        let pageNum = 1;
-        if (link.url) {
-            const urlObj = new URL(link.url);
-            pageNum = urlObj.searchParams.get('page') || 1;
-        }
-        html += `
-            <li class="page-item ${activeClass} ${disabledClass}">
-                <a class="page-link" href="#" onclick="event.preventDefault(); ${link.url && !link.active ? `loadProducts(${pageNum})` : ''}">${link.label}</a>
-            </li>`;
-    });
-    html += '</ul></nav>';
-    container.innerHTML = html;
-}
-// Reset Form về chế độ Thêm mới
-function prepareAdd() {
-    document.getElementById('modalTitle').innerText = "Thêm sản phẩm mới";
-    document.getElementById('productForm').reset();
-    document.getElementById('product_id').value = '';
-    document.getElementById('imagePreviewContainer').style.display = 'none';
-}
-// 2. PREPARE EDIT: Đổ dữ liệu cũ lên Form
-function prepareEdit(id) {
-    const p = window.cachedProducts.find(item => item.id == id);
-    if (!p) return;
-    document.getElementById('modalTitle').innerText = "Chỉnh sửa: " + p.name;
-    document.getElementById('product_id').value = p.id;
-    document.getElementById('prod_name').value = p.name;
-    document.getElementById('prod_sku').value = p.sku;
-    document.getElementById('prod_price').value = p.price;
-    document.getElementById('prod_stock').value = p.stock_quantity;
-
-    const preview = document.getElementById('imagePreview');
-    if(p.image) {
-        preview.src = `/images/products/${p.image}`; // Đồng bộ đường dẫn thư mục ảnh public
-        document.getElementById('imagePreviewContainer').style.display = 'block';
-    } else {
-        document.getElementById('imagePreviewContainer').style.display = 'none';
-    }
-    const modal = new bootstrap.Modal(document.getElementById('modalProduct'));
-    modal.show();
-}
-// 3. CREATE & UPDATE: Lưu thông tin
-function saveProduct(event) {
-    event.preventDefault();
-    const id = document.getElementById('product_id').value;
-    const formElement = document.getElementById('productForm');
-    const formData = new FormData(formElement);
-    let url = "{{ route('admin.products.store') }}"; 
-    if (id) {
-        url = "{{ route('admin.products.update', ':id') }}".replace(':id', id); 
-        formData.append('_method', 'PUT'); // Chèn giả lập PUT method
-    }
-    fetch(url, {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => {
-        if(!res.ok) throw new Error('Xử lý dữ liệu thất bại. Hãy kiểm tra lại mã SKU.');
-        return res.json();
-    })
-    .then(() => {
-        const modalElement = document.getElementById('modalProduct');
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        if(modal) modal.hide();
+    // 2. CREATE & UPDATE: Đẩy dữ liệu lưu trữ, đồng thời viết đè và tính toán lại Badge giao diện ngay lập tức
+    function saveProductCRUD(event) {
+        event.preventDefault();
         
-        loadProducts();
-        alert(id ? 'Cập nhật sản phẩm thành công!' : 'Thêm sản phẩm mới thành công!');
-    })
-    .catch(err => alert(err.message));
-}
-// 4. DELETE: Xóa dữ liệu
-function deleteProduct(id) {
-    if(!confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
-    const url = "{{ route('admin.products.destroy', ':id') }}".replace(':id', id); 
-    fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'X-Requested-With': 'XMLHttpRequest'
+        const id = document.getElementById('product_id').value;
+        const formElement = document.getElementById('productForm');
+        const formData = new FormData(formElement);
+        
+        const name = document.getElementById('prod-name').value;
+        const sku = document.getElementById('prod-sku').value;
+        const price = document.getElementById('prod-price').value;
+        const qty = parseInt(document.getElementById('prod-qty').value) || 0;
+        
+        let url = "{{ route('admin.products.store') }}"; 
+        if (id) {
+            url = "{{ route('admin.products.update', ':id') }}".replace(':id', id); 
+            formData.append('_method', 'PUT'); 
         }
-    })
-    .then(res => {
-        if(!res.ok) throw new Error('Không thể xóa sản phẩm.');
-        return res.json();
-    })
-    .then(() => {
-        const row = document.getElementById(`product-row-${id}`);
-        if(row) row.remove();
-    })
-    .catch(err => alert(err.message));
-}
-document.addEventListener('DOMContentLoaded', loadProducts);
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => {
+            if(!res.ok) throw new Error('Thao tác không thành công. SKU không được trùng lặp.');
+            return res.json();
+        })
+        .then(data => {
+            if (id) {
+                // UPDATE: Tìm kiếm hàng cũ và thực thi cập nhật DOM trực tiếp không loát lại trang
+                const row = document.getElementById(`product-row-${id}`);
+                if (row) {
+                    row.querySelector('.prod-title-cell').innerText = name;
+                    row.querySelector('.prod-sku-cell').innerText = sku.toUpperCase();
+                    
+                    if (row.cells[3]) {
+                        row.cells[3].innerText = Number(price).toLocaleString('vi-VN') + 'đ';
+                    }
+
+                    const qtyCell = row.querySelector('.prod-qty-cell');
+                    if (qtyCell) {
+                        qtyCell.innerText = qty;
+                        qtyCell.className = qty <= 2 
+                            ? "py-4 px-3 text-right font-headline text-lg text-primary prod-qty-cell" 
+                            : "py-4 px-3 text-right font-headline text-lg text-white prod-qty-cell";
+                    }
+
+                    // Tái tính toán Badge Trạng thái tại chỗ theo yêu cầu mới nhất của bạn
+                    let statusBadge = '';
+                    if(qty <= 0) {
+                        statusBadge = '<span class="inline-block px-2 py-0.5 bg-primary/20 text-primary border border-primary/30 font-bold text-[10px] uppercase rounded">Hết hàng</span>';
+                    } else if(qty <= 15) {
+                        statusBadge = '<span class="inline-block px-2 py-0.5 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 font-bold text-[10px] uppercase rounded">Sắp hết</span>';
+                    } else {
+                        statusBadge = '<span class="inline-block px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/20 font-bold text-[10px] uppercase rounded">Sẵn sàng</span>';
+                    }
+                    row.querySelector('.status-cell').innerHTML = statusBadge;
+
+                    // Thay đổi ảnh đại diện xem trước trên hàng nếu tệp tệp mới được chọn
+                    const fileInput = document.getElementById('prod-image');
+                    if (fileInput && fileInput.files.length > 0) {
+                        const imgElement = row.querySelector('td img');
+                        if (imgElement) imgElement.src = URL.createObjectURL(fileInput.files[0]);
+                    }
+                }
+                alert("Hệ thống: Đã cập nhật thông tin và trạng thái sản phẩm thành công!");
+            } else {
+                // CREATE: Thêm mới hoàn toàn -> Load lại bảng nạp phần tử lên đầu
+                loadProducts();
+                alert("Hệ thống: Đã thêm sản phẩm mới vào kho hàng!");
+            }
+            clearCRUDForm();
+        })
+        .catch(err => alert(err.message));
+    }
+
+    // 3. EDIT PREPARE: Hút dữ liệu từ bộ nhớ đệm lên lại Form nhập liệu để sẵn sàng sửa
+    function editProductRow(id) {
+        const p = window.cachedProducts.find(item => item.id == id);
+        if (!p) return;
+
+        document.getElementById('product_id').value = p.id;
+        document.getElementById('prod-name').value = p.name;
+        document.getElementById('prod-sku').value = p.sku;
+        document.getElementById('prod-price').value = p.price;
+        document.getElementById('prod-qty').value = p.stock_quantity;
+
+        const preview = document.getElementById('imagePreview');
+        if(p.image) {
+            preview.src = `/images/products/${p.image}`;
+            document.getElementById('imagePreviewContainer').style.display = 'flex';
+        } else {
+            document.getElementById('imagePreviewContainer').style.display = 'none';
+        }
+
+        document.getElementById('form-title').innerHTML = '<span class="material-symbols-outlined text-blue-400">edit_calendar</span> Cập nhật sản phẩm #' + escapeHtml(p.sku);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Hiệu ứng cuộn màn hình mượt mà lên vị trí form
+    }
+
+    // 4. DELETE: Gửi lệnh xóa hàng vĩnh viễn khỏi Database
+    function deleteProductRow(id) {
+        if(!confirm("Xác nhận: Bạn có chắc chắn muốn xóa sản phẩm này khỏi hệ thống tồn kho?")) return;
+        
+        const url = "{{ route('admin.products.destroy', ':id') }}".replace(':id', id); 
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => {
+            if(!res.ok) throw new Error('Xóa sản phẩm thất bại.');
+            return res.json();
+        })
+        .then(() => {
+            const row = document.getElementById(`product-row-${id}`);
+            if(row) row.remove();
+            alert("Hệ thống: Đã xóa bản ghi sản phẩm thành công.");
+            clearCRUDForm();
+        })
+        .catch(err => alert(err.message));
+    }
+
+    // Reset Form về rỗng ban đầu và phục hồi tiêu đề Cấu hình sản phẩm màu đỏ
+    function clearCRUDForm() {
+        document.getElementById('productForm').reset();
+        document.getElementById('product_id').value = '';
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+        document.getElementById('form-title').innerHTML = '<span class="material-symbols-outlined text-primary">edit_note</span> Cấu hình sản phẩm ';
+    }
+
+    // Lắng nghe sự kiện chạy ngầm nạp bảng sản phẩm ngay khi cấu trúc HTML sẵn sàng
+    document.addEventListener('DOMContentLoaded', () => loadProducts());
 </script>
-@endsection
