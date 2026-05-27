@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KOR GYM - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../assets/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+
+<nav class="bg-[#1a1a1a] text-white hidden md:flex flex-col fixed left-0 top-0 h-screen w-64 z-50 border-r border-white/10 shadow-xl">
+    <div class="px-6 py-8 border-b border-white/10">
+        <h1 class="font-headline text-2xl text-primary font-black uppercase mb-1 tracking-wider">KOR GYM ADMIN</h1>
+        <p class="text-gray-400 text-xs uppercase font-bold tracking-widest">Hệ thống quản trị</p>
+    </div>
+    <div class="flex-1 flex flex-col gap-1 py-4">
+        <a class="bg-primary/20 text-primary border-l-4 border-primary px-6 py-3.5 flex items-center gap-3 transition-all" href="admin.html">
+            <span class="material-symbols-outlined">analytics</span><span class="text-sm font-bold">Tổng quan & Phân tích</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="members.html">
+            <span class="material-symbols-outlined">group</span><span class="text-sm font-bold">Quản lý Hội viên</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="inventory.html">
+            <span class="material-symbols-outlined">inventory_2</span><span class="text-sm font-bold">Kho Hàng & Sản phẩm</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="transactions.html">
+            <span class="material-symbols-outlined">receipt_long</span><span class="text-sm font-bold">Lịch sử Giao dịch</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="schedule.html">
+            <span class="material-symbols-outlined">calendar_month</span><span class="text-sm font-bold">Lịch HLV (Booking)</span>
+        </a>
+    </div>
+    <div class="p-6 border-t border-white/10 mt-auto flex flex-col gap-3">
+        <a href="../index.html" class="w-full bg-white/10 text-white text-xs font-bold uppercase py-3 px-4 rounded hover:bg-white/20 transition-all text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">open_in_new</span> VỀ APP HỘI VIÊN
+        </a>
+    </div>
+</nav>
+
+<main class="flex-1 md:ml-64 p-6 md:p-10 w-full space-y-8">
+    <header class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+        <div>
+            <h2 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight">BẢNG ĐIỀU KHIỂN HỆ THỐNG</h2>
+            <p class="text-gray-400 text-sm mt-1">Quản lý hội viên, phê duyệt đơn hàng & tạo khuyến mãi</p>
+        </div>
+    </header>
+
+    <div class="bg-[#1A1A1A] rounded-xl border border-white/10 overflow-hidden shadow-md">
+        <div class="p-5 border-b border-white/10 bg-black/20">
+            <h3 class="font-headline text-lg text-white uppercase tracking-wide">Quản lý và Thực thi Hội viên</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse whitespace-nowrap text-sm">
+                <thead>
+                    <tr class="text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-white/10 bg-black/40">
+                        <th class="p-4 pl-6">Hội viên</th><th class="p-4">Hạng Gói Tập</th><th class="p-4">Ngày Hết Hạn</th><th class="p-4 text-right pr-6">Thao tác hệ thống</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr>
+                        <td class="p-4 pl-6 font-bold text-white">Nguyễn Văn Tuấn</td>
+                        <td class="p-4 text-gray-400 text-xs">Gói VIP (12 Tháng)</td>
+                        <td class="p-4 text-gray-400 text-xs font-mono">24/10/2026</td>
+                        <td class="p-4 pr-6 text-right">
+                            <button onclick="alert('Hệ thống Mail-Service: Đã gửi thông báo cảnh báo gia hạn gói tập tới Email của Nguyễn Văn Tuấn thành công!')" class="text-[10px] uppercase font-bold tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-1 rounded hover:bg-yellow-500/20">Cảnh báo hết hạn</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 pl-6 font-bold text-white">Lê Thị Mai</td>
+                        <td class="p-4 text-gray-400 text-xs">Gói Tiêu chuẩn (6 Tháng)</td>
+                        <td class="p-4 text-gray-400 text-xs font-mono">02/06/2026</td>
+                        <td class="p-4 pr-6 text-right">
+                            <button onclick="alert('Hệ thống Mail-Service: Đã gửi thông báo cảnh báo gia hạn gói tập tới Email của Lê Thị Mai thành công!')" class="text-[10px] uppercase font-bold tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-1 rounded hover:bg-yellow-500/20">Cảnh báo hết hạn</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="bg-[#1A1A1A] rounded-xl border border-white/10 overflow-hidden shadow-md">
+        <div class="p-5 border-b border-white/10 bg-black/20">
+            <h3 class="font-headline text-lg text-white uppercase tracking-wide">Xử lý & Phê duyệt đơn hàng mua sắm</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse whitespace-nowrap text-sm">
+                <thead>
+                    <tr class="text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-white/10 bg-black/40">
+                        <th class="p-4 pl-6">Mã Đơn</th><th class="p-4">Khách Hàng</th><th class="p-4">Trạng thái hiện tại</th><th class="p-4 text-right pr-6">Phê duyệt nhanh</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr>
+                        <td class="p-4 pl-6 font-mono text-white">#KOR-992</td>
+                        <td class="p-4 text-gray-400 text-xs">Đào Tấn</td>
+                        <td class="p-4"><span id="status-992" class="text-xs text-yellow-400 font-bold">Đang xử lý</span></td>
+                        <td class="p-4 pr-6 text-right">
+                            <button onclick="approveOrder('992')" class="text-[10px] uppercase font-bold tracking-wider bg-green-500/10 text-green-400 border border-green-500/20 px-3 py-1 rounded hover:bg-green-500/20">Duyệt xuất kho</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">
+        <h3 class="font-headline text-lg text-white uppercase mb-4 border-b border-white/10 pb-3">Phân hệ Quản lý cấu hình mã khuyến mãi</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Mã khuyến mãi (Coupon Code)</label>
+                <input id="coupon-code" type="text" placeholder="e.g. KORGYM50" class="w-full bg-black/40 border border-white/10 rounded-lg text-white text-sm px-3 py-2 focus:ring-1 focus:ring-primary focus:border-primary uppercase">
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Mức giảm giá (%)</label>
+                <input id="coupon-pct" type="number" placeholder="20" class="w-full bg-black/40 border border-white/10 rounded-lg text-white text-sm px-3 py-2 focus:ring-1 focus:ring-primary focus:border-primary">
+            </div>
+            <button onclick="generateCouponMock()" class="w-full bg-primary text-white text-xs font-bold uppercase py-2.5 rounded-lg hover:bg-red-700 transition-colors h-[38px]">Phát hành mã</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    function approveOrder(orderId) {
+        const target = document.getElementById(`status-${orderId}`);
+        if(target) {
+            target.innerText = "Đã hoàn thành / Đã giao hàng";
+            target.className = "text-xs text-green-400 font-bold";
+            alert(`Hệ thống Admin: Đơn hàng #${orderId} đã được ký duyệt phê duyệt, lệnh xuất kho đã được chuyển đi!`);
+        }
+    }
+
+    function generateCouponMock() {
+        const code = document.getElementById('coupon-code').value.toUpperCase().trim();
+        const pct = document.getElementById('coupon-pct').value;
+        if(!code || !pct) {
+            alert("Lỗi cấu hình: Vui lòng cung cấp đầy đủ Tên mã và Mức % giảm giá!");
+            return;
+        }
+        alert(`Hệ thống KOR GYM: Đã lưu và phát hành mã giảm giá [${code}] giảm ${pct}% áp dụng toàn hệ thống cửa hàng thành công!`);
+        document.getElementById('coupon-code').value = '';
+        document.getElementById('coupon-pct').value = '';
+    }
+</script>
+</body>
+</html>

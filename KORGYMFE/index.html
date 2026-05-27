@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KOR GYM - Trang chủ Hội viên</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="assets/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white pb-24 md:pb-12">
+
+<nav class="bg-background/90 backdrop-blur-xl border-b border-white/10 sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 h-16 shadow-lg">
+    <div class="flex items-center gap-8">
+        <span class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic">KOR GYM</span>
+        <div class="hidden md:flex gap-6 items-center">
+            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="pages/shop.html">Cửa hàng</a>
+            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="pages/booking.html">Đặt Lịch</a>
+        </div>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="pages/shop.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors relative flex items-center justify-center">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(227,24,55,0.8)]"></span>
+        </a>
+        <a href="pages/notifications.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
+            <span class="material-symbols-outlined">notifications</span>
+        </a>
+        <a href="pages/profile.html" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden ml-2 block hover:border-primary transition-colors">
+            <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 md:px-8 pt-8 space-y-8">
+    
+    <div class="flex justify-between items-end">
+        <div>
+            <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight">Cổng Hội Viên</h1>
+            <p class="text-sm text-gray-400 mt-1">Chào Nguyễn Thanh Trí. Bạn đã sẵn sàng bứt phá giới hạn chưa?</p>
+        </div>
+        <div class="hidden md:flex items-center gap-2 text-gray-400">
+            <span class="material-symbols-outlined text-lg">calendar_today</span>
+            <span class="text-xs font-bold uppercase" id="current-date">Hôm nay</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="md:col-span-4 bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 flex flex-col items-center relative overflow-hidden group">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-primary/20 blur-[50px] rounded-full pointer-events-none"></div>
+            <h2 class="font-headline text-xl uppercase text-white w-full text-center border-b border-white/10 pb-4 mb-6 relative z-10">Thẻ Check-in</h2>
+            <div class="bg-white p-3 rounded-xl shadow-lg mb-6 relative z-10 transition-transform group-hover:scale-105">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=KOR-9824-Tri" class="w-40 h-40 object-contain" alt="QR Code">
+            </div>
+            <p class="font-headline text-primary tracking-widest text-lg relative z-10">MÃ SỐ: KOR-9824</p>
+            <p class="text-xs font-bold text-gray-500 uppercase mt-1 relative z-10">Quét tại cổng để vào phòng tập</p>
+        </div>
+
+        <div class="md:col-span-8 bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+            <div>
+                <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-4">Hồ sơ sức khỏe & Đề xuất toàn diện</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-surface-variant/30 p-3 rounded-xl border border-white/5">
+                        <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Chiều cao (cm)</label>
+                        <input type="number" id="height-input" value="172" class="w-full bg-transparent border-none p-0 text-xl font-bold text-white focus:ring-0">
+                    </div>
+                    <div class="bg-surface-variant/30 p-3 rounded-xl border border-white/5">
+                        <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Cân nặng (kg)</label>
+                        <input type="number" id="weight-input" value="78" class="w-full bg-transparent border-none p-0 text-xl font-bold text-white focus:ring-0">
+                    </div>
+                    <div class="bg-surface-variant/30 p-3 rounded-xl border border-white/5">
+                        <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Tỷ lệ mỡ (Body Fat %)</label>
+                        <input type="number" id="fat-input" value="22" class="w-full bg-transparent border-none p-0 text-xl font-bold text-white focus:ring-0">
+                    </div>
+                </div>
+
+                <div id="bmi-panel" class="p-4 rounded-xl border transition-all duration-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="text-sm font-bold text-white">Chỉ số BMI của bạn: <span id="bmi-score" class="text-xl font-headline ml-1">--</span></div>
+                        <p id="bmi-status" class="text-xs text-gray-400 mt-1">Đang phân tích dữ liệu thể trạng...</p>
+                    </div>
+                    <div class="bg-black/40 px-4 py-3 rounded-lg border border-white/5 max-w-md">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Hệ thống đề xuất KOR-AI:</span>
+                        <p id="ai-suggestion" class="text-xs text-gray-300 leading-relaxed">Đang xử lý đề xuất giáo án tối ưu...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
+                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR</span>
+                <button onclick="calculateHealthMetrics()" class="bg-primary text-white text-xs font-bold uppercase py-2 px-4 rounded hover:bg-red-700 transition-colors">Cập nhật chỉ số</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+        <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">newspaper</span> Chuyên mục kiến thức & Sự kiện phòng tập
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
+                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Dinh dưỡng"></div>
+                <div class="p-4 space-y-2">
+                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Dinh dưỡng đúng cách</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">Cách tính toán Calo sợi mì Ý và thực đơn tăng cơ nhịp nhàng</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">Hướng dẫn chi tiết phương pháp cân đo lượng calo trong mì Ý khô và cách kết hợp với Whey Protein Isolate phục vụ body recomposition.</p>
+                </div>
+            </div>
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
+                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Kỹ thuật"></div>
+                <div class="p-4 space-y-2">
+                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Kỹ thuật tập luyện</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">Mẹo tự đo tỷ lệ mỡ (Body Fat) chính xác tại nhà</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">Không cần máy InBody, bạn hoàn toàn có thể tự kiểm tra lượng mỡ cơ thể bằng thước dây và kẹp Caliper theo chuẩn y khoa.</p>
+                </div>
+            </div>
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
+                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sự kiện"></div>
+                <div class="p-4 space-y-2">
+                    <span class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Sự kiện độc quyền</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">KOR-Race 2026: Giải chạy việt dã bứt phá cự ly 25km</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">Chào mừng chuỗi sự kiện thường niên, giải chạy việt dã kết hợp sức bền kháng lực chính thức mở cổng đăng ký thẻ tham gia cho toàn bộ hội viên.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+        <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">rate_review</span> Hệ thống phản hồi & Chấm điểm dịch vụ KOR
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-5 bg-black/20 border border-white/5 p-4 rounded-xl space-y-4">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider">Để lại đánh giá buổi tập vừa qua</h3>
+                
+                <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chọn Huấn luyện viên / Sản phẩm</label>
+                    <select id="feedback-target" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary">
+                        <option value="HLV Hoàng Long">HLV Hoàng Long (Buổi tập Deadlift)</option>
+                        <option value="HLV Thu Thảo">HLV Thu Thảo (Lớp Yoga Core)</option>
+                        <option value="Sản phẩm Whey Gold">Whey Gold Standard (Đơn mua #9810)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chấm điểm chất lượng (Rating)</label>
+                    <div class="flex gap-1 text-yellow-500" id="star-rating-container">
+                        <span onclick="setStarRating(1)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(2)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(3)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(4)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(5)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Ý kiến bình luận nhận xét</label>
+                    <textarea id="feedback-comment" rows="2" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary placeholder:text-gray-600" placeholder="PT hướng dẫn nhiệt tình, cơ sở sạch sẽ..."></textarea>
+                </div>
+
+                <button onclick="submitFeedbackForm()" class="w-full py-2.5 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-lg shadow-md transition-all">Gửi phản hồi hệ thống</button>
+            </div>
+
+            <div class="md:col-span-7 space-y-3 max-h-[340px] overflow-y-auto pr-1" id="comments-display-list">
+                <div class="bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs">
+                    <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold font-headline flex items-center justify-center flex-shrink-0">LQ</div>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2"><span class="font-bold text-white">Lê Quân (Hội viên Elite)</span><span class="text-yellow-500">★★★★★</span></div>
+                        <p class="text-gray-300">Đơn hàng Whey Gold Standard giao siêu nhanh, đóng gói kỹ lồng tem chống hàng giả. Vị socola đôi rất dễ uống, không bị ngọt gắt.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // 1. LOGIC TÍNH BMI VÀ PHÂN LUỒNG ĐỀ XUẤT THỂ TRẠNG
+    function calculateHealthMetrics() {
+        const h = parseFloat(document.getElementById('height-input').value) / 100;
+        const w = parseFloat(document.getElementById('weight-input').value);
+        if(!h || !w) return;
+        
+        const bmi = (w / (h * h)).toFixed(1);
+        document.getElementById('bmi-score').innerText = bmi;
+        
+        const panel = document.getElementById('bmi-panel');
+        const statusText = document.getElementById('bmi-status');
+        const aiText = document.getElementById('ai-suggestion');
+        
+        if(bmi >= 25) {
+            statusText.innerText = "Trạng thái: Thừa cân - Lượng mỡ tích tụ cần giải phóng.";
+            aiText.innerText = "Khuyên dùng: Giáo án Cắt nét & Thâm hụt calo. Nên bổ sung Whey Isolate tinh khiết tại Cửa hàng để tối ưu khối cơ nách bắp.";
+            panel.className = "p-4 rounded-xl border border-red-500/30 bg-red-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+        } else if (bmi < 18.5) {
+            statusText.innerText = "Trạng thái: Thiếu cân - Cần tích lũy dinh dưỡng và tập nặng.";
+            aiText.innerText = "Khuyên dùng: Giáo án Tăng cơ xả cơ cường độ cao. Nên ưu tiên chọn thực phẩm Mass Gainer năng lượng cao tại Store.";
+            panel.className = "p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+        } else {
+            statusText.innerText = "Trạng thái: Thể trạng cân đối lý tưởng - Phân bố cơ mỡ ổn định.";
+            aiText.innerText = "Khuyên dùng: Lộ trình Điêu khắc và giữ nét cơ. Duy trì cường độ tập, kết hợp dùng thêm Creatine để bứt phá sức mạnh nổ.";
+            panel.className = "p-4 rounded-xl border border-green-500/30 bg-green-500/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+        }
+    }
+
+    // 2. LOGIC ĐÁNH GIÁ SỐ SAO CHẤM ĐIỂM (STAR RATING CONTROLLER)
+    let currentRatingScore = 5; 
+    function setStarRating(score) {
+        currentRatingScore = score;
+        const stars = document.querySelectorAll('#star-rating-container .star-node');
+        stars.forEach((star, index) => {
+            if(index < score) {
+                star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+            } else {
+                star.style.fontVariationSettings = "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+            }
+        });
+    }
+
+    // 3. LOGIC SUBMIT GỬI FORM VÀ PHI ĐỒNG BỘ ĐỔ DATA RA BẢNG BÌNH LUẬN VIRTUAL DOM
+    function submitFeedbackForm() {
+        const target = document.getElementById('feedback-target').value;
+        const comment = document.getElementById('feedback-comment').value.trim();
+        
+        if(!comment) {
+            showToastNotification("Vui lòng viết vài dòng ý kiến nhận xét trước khi gửi!");
+            return;
+        }
+
+        let starString = '';
+        for(let i=0; i<currentRatingScore; i++) { starString += '★'; }
+
+        const displayList = document.getElementById('comments-display-list');
+        const card = document.createElement('div');
+        card.className = "bg-primary/5 border border-primary/20 p-3 rounded-xl flex gap-3 items-start text-xs animate-fade-in";
+        card.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-primary text-white font-bold font-headline flex items-center justify-center flex-shrink-0">NT</div>
+            <div class="space-y-1">
+                <div class="flex items-center gap-2"><span class="font-bold text-white">Nguyễn Thanh Trí (Bạn)</span><span class="text-yellow-500">${starString}</span></div>
+                <p class="text-gray-400"><strong class="text-gray-500">[Đã chấm cho ${target}]:</strong> ${comment}</p>
+            </div>
+        `;
+        
+        displayList.insertBefore(card, displayList.firstChild);
+        document.getElementById('feedback-comment').value = '';
+        showToastNotification("Hệ thống: Đã ghi nhận nhận xét đánh giá của hội viên!");
+    }
+
+    // 4. HÀM TẠO TOAST MESSAGE ĐIỀU HƯỚNG PHẢN HỒI NHANH
+    function showToastNotification(msg) {
+        const t = document.createElement('div');
+        t.style.cssText = "position: fixed; bottom: 30px; left: 30px; background: #222; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index:9999; border: 1px solid rgba(255,255,255,0.1);";
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    // 5. LOGIC HIỂN THỊ NGÀY THÁNG THỜI GIAN THỰC HÔM NAY
+    function updateCurrentDateString() {
+        const today = new Date();
+        const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        const dayName = days[today.getDay()];
+        const dateStr = `${dayName}, ${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+        const dateTarget = document.getElementById('current-date');
+        if(dateTarget) {
+            dateTarget.innerText = dateStr;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        calculateHealthMetrics();
+        setStarRating(5); 
+        updateCurrentDateString(); // Kích hoạt hiển thị ngày động
+    });
+</script>
+</body>
+</html>

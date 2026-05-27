@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="dark" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>KOR GYM - Lịch HLV & Lớp học</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="../assets/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased pb-12">
+
+<nav class="bg-[#1a1a1a] text-white hidden md:flex flex-col fixed left-0 top-0 h-screen w-64 z-50 border-r border-white/10 shadow-xl">
+    <div class="px-6 py-8 border-b border-white/10">
+        <h1 class="font-headline text-2xl text-primary font-black uppercase mb-1 tracking-wider">KOR GYM ADMIN</h1>
+        <p class="text-gray-400 text-xs uppercase font-bold tracking-widest">Hệ thống quản trị</p>
+    </div>
+    <div class="flex-1 flex flex-col gap-1 py-4">
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="admin.html">
+            <span class="material-symbols-outlined">analytics</span><span class="text-sm font-bold">Tổng quan & Phân tích</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="members.html">
+            <span class="material-symbols-outlined">group</span><span class="text-sm font-bold">Quản lý Hội viên</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="inventory.html">
+            <span class="material-symbols-outlined">inventory_2</span><span class="text-sm font-bold">Kho Hàng & Sản phẩm</span>
+        </a>
+        <a class="text-gray-400 hover:bg-white/5 hover:text-white px-6 py-3.5 flex items-center gap-3 transition-all" href="transactions.html">
+            <span class="material-symbols-outlined">receipt_long</span><span class="text-sm font-bold">Lịch sử Giao dịch</span>
+        </a>
+        <a class="bg-primary/20 text-primary border-l-4 border-primary px-6 py-3.5 flex items-center gap-3 transition-all" href="schedule.html">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span><span class="text-sm font-bold">Lịch HLV (Booking)</span>
+        </a>
+    </div>
+    <div class="p-6 border-t border-white/10 mt-auto flex flex-col gap-3">
+        <a href="../index.html" class="w-full bg-white/10 text-white text-xs font-bold uppercase py-3 px-4 rounded hover:bg-white/20 transition-all text-center flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm">open_in_new</span> VỀ APP HỘI VIÊN
+        </a>
+    </div>
+</nav>
+
+<main class="flex-1 md:ml-64 p-6 md:p-10 min-h-screen flex flex-col gap-8">
+    <header>
+        <h2 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight">ĐIỀU PHỐI LỊCH HẸN <span class="text-primary">&</span> LỚP HỌC</h2>
+        <p class="text-gray-400 text-sm mt-1">Quản lý các lớp học cộng đồng và điều phối lịch hẹn PT 1-kèm-1 của hội viên.</p>
+    </header>
+
+    <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">
+        <h3 id="class-form-title" class="font-headline text-lg text-white uppercase mb-4 border-b border-white/10 pb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">more_time</span> Thiết lập lịch lớp học / Ca tập
+        </h3>
+        <input type="hidden" id="edit-class-index" value="">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end text-xs">
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Tên lớp học / Ca tập</label>
+                <input id="class-name" type="text" placeholder="e.g. Yoga Core Cắt Nét" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary">
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Huấn luyện viên (HLV)</label>
+                <select id="class-pt" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary text-gray-400">
+                    <option value="HLV Hoàng Long">HLV Hoàng Long</option>
+                    <option value="HLV Thu Thảo">HLV Thu Thảo</option>
+                    <option value="HLV Lê Quân">HLV Lê Quân</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Khung giờ & Ngày hẹn</label>
+                <input id="class-time" type="text" placeholder="e.g. 10:00 AM - Thứ 2" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary">
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Sức chứa (Học viên)</label>
+                <input id="class-slots" type="text" placeholder="e.g. 24/30 Đã đặt" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary">
+            </div>
+            <div class="flex gap-2">
+                <button onclick="saveClassCRUD()" class="flex-1 bg-primary text-white text-xs font-bold uppercase py-2.5 rounded-lg hover:bg-red-700 transition-colors h-[38px]">Lưu lịch học</button>
+                <button onclick="clearClassForm()" class="bg-white/10 text-gray-400 text-xs font-bold uppercase p-2.5 rounded-lg hover:bg-white/20 hover:text-white transition-colors h-[38px]"><span class="material-symbols-outlined text-sm block">refresh</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">
+            <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                <h3 class="font-headline text-lg text-white uppercase">Danh sách điều phối lịch thực tế</h3>
+                <span class="material-symbols-outlined text-primary">calendar_view_day</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse whitespace-nowrap text-sm" id="class-crud-table">
+                    <thead>
+                        <tr class="text-gray-500 font-bold uppercase text-[10px] tracking-wider border-b border-white/10 bg-black/40">
+                            <th class="p-4 pl-4">Huấn Luyện Viên</th>
+                            <th class="p-4">Lớp Học / Ca Tập</th>
+                            <th class="p-4">Khung Giờ & Ngày</th>
+                            <th class="p-4 text-center">Sức Chứa / Trạng Thái</th>
+                            <th class="p-4 text-right pr-6">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5" id="class-tbody">
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 pl-4 font-bold text-white class-pt-cell">HLV Hoàng Long</td>
+                            <td class="p-4 text-gray-300 font-bold class-name-cell">1-KÈM-1 PT: CẮT NÉT GIẢM MỠ</td>
+                            <td class="p-4 text-gray-400 text-xs font-mono class-time-cell">10:00 AM - Thứ 2 - Ngày 25</td>
+                            <td class="p-4 text-center class-slots-cell"><span class="inline-block px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold rounded uppercase">Đã xác nhận</span></td>
+                            <td class="p-4 text-right pr-6 space-x-1">
+                                <button onclick="editClassRow(this)" class="text-blue-400 p-1 hover:bg-blue-500/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">edit</span></button>
+                                <button onclick="deleteClassRow(this)" class="text-primary p-1 hover:bg-primary/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">delete</span></button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="p-4 pl-4 font-bold text-white class-pt-cell">HLV Thu Thảo</td>
+                            <td class="p-4 text-gray-300 font-bold class-name-cell">YOGA CƯỜNG ĐỘ CAO</td>
+                            <td class="p-4 text-gray-400 text-xs font-mono class-time-cell">08:00 AM - Thứ 3 - Ngày 26</td>
+                            <td class="p-4 text-center class-slots-cell"><span class="inline-block px-2 py-0.5 bg-white/10 text-white border border-white/20 text-[10px] font-bold rounded">24/30 ĐÃ ĐẶT</span></td>
+                            <td class="p-4 text-right pr-6 space-x-1">
+                                <button onclick="editClassRow(this)" class="text-blue-400 p-1 hover:bg-blue-500/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">edit</span></button>
+                                <button onclick="deleteClassRow(this)" class="text-primary p-1 hover:bg-primary/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">delete</span></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ENGINE ĐIỀU KHIỂN CRUD LỚP HỌC VIRTUAL DOM
+    function saveClassCRUD() {
+        const name = document.getElementById('class-name').value.trim();
+        const pt = document.getElementById('class-pt').value;
+        const time = document.getElementById('class-time').value.trim();
+        const slots = document.getElementById('class-slots').value.trim();
+        const editIndex = document.getElementById('edit-class-index').value;
+
+        if(!name || !time || !slots) {
+            alert("Lỗi nhập liệu: Vui lòng điền đầy đủ các thông số cấu hình lớp học!");
+            return;
+        }
+
+        // Tạo badge trạng thái linh hoạt dựa trên chuỗi nhập vào
+        let slotsBadge = '';
+        if(slots.toUpperCase() === "ĐÃ XÁC NHẬN" || slots.toUpperCase() === "XÁC NHẬN") {
+            slotsBadge = '<span class="inline-block px-2 py-0.5 bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] font-bold rounded uppercase">Đã xác nhận</span>';
+        } else {
+            slotsBadge = `<span class="inline-block px-2 py-0.5 bg-white/10 text-white border border-white/20 text-[10px] font-bold rounded uppercase">${slots}</span>`;
+        }
+
+        if(editIndex !== "") {
+            // Thực thi lệnh UPDATE
+            const tbody = document.getElementById('class-tbody');
+            const row = tbody.rows[parseInt(editIndex)];
+            
+            row.querySelector('.class-name-cell').innerText = name;
+            row.querySelector('.class-pt-cell').innerText = pt;
+            row.querySelector('.class-time-cell').innerText = time;
+            row.querySelector('.class-slots-cell').innerHTML = slotsBadge;
+            
+            alert("Hệ thống: Đã cập nhật thông tin lớp học/ca dạy thành công!");
+        } else {
+            // Thực thi lệnh CREATE
+            const tbody = document.getElementById('class-tbody');
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-white/5 transition-colors animate-fade-in";
+            tr.innerHTML = `
+                <td class="p-4 pl-4 font-bold text-white class-pt-cell">${pt}</td>
+                <td class="p-4 text-gray-300 font-bold class-name-cell">${name}</td>
+                <td class="p-4 text-gray-400 text-xs font-mono class-time-cell">${time}</td>
+                <td class="p-4 text-center class-slots-cell">${slotsBadge}</td>
+                <td class="p-4 text-right pr-6 space-x-1">
+                    <button onclick="editClassRow(this)" class="text-blue-400 p-1 hover:bg-blue-500/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">edit</span></button>
+                    <button onclick="deleteClassRow(this)" class="text-primary p-1 hover:bg-primary/10 rounded transition-colors"><span class="material-symbols-outlined text-sm block">delete</span></button>
+                </td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+            alert("Hệ thống: Đã thêm mới lớp học thành công vào thời khóa biểu!");
+        }
+        clearClassForm();
+    }
+
+    // Thực thi lệnh DELETE
+    function deleteClassRow(btn) {
+        if(confirm("Xác nhận: Bạn có chắc muốn hủy và xóa bỏ lớp học/ca tập này khỏi thời khóa biểu hệ thống?")) {
+            btn.closest('tr').remove();
+            clearClassForm();
+        }
+    }
+
+    // Đẩy ngược data lên Form để thực hiện UPDATE
+    function editClassRow(btn) {
+        const row = btn.closest('tr');
+        const tbody = document.getElementById('class-tbody');
+        const index = Array.from(tbody.rows).indexOf(row);
+
+        document.getElementById('class-name').value = row.querySelector('.class-name-cell').innerText;
+        document.getElementById('class-pt').value = row.querySelector('.class-pt-cell').innerText;
+        document.getElementById('class-time').value = row.querySelector('.class-time-cell').innerText;
+        document.getElementById('class-slots').value = row.querySelector('.class-slots-cell').innerText;
+        document.getElementById('edit-class-index').value = index;
+
+        document.getElementById('class-form-title').innerHTML = '<span class="material-symbols-outlined text-blue-400">edit_calendar</span> Chỉnh sửa lịch lớp học';
+    }
+
+    function clearClassForm() {
+        document.getElementById('class-name').value = '';
+        document.getElementById('class-time').value = '';
+        document.getElementById('class-slots').value = '';
+        document.getElementById('edit-class-index').value = '';
+        document.getElementById('class-form-title').innerHTML = '<span class="material-symbols-outlined text-primary">more_time</span> Thiết lập lịch lớp học / Ca tập';
+    }
+</script>
+</body>
+</html>
