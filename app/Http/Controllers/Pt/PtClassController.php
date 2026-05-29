@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\PT;
+namespace App\Http\Controllers\Pt;
 
 use App\Http\Controllers\Controller;
 use App\Models\GymClass;

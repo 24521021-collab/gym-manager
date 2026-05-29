@@ -122,7 +122,7 @@
                 <div class="class-item bg-gradient-to-b from-[#1E1E1E] to-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:border-primary/40 transition-all duration-300 flex flex-col group">
                     <div class="h-44 w-full overflow-hidden relative">
                         <img class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" 
-                             src="/images/products/${c.image || 'default-class.jpg'}" alt="${escapeHtml(c.name)}">
+                             src="/images/classes/${c.image || 'default-class.jpg'}" alt="${escapeHtml(c.name)}">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent"></div>
                         ${isBooked ? '<span class="absolute top-4 right-4 z-20 text-[10px] font-bold bg-emerald-500 text-white px-3 py-1 rounded-md uppercase tracking-wider">Đã đăng ký</span>' : ''}
                     </div>
@@ -132,6 +132,7 @@
                             <div class="flex flex-col gap-1.5 text-[11px] text-gray-400">
                                 <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary">person</span> PT: <strong class="text-white font-normal">${escapeHtml(c.pt?.user?.full_name || 'Hệ thống KOR')}</strong></span>
                                 <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary">payments</span> Giá: <strong class="text-white font-normal">${new Intl.NumberFormat('vi-VN').format(c.price)}đ</strong></span>
+                                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary">calendar_month</span> Thời lượng: <strong class="text-white font-normal">${c.total_sessions} buổi</strong></span>
                             </div>
                         </div>
                         

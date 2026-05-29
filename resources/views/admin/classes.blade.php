@@ -140,7 +140,7 @@
 
                 let html = '';
                 window.cachedClasses.forEach(c => {
-                    const imgPath = c.image ? `/images/products/${c.image}` : '/images/products/default-class.jpg';
+                    const imgPath = c.image ? `/images/classes/${c.image}` : '/images/classes/default-class.jpg';
                     const ptName = c.pt && c.pt.user ? c.pt.user.full_name : 'N/A';
                     
                     html += `
@@ -208,7 +208,7 @@
         document.getElementById('description').value = c.description || '';
 
         if (c.image) {
-            document.getElementById('imagePreview').src = `/images/products/${c.image}`;
+            document.getElementById('imagePreview').src = `/images/classes/${c.image}`;
             document.getElementById('imagePreviewContainer').style.display = 'flex';
         } else {
             document.getElementById('imagePreviewContainer').style.display = 'none';
