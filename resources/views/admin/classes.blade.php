@@ -7,6 +7,13 @@
         <p class="text-gray-400 text-sm mt-1">Thiết lập danh sách các lớp học Gym nhóm, huấn luyện viên và sức chứa phòng tập.</p>
     </header>
 
+     <div class="max-w-md">
+            <form id="searchForm" onsubmit="event.preventDefault(); loadClasses();" class="flex gap-2 text-xs">
+                <input type="text" id="searchInput" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Tìm tên lớp hoặc PT..." value="{{ request('search') }}">
+                <button type="submit" class="bg-white/10 text-white font-bold uppercase px-4 py-2.5 rounded-lg hover:bg-white/20 transition-colors whitespace-nowrap">Tìm kiếm</button>
+            </form>
+    </div>
+    
     <!-- Form Cấu hình Lớp học (Inline - Giống Admin Products) -->
     <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md mt-6">
         <h3 id="form-title" class="font-headline text-lg text-white uppercase mb-4 border-b border-white/10 pb-3 flex items-center gap-2">
@@ -72,13 +79,6 @@
 
     <!-- Form Tìm kiếm & Danh sách -->
     <div class="mt-8 space-y-4">
-        <div class="max-w-md">
-            <form id="searchForm" onsubmit="event.preventDefault(); loadClasses();" class="flex gap-2 text-xs">
-                <input type="text" id="searchInput" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Tìm tên lớp hoặc PT..." value="{{ request('search') }}">
-                <button type="submit" class="bg-white/10 text-white font-bold uppercase px-4 py-2.5 rounded-lg hover:bg-white/20 transition-colors whitespace-nowrap">Tìm kiếm</button>
-            </form>
-        </div>
-
         <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">
             <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
                 <h3 class="font-headline text-lg text-white uppercase">Danh sách lớp học hiện tại</h3>
@@ -140,7 +140,7 @@
 
                 let html = '';
                 window.cachedClasses.forEach(c => {
-                    const imgPath = c.image ? `/images/products/${c.image}` : '/images/products/default-class.jpg';
+                    const imgPath = c.image ? `/images/classes/${c.image}` : '/images/classes/default-class.jpg';
                     const ptName = c.pt && c.pt.user ? c.pt.user.full_name : 'N/A';
                     
                     html += `
@@ -151,15 +151,20 @@
                             <td class="py-4 px-3 text-gray-400">${c.max_capacity} người</td>
                             <td class="py-4 px-3 text-gray-400">${c.total_sessions} buổi</td>
                             <td class="py-4 px-3 text-right font-bold text-gray-300">${Number(c.price).toLocaleString('vi-VN')}đ</td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-dark" onclick="prepareEdit(${c.id})">Sửa<i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteClass(${c.id})">Xóa<i class="fas fa-trash"></i></button>
+                            <td class="py-4 px-3 text-right pr-4 space-x-1 whitespace-nowrap">
+                                <button class="text-blue-400 p-1 hover:bg-blue-500/10 rounded transition-colors" onclick="prepareEdit(${c.id})">
+                                    <span class="material-symbols-outlined text-sm block">edit</span>
+                                </button>
+                                <button class="text-primary p-1 hover:bg-primary/10 rounded transition-colors" onclick="deleteClass(${c.id})">
+                                    <span class="material-symbols-outlined text-sm block">delete</span>
+                                </button>
                             </td>
                         </tr>`;
                 });
                 tbody.innerHTML = html;
                 renderPagination(data.links);
-            });
+            })
+            .catch(err => console.error("Lỗi tải lớp học:", err));
     }
 
     // 1.5 Render Pagination
@@ -174,9 +179,9 @@
             <a href="#" onclick="event.preventDefault(); ${link.url && !link.active ? `loadClasses(${pageNum})` : ''}" 
                    class="px-3 py-1.5 rounded-lg border text-xs font-bold uppercase transition-all ${link.active ? 'bg-primary text-white border-primary' : 'bg-black/40 text-gray-400 border-white/10 hover:bg-white/5'} ${!link.url ? 'opacity-40 pointer-events-none' : ''}">
                 ${link.label.replace('&laquo; Previous', 'Trước').replace('Next &raquo;', 'Sau')}
-            </li>`;
+            </a>`;
         });
-        container.innerHTML = html + '</ul></nav>';
+        container.innerHTML = html + '</nav>';
     }
 
     // 2. PREPARE ADD
@@ -203,8 +208,8 @@
         document.getElementById('description').value = c.description || '';
 
         if (c.image) {
-            document.getElementById('imagePreview').src = `/images/products/${c.image}`;
-            document.getElementById('imagePreviewContainer').style.display = 'block';
+            document.getElementById('imagePreview').src = `/images/classes/${c.image}`;
+            document.getElementById('imagePreviewContainer').style.display = 'flex';
         } else {
             document.getElementById('imagePreviewContainer').style.display = 'none';
         }
@@ -262,14 +267,19 @@
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("Không thể xóa lớp học này.");
+            return res.json();
+        })
         .then(data => {
             if (data.success) {
                 const row = document.getElementById(`class-row-${id}`);
                 if (row) row.remove();
                 alert(data.message);
+                loadClasses();
             }
-        });
+        })
+        .catch(err => alert(err.message));
     }
 
     // Preview ảnh khi chọn file

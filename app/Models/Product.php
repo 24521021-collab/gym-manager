@@ -5,6 +5,6 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
 
-protected $fillable = ['name','image','sku', 'price','product_category','stock_quantity',];
+protected $fillable = ['name','image','sku','description','price','product_category','stock_quantity',];
 public function orderItems() { return $this->hasMany(OrderItem::class); }
 }

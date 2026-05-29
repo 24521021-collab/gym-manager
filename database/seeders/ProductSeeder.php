@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ProductSeeder extends Seeder
 {
@@ -13,16 +14,18 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // Xóa sạch dữ liệu cũ để tránh trùng lặp
+        Schema::disableForeignKeyConstraints();
         DB::table('products')->truncate();
+        Schema::enableForeignKeyConstraints();
 
         $products = [
             [
                 'id' => 1,
                 'name' => 'Mutant Mass Extreme 2500 12lbs',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => '1 serving Mass Extreme 2500 12lbs cung cấp: 1070 Calories, 230-231g Carbohydrate và 30g Protein. Hỗ trợ tăng cân hiệu quả. Vị ngon dễ uống.',
                 'price' => 1850000,
-                'image' => 'https://www.wheystore.vn/images/products/2025/08/28/large/mutant-mass-extreme-2500-12lbs_1756351413.jpg.webp',
+                'image' => 'san-pham-1.jpg',
                 'sku' => 'SKU-MUTANT-MASS',
                 'stock_quantity' => 20,
                 'created_at' => now(),
@@ -31,10 +34,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 2,
                 'name' => 'Whey Gold Standard 5lbs',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Sữa tăng cơ tinh khiết, cung cấp 24g Protein và 5.5g BCAA mỗi khẩu phần giúp phục hồi cơ bắp nhanh chóng sau tập.',
                 'price' => 1550000,
-                'image' => 'https://www.wheystore.vn/images/products/2024/01/25/large/gold-standard-100-whey-5lbs-1_1706178123.jpg.webp',
+                'image' => 'san-pham-2.jpg',
                 'sku' => 'SKU-WHEY-GOLD',
                 'stock_quantity' => 15,
                 'created_at' => now(),
@@ -43,10 +46,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 3,
                 'name' => 'Rule 1 Whey Blend 5lbs',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Phức hợp Whey Concentrate và Isolate, hỗ trợ phát triển cơ bắp hiệu quả với 24g protein/serving, mùi vị đa dạng.',
                 'price' => 1350000,
-                'image' => 'https://i.ebayimg.com/images/g/U6cAAeSwo4BqDu2t/s-l1600.webp',
+                'image' => 'san-pham-3.jpg',
                 'sku' => 'SKU-RULE1-BLEND',
                 'stock_quantity' => 30,
                 'created_at' => now(),
@@ -55,10 +58,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 4,
                 'name' => 'Creatine Monohydrate Ostrovit 300g',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Tăng cường sức mạnh bùng nổ, tích trữ năng lượng ATP, giúp nâng tạ nặng hơn và tăng độ phồng tế bào cơ.',
                 'price' => 450000,
-                'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3-Slf4_-3R3Ti3DWYpoDaNZOvkY-ahcDG4A&s',
+                'image' => 'san-pham-4.jpg',
                 'sku' => 'SKU-CREATINE-OST',
                 'stock_quantity' => 50,
                 'created_at' => now(),
@@ -67,10 +70,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 5,
                 'name' => 'Xtend BCAA 90 Servings',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Cung cấp 7g BCAA với tỷ lệ 2:1:1 và Electrolytes giúp phục hồi, chống dị hóa cơ bắp, bổ sung điện giải trong lúc tập.',
                 'price' => 1150000,
-                'image' => 'https://bizweb.dktcdn.net/100/011/344/products/t1.jpg?v=1695783114890',
+                'image' => 'san-pham-5.jpg',
                 'sku' => 'SKU-XTEND-BCAA',
                 'stock_quantity' => 12,
                 'created_at' => now(),
@@ -79,10 +82,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 6,
                 'name' => 'Pre-Workout C4 Original 30 Servings',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Tăng cường năng lượng, độ tỉnh táo, tập trung và sức bền với 150mg Caffeine, Beta-Alanine và Creatine.',
                 'price' => 650000,
-                'image' => 'https://bizweb.dktcdn.net/100/011/344/products/c4-original-pre-workout-30-servings-icy-blue-razz.jpg?v=1758188304343',
+                'image' => 'san-pham-6.jpg',
                 'sku' => 'SKU-C4-PRE',
                 'stock_quantity' => 18,
                 'created_at' => now(),
@@ -91,10 +94,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 7,
                 'name' => 'Dầu cá Omega-3 Fish Oil 1000mg',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Chứa EPA và DHA hỗ trợ sức khỏe tim mạch, giảm đau viêm khớp sau tập tạ nặng và cải thiện trí não.',
                 'price' => 350000,
-                'image' => 'https://www.hangngoainhap.com.vn/images/202506/goods_img/78-p2-1750905299.jpg',
+                'image' => 'san-pham-7.jpg',
                 'sku' => 'SKU-OMEGA3-OIL',
                 'stock_quantity' => 40,
                 'created_at' => now(),
@@ -103,10 +106,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 8,
                 'name' => 'ZMA (Zinc, Magnesium, Vitamin B6)',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Phục hồi hệ thần kinh, thư giãn cơ, ngăn chuột rút, cải thiện giấc ngủ sâu và hỗ trợ tăng sinh tự nhiên.',
                 'price' => 550000,
-                'image' => 'https://m.media-amazon.com/images/I/71oP4iA2wbL._AC_UF894,1000_QL80_.jpg',
+                'image' => 'san-pham-8.jpg',
                 'sku' => 'SKU-ZMA-RECOVERY',
                 'stock_quantity' => 25,
                 'created_at' => now(),
@@ -115,10 +118,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 9,
                 'name' => 'Lipo 6 Black Ultra Concentrate',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Công thức sinh nhiệt siêu tập trung, tăng cường đốt cháy mỡ thừa và hỗ trợ quá trình siết cơ (Cutting) cực mạnh.',
                 'price' => 750000,
-                'image' => 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQvVOtsHHtYnM5W_FJ08uvjHqFipuk17Dm4yJGxv4xmBxOwzgQQU2tEPTqsiWHhjX8oF0yQp8AEhJUv4eV6HB-DYh5DkUdI5l4DrpdTC28vAzOEQOVMFZmlQhQLrmbmEzxb_1GgqQ&usqp=Cac',
+                'image' => 'san-pham-9.jpg',
                 'sku' => 'SKU-LIPO6-BURN',
                 'stock_quantity' => 14,
                 'created_at' => now(),
@@ -127,10 +130,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 10,
                 'name' => 'Bánh Protein Bar (Hộp 12 thanh)',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Bữa ăn phụ cực kỳ tiện lợi, cung cấp 20g protein nhanh chóng trước hoặc sau khi tập luyện bận rộn.',
                 'price' => 650000,
-                'image' => 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRuS-PMsT2dzj-Yvjn12qWiKBN3Yl9fMdEUmqej7UoRVhkQ0tbAKfSQlCkfERvtooXj-g1NW8IPbnTos-nKdubyy17XoUodZr_8QKlPPnjtRHKxd-EyzrwMka-qHAO641YxhA4ohQ6BOKg&usqp=Cac',
+                'image' => 'san-pham-10.jpg',
                 'sku' => 'SKU-PROBAR-BOX',
                 'stock_quantity' => 22,
                 'created_at' => now(),
@@ -139,10 +142,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 11,
                 'name' => 'Vitamin D3 K2 MK7 Ostrovit',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Hỗ trợ vận chuyển và hấp thụ canxi vào xương, tăng mật độ xương khớp, phòng ngừa loãng xương hiệu quả.',
                 'price' => 400000,
-                'image' => 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRKWcg4idhxwLs4zf_JMGLIOi4p8aDqwnPxqbNiuZJPrbQcnqq2vrIRbNhHewMD7QTPTEVDCs9jnV6mqV6DJfYeDIrKc4FSe5-e6aJ4YlhzKU0hknbU2gF4EpLpzmeCWPxVjPyuJNN93w&usqp=Cac',
+                'image' => 'san-pham-11.jpg',
                 'sku' => 'SKU-D3K2-OST',
                 'stock_quantity' => 35,
                 'created_at' => now(),
@@ -151,10 +154,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 12,
                 'name' => 'Đai lưng gánh tạ Valeo',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Bảo vệ cột sống, hỗ trợ gồng core (Intra-abdominal pressure) an toàn cho các bài tập nặng như Squat, Deadlift.',
                 'price' => 250000,
-                'image' => 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRD29urf4SmM5M4vGaAInbrdnXRj6O8yUBDx9G3vtYJtyPKJsoWbv3LrUW2qOjWIdhjnCrD8CDdito81mrYNT0dijDlFrQhc612tSESDfyFka7w6hVsSmKkmctzIIfPk2LCjpPMljdtvE8&usqp=Cac',
+                'image' => 'san-pham-12.jpg',
                 'sku' => 'SKU-VALEO-BELT',
                 'stock_quantity' => 10,
                 'created_at' => now(),
@@ -163,10 +166,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 13,
                 'name' => 'Dây kéo lưng (Lifting Straps)',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Tăng độ bám, trợ lực cho cổ tay và cẳng tay trong các bài kéo (Pull) để tập trung tác động vào cơ lưng.',
                 'price' => 150000,
-                'image' => 'https://www.wheystore.vn/images/products/2024/01/22/large/day-keo-lifting-strap-wheystore_1705908393.jpg.webp',
+                'image' => 'san-pham-13.jpg',
                 'sku' => 'SKU-LIFT-STRAPS',
                 'stock_quantity' => 50,
                 'created_at' => now(),
@@ -175,10 +178,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 14,
                 'name' => 'Băng quấn cổ tay (Wrist Wraps)',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Cố định khớp cổ tay, phòng tránh chấn thương hiệu quả khi thực hiện đẩy tạ nặng (Bench press, Shoulder press).',
                 'price' => 200000,
-                'image' => 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQ4OefO0Ce9l5UtKGIXJQrQfQ90Kbdg_T3BnnIyC-gyOKXF8a8GHqG_FYos5wnzbTy2PNEOC1QMjRXVY9CX7jgoatLucOisWPOAbgtX0thgoaxDBxE06dH-0zFoJOXtTipP5PqSgQ&usqp=Cac',
+                'image' => 'san-pham-14.jpg',
                 'sku' => 'SKU-WRIST-WRAPS',
                 'stock_quantity' => 45,
                 'created_at' => now(),
@@ -187,10 +190,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 15,
                 'name' => 'Bình lắc Shaker Spider 500ml',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Thiết kế chống rò rỉ, kèm quả cầu lò xo giúp hòa tan Whey/Mass dễ dàng, chất liệu nhựa an toàn BPA-free.',
                 'price' => 120000,
-                'image' => 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRoDsNxi687tB_Mb_Z9kPVMKAHlaSVLF_b7EYmN9DJ9drxX-cLzoTFBB4v-LHAckPtEe6wyxE3qZJYtTEEb2ZhV_Qwqf8txscKk-jQvtWm-q_g7lALjaNYGtugyxfXH75zdZt-ypnY&usqp=Cac',
+                'image' => 'san-pham-15.jpg',
                 'sku' => 'SKU-SHAKER-SPIDER',
                 'stock_quantity' => 60,
                 'created_at' => now(),
@@ -199,10 +202,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 16,
                 'name' => 'Băng bảo vệ gối (Knee Sleeves)',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Giữ ấm và trợ lực khớp gối khi Squat, giảm áp lực lên sụn chêm and dây chằng, bảo vệ đầu gối tối đa.',
                 'price' => 350000,
-                'image' => 'https://vnsport.com.vn/wp-content/uploads/2021/07/knee-support-vnsport-vn09.jpg',
+                'image' => 'san-pham-16.jpg',
                 'sku' => 'SKU-KNEE-SLEEVES',
                 'stock_quantity' => 15,
                 'created_at' => now(),
@@ -211,10 +214,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 17,
                 'name' => 'Dây kháng lực (Resistance Band)',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Bộ 5 dây cao su co giãn giúp tập mông đùi hiệu quả tại nhà, hoặc dùng để khởi động khớp vai linh hoạt trước khi tập.',
                 'price' => 180000,
-                'image' => 'https://ptfitness.vn/wp-content/uploads/2022/02/bo-day-dan-hoi-khang-luc-ngu-sac-pt6604-p3.jpg',
+                'image' => 'san-pham-17.jpg',
                 'sku' => 'SKU-RES-BAND',
                 'stock_quantity' => 30,
                 'created_at' => now(),
@@ -223,10 +226,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 18,
                 'name' => 'Mutant Geaar EAA 30 Servings',
-                'type' => 'Thực phẩm bổ sung',
+                'product_category' => 'sups',
                 'description' => 'Cung cấp 9 amino axit thiết ước tổng hợp protein, bổ sung chất điện giải chống dị hóa và bù nước trong lúc tập tạ.',
                 'price' => 850000,
-                'image' => 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcR77ZrooVmqmcuX2nZkHL30NpjmFtwtMU5B4JvJiGvGc_iBaiRN8jgrOcBU0pA3UOHJ5hDCG4IAz1Yjruj1XkJZ84J8XqVKYcIAcP8c-09yWStgUAksLmxgBw',
+                'image' => 'san-pham-18.jpg',
                 'sku' => 'SKU-MUTANT-EAA',
                 'stock_quantity' => 20,
                 'created_at' => now(),
@@ -235,10 +238,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 19,
                 'name' => 'Lăn khử mùi thể thao Old Spice',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Ngăn tiết mồ hôi, kháng khuẩn, giữ cơ thể khô thoáng và tự tin trong suốt buổi tập tạ cường độ cao tại phòng.',
                 'price' => 160000,
-                'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH9f9IthGwlhkLwfKuqMAGlsjWbRlwkXSGog&s',
+                'image' => 'san-pham-19.jpg',
                 'sku' => 'SKU-OLDSPICE-DEO',
                 'stock_quantity' => 40,
                 'created_at' => now(),
@@ -247,10 +250,10 @@ class ProductSeeder extends Seeder
             [
                 'id' => 20,
                 'name' => 'Túi xách thể thao KOR Duffle',
-                'type' => 'Phụ kiện tập luyện',
+                'product_category' => 'gear',
                 'description' => 'Túi gym chống nước, có ngăn đựng giày riêng biệt thoát khí, chứa phụ kiện, quần áo, bình lắc cực kỳ rộng rãi.',
                 'price' => 320000,
-                'image' => 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=400', // Thay thế ảnh base64 lỗi bằng link ảnh túi trống
+                'image' => 'san-pham-20.jpg',
                 'sku' => 'SKU-KOR-DUFFLE',
                 'stock_quantity' => 12,
                 'created_at' => now(),

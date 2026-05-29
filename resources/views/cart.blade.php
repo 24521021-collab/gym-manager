@@ -36,7 +36,7 @@
                                     // Kiểm tra loại hình để lấy đường dẫn ảnh chính xác
                                     $imagePath = $details['item_type'] === 'product' 
                                         ? asset('images/products/' . ($details['image'] ?? 'default-product.jpg'))
-                                        : asset('images/products/' . ($details['image'] ?? 'default-class.jpg'));
+                                        : asset('images/classes/' . ($details['image'] ?? 'default-class.jpg'));
                                 @endphp
                                 <div data-id="{{ $id }}" class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-black/20 rounded-xl border border-white/5 gap-4">
                                     <div class="flex items-center gap-4 flex-1">

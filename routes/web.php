@@ -26,6 +26,7 @@ use App\Http\Controllers\Pt\PtDashboardController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Admin\AdminPt_BookingController;
+use App\Http\Controllers\Admin\PostController;
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
 //home( trang chủ )
@@ -163,6 +164,16 @@ Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 Route::get('/classes',[BookingController::class, 'index'])->name('classes.index');
 Route::post('/classes/book',[BookingController::class, 'store'])->name('classes.store')->middleware('auth');
 Route::delete('/classes/cancel',[BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');
+
+// Route công khai (Ai cũng xem được bài viết)
+Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+Route::get('/blog/{slug}', [PostController::class, 'show'])->name('posts.show');
+
+// Route Admin (Bảo mật: Chỉ Admin mới được thêm/xóa bài viết)
+Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function () {
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+});
 
 // Cấu hình route ảo để làm sạch lỗi của môi trường phát triển ngầm (IDX/Vite)
 Route::put('/', function () {

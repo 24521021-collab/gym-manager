@@ -34,6 +34,9 @@
                                 <img src="{{ asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" 
                                 class="w-full h-full object-cover opacity-90 js-main-img" 
                                 alt="{{ $product->name }}"/>
+                                <span class="absolute top-2 right-2 text-[9px] font-bold bg-black/60 text-primary border border-primary/20 px-2 py-0.5 rounded uppercase backdrop-blur-md z-10">
+                                    {{ $product->product_category == 'sups' ? 'Supplements' : 'Gear' }}
+                                </span>
                                 <div class="absolute bg-white/20 border border-white/40 pointer-events-none hidden js-zoom-lens" style="width: 60px; height: 60px; border-radius: 8px;"></div>
                             </div>
                         <div class="absolute left-full top-0 ml-3 w-64 h-64 border border-white/10 rounded-xl overflow-hidden bg-[#141414] shadow-2xl hidden z-50 js-zoom-result">
@@ -46,9 +49,10 @@
                             <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">{{ $product->name }}</h3>
                             <p class="text-[10px] text-gray-500 mt-0.5">Mã SKU: <strong>{{ $product->sku }}</strong></p>
                             <p class="text-[10px] text-gray-500 mt-0.5">Kho còn: <strong class="{{ $product->stock_quantity > 0 ? 'text-emerald-400' : 'text-primary' }}">{{ $product->stock_quantity }}</strong></p>
-                            <span class="text-[10px] text-gray-400 mt-1 block italic text-primary">
-                                {{ $product->product_category == 'sups' ? 'Thực phẩm bổ sung' : 'Phụ kiện tập luyện' }}
-                            </span>
+                            
+                            @if($product->description)
+                                <p class="text-[10px] text-gray-400 mt-2 line-clamp-3 italic leading-relaxed">{{ $product->description }}</p>
+                            @endif
                         </div>
                     </div>
                     
@@ -100,6 +104,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Hàm hỗ trợ ngăn chặn XSS khi render dữ liệu từ API
+    function escapeHtml(text) {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text ? String(text).replace(/[&<>"']/g, m => map[m]) : '';
+    }
+
     // 1. Khởi tạo dữ liệu đồng bộ từ Session của Laravel
     // Thêm cấu hình này ngay đầu khối <script>
     let selectedItems = [
@@ -184,9 +194,11 @@
             data.products.data.forEach(product => {
                 const img = product.image ? `/images/products/${product.image}` : '/images/products/default-product.jpg';
                 const catText = product.product_category === 'sups' ? 'Thực phẩm bổ sung' : 'Phụ kiện tập luyện';
+                const catBadge = product.product_category === 'sups' ? 'Supplements' : 'Gear';
                 
                 // Chuẩn hóa tên chống lỗi vỡ HTML/JS
                 const safeName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const descriptionHtml = product.description ? `<p class="text-[10px] text-gray-400 mt-2 line-clamp-3 italic leading-relaxed">${escapeHtml(product.description)}</p>` : '';
                 
                 const html = `
                     <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 shadow-md p-3 flex flex-col justify-between relative" data-cat="${product.product_category}">
@@ -194,6 +206,7 @@
                             <div class="relative mb-2">
                                 <div class="w-full h-36 rounded-xl overflow-hidden bg-black/20 relative cursor-zoom-in js-zoom-container">
                                     <img src="${img}" class="w-full h-full object-cover opacity-90 js-main-img" alt="${product.name}"/>
+                                    <span class="absolute top-2 right-2 text-[9px] font-bold bg-black/60 text-primary border border-primary/20 px-2 py-0.5 rounded uppercase backdrop-blur-md z-10">${catBadge}</span>
                                     <div class="absolute bg-white/20 border border-white/40 pointer-events-none hidden js-zoom-lens" style="width: 60px; height: 60px; border-radius: 8px;"></div>
                                 </div>
                                 <div class="absolute left-full top-0 ml-3 w-64 h-64 border border-white/10 rounded-xl overflow-hidden bg-[#141414] shadow-2xl hidden z-50 js-zoom-result">
@@ -204,7 +217,7 @@
                                 <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">${product.name}</h3>
                                 <p class="text-[10px] text-gray-500 mt-0.5">Mã SKU: <strong>${product.sku}</strong></p>
                                 <p class="text-[10px] text-gray-500 mt-0.5">Kho còn: <strong class="${product.stock_quantity > 0 ? 'text-emerald-400' : 'text-primary'}">${product.stock_quantity}</strong></p>
-                                <span class="text-[10px] text-gray-400 mt-1 block italic text-primary">${catText}</span>
+                                ${descriptionHtml}
                             </div>
                         </div>
                         <div class="p-1 mt-3 flex justify-between items-center">

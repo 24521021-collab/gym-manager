@@ -78,12 +78,12 @@ class ClassController extends Controller
 
         if ($request->hasFile('image')) {
             // Xóa ảnh cũ nếu tồn tại để tránh rác server
-            if ($class->image && File::exists(public_path('uploads/classes/' . $class->image))) {
-                File::delete(public_path('uploads/classes/' . $class->image));
+            if ($class->image && File::exists(public_path('images/classes/' . $class->image))) {
+                File::delete(public_path('images/classes/' . $class->image));
             }
             
             $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/classes'), $imageName);
+            $request->image->move(public_path('images/classes'), $imageName);
             $data['image'] = $imageName;
         }
 
@@ -99,8 +99,8 @@ class ClassController extends Controller
     public function destroy($id) {
         $class = GymClass::findOrFail($id);
         // Xóa ảnh khi xóa record
-        if ($class->image && File::exists(public_path('uploads/classes/' . $class->image))) {
-            File::delete(public_path('uploads/classes/' . $class->image));
+        if ($class->image && File::exists(public_path('images/classes/' . $class->image))) {
+            File::delete(public_path('images/classes/' . $class->image));
         }
         $class->delete();
         return response()->json(['success' => true, 'message' => 'Đã xóa lớp học!']);
