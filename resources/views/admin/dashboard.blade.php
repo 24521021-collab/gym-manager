@@ -274,7 +274,14 @@
         modal.classList.remove('hidden');
         modal.classList.add('flex');
 
-        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+            fps: 30, // Tăng từ 10 lên 30 để máy ảnh bắt mã nhanh và mượt hơn
+            qrbox: { width: 250, height: 250 }, // Định nghĩa vùng quét cố định giúp tập trung lấy nét
+            aspectRatio: 1.0,
+            experimentalFeatures: {
+                useBarCodeDetectorIfSupported: true // CỰC KỲ QUAN TRỌNG: Dùng API phần cứng của trình duyệt để nhận diện tức thì
+            }
+        });
         html5QrcodeScanner.render(onScanSuccess);
     }
 

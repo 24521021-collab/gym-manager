@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('image')->nullable()->default('default-product.jpg');
             $table->string('name');
-            $table->string('type')->nullable(); // Thêm cột thể loại (Thực phẩm bổ sung / Phụ kiện)
+            $table->string('product_category')->nullable(); // Thêm cột thể loại (sups / gear)
             $table->text('description')->nullable(); // Thêm cột mô tả sản phẩm theo ý bạn
             $table->string('sku')->unique()->nullable(); // Cho phép nullable để tránh lỗi dữ liệu Seeder cũ
             $table->decimal('price', 12, 2); // Kiểu decimal chuẩn cho tiền tệ
