@@ -21,7 +21,7 @@ class GymPackageController extends Controller{
 
         // Nếu là request AJAX, trả về JSON
         if ($request->ajax()) {
-            return response()->json($packages);
+            return response()->json($packages)->header('Vary', 'X-Requested-With');
         }
         return view('admin.packages', compact('packages'));
 }

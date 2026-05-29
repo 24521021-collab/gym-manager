@@ -32,14 +32,14 @@ class ReviewController extends Controller
         // 1. Lấy danh sách sản phẩm đã mua và thanh toán thành công
         $products = Product::whereHas('orderItems.order', function ($query) use ($userId) {
             $query->where('user_id', $userId)
-                  ->where('payment_status', 'Pending');
+                  ->where('payment_status',['Pending', 'Paid']);
         })->distinct()->get(['id', 'name']);
 
         // 2. Lấy danh sách HLV (PT) mà người dùng đã từng đặt lịch
         $pts = User::where('role', 'pt')
             ->whereHas('ptBookingsAsPt', function ($query) use ($userId) {
                 $query->where('customer_id', $userId)
-                      ->where('status', 'pending'); // Chỉ cho phép đánh giá khi đã tập xong
+                      ->where('status', ['pending','paid']); // Chỉ cho phép đánh giá khi đã tập xong
             })->distinct()->get(['id', 'full_name']);
 
         return response()->json([

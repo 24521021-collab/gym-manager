@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Membership;
 use App\Models\Booking;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +45,7 @@ class AdminOrderController extends Controller
         $orders = $query->paginate(10);
 
         if ($request->ajax()) {
-            return response()->json($orders);
+            return response()->json($orders)->header('Vary', 'X-Requested-With');
         }
         return view('admin.transaction');
     }
@@ -80,6 +81,7 @@ class AdminOrderController extends Controller
 
             // Nếu Admin xác nhận đã thanh toán (Paid)
             if ($newStatus === 'Paid') {
+                $hasProducts = false; // Khởi tạo cờ
                 foreach ($order->items as $item) {
                     if ($item->item_type === 'package') {
                         // 1. Kích hoạt Membership đang ở trạng thái Inactive
@@ -87,6 +89,17 @@ class AdminOrderController extends Controller
                             ->where('package_id', $item->item_id)
                             ->where('status', 'Inactive')
                             ->update(['status' => 'Active']);
+                        
+                        try {
+                            Notification::create([
+                                'user_id' => $order->user_id,
+                                'type'    => 'membership',
+                                'title'   => 'Gói tập đã kích hoạt',
+                                'content' => "Cảm ơn bạn! Gói tập [{$item->name}] đã được xác nhận thanh toán và kích hoạt thành công."
+                            ]);
+                        } catch (\Exception $e) {
+                            \Log::error("Lỗi tạo thông báo cho gói tập trong AdminOrderController #ORD-{$order->id}: " . $e->getMessage());
+                        }
 
                         // 2. Nâng cấp Role cho người dùng nếu đang là guest
                         $user = $order->user;
@@ -100,6 +113,32 @@ class AdminOrderController extends Controller
                             ->where('class_id', $item->item_id)
                             ->where('status', 'pending')
                             ->update(['status' => 'confirmed']);
+                        
+                        try {
+                            Notification::create([
+                                'user_id' => $order->user_id,
+                                'type'    => 'class',
+                                'title'   => 'Lớp học đã xác nhận',
+                                'content' => "Cảm ơn bạn! Đơn đăng ký lớp [{$item->name}] đã được xác nhận thành công."
+                            ]);
+                        } catch (\Exception $e) {
+                            \Log::error("Lỗi tạo thông báo cho lớp học trong AdminOrderController #ORD-{$order->id}: " . $e->getMessage());
+                        }
+                    } elseif ($item->item_type === 'product') {
+                        $hasProducts = true; // Đặt cờ nếu có sản phẩm
+                    }
+                }
+                // Tạo một thông báo duy nhất cho các sản phẩm trong đơn hàng (nếu có)
+                if ($hasProducts) {
+                    try {
+                        Notification::create([
+                            'user_id' => $order->user_id,
+                            'type'    => 'order',
+                            'title'   => 'Đơn hàng đã xác nhận',
+                            'content' => "Cảm ơn bạn! Đơn hàng #ORD-{$order->id} đã được xác nhận thanh toán."
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error("Lỗi tạo thông báo cho đơn hàng sản phẩm trong AdminOrderController #ORD-{$order->id}: " . $e->getMessage());
                     }
                 }
             } 

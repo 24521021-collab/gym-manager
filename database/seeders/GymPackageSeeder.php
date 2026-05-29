@@ -20,5 +20,18 @@ class GymPackageSeeder extends Seeder
         'price' => 900000,
         'description' => 'Tập luyện với PT'
     ]);
-}
+       \App\Models\GymPackage::create([
+        'package_name' => 'Gói Elite Vip',
+        'duration_days' => 30,
+        'price' => 1000000,
+        'description' => 'Tập toàn diện , có chế độ dinh dưỡng'
+    ]);
+       \App\Models\GymPackage::create([
+        'package_name' => 'Gói Nâng Cao Siu Vip',
+        'duration_days' => 30,
+        'price' => 1900000,
+        'description' => 'Tập luyện với PT, có 1-1 tại giường '
+    ]);
+    
+    }
 }

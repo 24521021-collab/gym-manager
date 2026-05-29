@@ -26,8 +26,8 @@ class ClassController extends Controller
         $classes = $query->paginate(10);
 
         // Trả về JSON nếu là request AJAX
-        if ($request->ajax()) {
-            return response()->json($classes);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json($classes)->header('Vary', 'X-Requested-With');
         }
 
         $pts = PTProfile::with('user')->get(); 

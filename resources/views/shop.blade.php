@@ -1,5 +1,4 @@
 @extends('layout.frontend') 
-
 @section('content')
 <div class="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-6">
     
@@ -27,11 +26,22 @@
         <section class="col-span-12 lg:col-span-5">
             <div class="grid grid-cols-2 gap-4" id="product-list">
                 @foreach($products as $product)
-                <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 overflow-hidden shadow-md hover:border-primary transition-colors p-3 flex flex-col justify-between" data-cat="{{ $product->product_category }}">
+                <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 shadow-md hover:border-primary transition-colors p-3 flex flex-col justify-between relative" data-cat="{{ $product->product_category }}">
                     <div>
-                        <div class="w-full h-36 rounded-xl overflow-hidden mb-2 bg-black/20">
-                            <img src="{{ asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" class="w-full h-full object-cover opacity-90" alt="{{ $product->name }}"/>
+                        {{-- Wrapper cho ảnh và hộp zoom --}}
+                        <div class="relative mb-2">
+                            <div class="w-full h-36 rounded-xl overflow-hidden bg-black/20 relative cursor-zoom-in js-zoom-container">
+                                <img src="{{ asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" 
+                                class="w-full h-full object-cover opacity-90 js-main-img" 
+                                alt="{{ $product->name }}"/>
+                                <div class="absolute bg-white/20 border border-white/40 pointer-events-none hidden js-zoom-lens" style="width: 60px; height: 60px; border-radius: 8px;"></div>
+                            </div>
+                        <div class="absolute left-full top-0 ml-3 w-64 h-64 border border-white/10 rounded-xl overflow-hidden bg-[#141414] shadow-2xl hidden z-50 js-zoom-result">
+                            <img src="{{ asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" 
+                            class="absolute max-w-none js-high-res-img" 
+                            style="width: 400%; height: 400%;" />
                         </div>
+                    </div>
                         <div class="p-1">
                             <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">{{ $product->name }}</h3>
                             <p class="text-[10px] text-gray-500 mt-0.5">Mã SKU: <strong>{{ $product->sku }}</strong></p>
@@ -179,10 +189,16 @@
                 const safeName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 
                 const html = `
-                    <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 overflow-hidden shadow-md p-3 flex flex-col justify-between" data-cat="${product.product_category}">
+                    <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 shadow-md p-3 flex flex-col justify-between relative" data-cat="${product.product_category}">
                         <div>
-                            <div class="w-full h-36 rounded-xl overflow-hidden mb-2 bg-black/20">
-                                <img src="${img}" class="w-full h-full object-cover opacity-90" alt="${product.name}"/>
+                            <div class="relative mb-2">
+                                <div class="w-full h-36 rounded-xl overflow-hidden bg-black/20 relative cursor-zoom-in js-zoom-container">
+                                    <img src="${img}" class="w-full h-full object-cover opacity-90 js-main-img" alt="${product.name}"/>
+                                    <div class="absolute bg-white/20 border border-white/40 pointer-events-none hidden js-zoom-lens" style="width: 60px; height: 60px; border-radius: 8px;"></div>
+                                </div>
+                                <div class="absolute left-full top-0 ml-3 w-64 h-64 border border-white/10 rounded-xl overflow-hidden bg-[#141414] shadow-2xl hidden z-50 js-zoom-result">
+                                    <img src="${img}" class="absolute max-w-none js-high-res-img" style="width: 400%; height: 400%;" />
+                                </div>
                             </div>
                             <div class="p-1">
                                 <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">${product.name}</h3>
@@ -342,5 +358,52 @@
         }
         window.location.href = "{{ route('cart.index') }}";
     }
+
+    /** 
+     * LOGIC ZOOM SẢN PHẨM (ĐÃ SỬA LỖI ID VÀ OVERFLOW)
+     * Sử dụng Event Delegation để hoạt động với cả sản phẩm load qua AJAX
+     */
+    $(document).ready(function() {
+        $(document).on('mouseenter', '.js-zoom-container', function() {
+            $(this).find('.js-zoom-lens').removeClass('hidden');
+            $(this).parent().find('.js-zoom-result').removeClass('hidden');
+        });
+
+        $(document).on('mouseleave', '.js-zoom-container', function() {
+            $(this).find('.js-zoom-lens').addClass('hidden');
+            $(this).parent().find('.js-zoom-result').addClass('hidden');
+        });
+
+        $(document).on('mousemove', '.js-zoom-container', function(e) {
+            const $container = $(this);
+            const $lens = $container.find('.js-zoom-lens');
+            const $resultBox = $container.parent().find('.js-zoom-result');
+            const $highResImg = $resultBox.find('.js-high-res-img');
+
+            const offset = $container.offset();
+            let x = e.pageX - offset.left;
+            let y = e.pageY - offset.top;
+
+            let lensX = x - ($lens.width() / 2);
+            let lensY = y - ($lens.height() / 2);
+
+            // Giới hạn lens trong khung ảnh
+            if (lensX < 0) lensX = 0;
+            if (lensY < 0) lensY = 0;
+            if (lensX > $container.width() - $lens.width()) lensX = $container.width() - $lens.width();
+            if (lensY > $container.height() - $lens.height()) lensY = $container.height() - $lens.height();
+
+            $lens.css({ left: lensX + 'px', top: lensY + 'px' });
+
+            // Tính toán tỷ lệ dịch chuyển ảnh lớn (400% zoom)
+            const ratioX = ($highResImg.width() - $resultBox.width()) / ($container.width() - $lens.width());
+            const ratioY = ($highResImg.height() - $resultBox.height()) / ($container.height() - $lens.height());
+
+            $highResImg.css({
+                left: '-' + (lensX * ratioX) + 'px',
+                top: '-' + (lensY * ratioY) + 'px'
+            });
+        });
+    });
 </script>
 @endsection

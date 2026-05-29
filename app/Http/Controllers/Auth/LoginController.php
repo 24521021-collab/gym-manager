@@ -42,7 +42,7 @@ class LoginController extends Controller
     Auth::logout(); // 1. Lệnh xóa trạng thái đăng nhập của người dùng
     $request->session()->invalidate(); // 2. Hủy bỏ phiên làm việc hiện tại
     $request->session()->regenerateToken(); // 3. Làm mới mã bảo mật (CSRF)
-    return redirect()->route('trang_chu'); // 4. Đuổi về trang đăng nhập
+    return redirect('/'); // 4. Đuổi về trang đăng nhập
     }
     // 1. Chuyển hướng người dùng sang Google
 public function redirectToGoogle() {

@@ -1,5 +1,4 @@
 @extends('layout.frontend')
-
 @section('content')
 <div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
     <h2 class="font-headline text-2xl uppercase tracking-wider text-white mb-6 flex items-center gap-2 italic">

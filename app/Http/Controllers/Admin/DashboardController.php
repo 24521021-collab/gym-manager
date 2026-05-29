@@ -3,223 +3,126 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\CheckIn;
 use Carbon\Carbon;
 
 // Import đúng các Model trong hệ thống của Long
-use App\Models\Order; 
+use App\Models\Order;
 use App\Models\User;
 use App\Models\GymClass;
-use App\Models\GymPackage;
-use App\Models\Membership;
 use App\Models\OrderItem;
 use App\Models\PtBooking;
+use App\Models\PTProfile;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $currentYear = Carbon::now()->year;
+        $currentMonth = Carbon::now()->month;
 
-        // --- 1. CÁC CARD THỐNG KÊ (QUICK STATS) ---
-        // Doanh thu chi tiết từ Sản phẩm
-        $productRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+        // 1. CÁC CARD THỐNG KÊ (QUICK STATS) - Lọc theo tháng và năm hiện tại
+        // Doanh thu từ Sản phẩm (Shop Revenue)
+        $shopRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.payment_status', 'Paid')
             ->where('order_items.item_type', 'product')
+            ->whereMonth('orders.order_date', $currentMonth)
+            ->whereYear('orders.order_date', $currentYear)
             ->sum('order_items.subtotal');
 
-        // Doanh thu chi tiết từ Gói tập
+        // Doanh thu từ Gói tập (Package Revenue)
         $packageRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.payment_status', 'Paid')
             ->where('order_items.item_type', 'package')
+            ->whereMonth('orders.order_date', $currentMonth)
+            ->whereYear('orders.order_date', $currentYear)
             ->sum('order_items.subtotal');
 
-        // Lợi nhuận từ Lớp học & PT Booking (Số tiền lời phòng Gym nhận được)
-        // 1. Tổng tiền từ lớp học (Gym giữ 50%)
-        $grossClassRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+        // Doanh thu từ Lớp học nhóm (Group Revenue)
+        $groupRevenue = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.payment_status', 'Paid')
             ->where('order_items.item_type', 'class')
+            ->whereMonth('orders.order_date', $currentMonth)
+            ->whereYear('orders.order_date', $currentYear)
             ->sum('order_items.subtotal');
-        
-        // 2. Tổng tiền từ PT Booking riêng (Gym giữ 20%)
-        $grossPtBookingRevenue = PtBooking::whereIn('status', ['confirmed', 'completed'])->sum('price');
 
-        // Công thức: Doanh thu lớp học (Lợi nhuận gym) = (Tổng lớp * 50%) + (Tổng PT * 20%)
-        $classRevenue = ($grossClassRevenue * 0.5) + ($grossPtBookingRevenue * 0.2);
+        // Doanh thu từ PT 1-kèm-1 (PT Revenue)
+        $ptRevenue = PtBooking::whereIn('status', ['confirmed', 'completed'])
+            ->whereMonth('booking_date', $currentMonth)
+            ->whereYear('booking_date', $currentYear)
+            ->sum('price');
 
-        // Tổng lợi nhuận thực tế (Package + Product + Lợi nhuận lớp/PT)
-        $totalRevenue = $packageRevenue + $productRevenue + $classRevenue;
-
-        // Số lớp học đang mở
-        $totalClasses = GymClass::count();
-
-        // Học viên mới trong năm nay (Loại trừ Admin và Trainer nếu có)
-        $totalNewMembers = User::whereYear('created_at', $currentYear)
-            ->where('role', 'member')
-            ->count();
-
-        // Tổng số đơn hàng bán lẻ sản phẩm
-        $totalOrders = Order::where('payment_status', 'Paid')->count();
-
-
-        // --- 2. BIỂU ĐỒ ĐƯỜNG: DOANH THU 12 THÁNG (LINE CHART) ---
-        // Gom doanh thu đơn hàng theo tháng
-        $monthlyOrderRevenue = Order::select(
-                DB::raw('SUM(total_amount) as total'),
-                DB::raw('MONTH(order_date) as month')
-            )
-            ->whereYear('order_date', $currentYear)
-            ->where('payment_status', 'Paid')
-            ->groupBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
-
-        // Gom doanh thu gói tập theo tháng
-        $monthlyPackageRevenue = Membership::join('gym_packages', 'memberships.package_id', '=', 'gym_packages.id')
-            ->select(
-                DB::raw('SUM(gym_packages.price) as total'),
-                DB::raw('MONTH(memberships.created_at) as month')
-            )
-            ->whereYear('memberships.created_at', $currentYear)
-            ->where('memberships.status', 'Active')
-            ->groupBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
-
-        // Cộng dồn doanh thu 2 mảng và chuẩn hóa đủ 12 tháng cho Chart.js
-        $monthsLabels = [];
-        $revenueChartData = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $monthsLabels[] = "Tháng $i";
-            $orderAmt = $monthlyOrderRevenue[$i] ?? 0;
-            $packageAmt = $monthlyPackageRevenue[$i] ?? 0;
-            $revenueChartData[] = $orderAmt + $packageAmt;
-        }
-
-        $revenueData = [
-            'labels' => $monthsLabels,
-            'data'   => $revenueChartData
-        ];
-
-
-        // --- 3. BIỂU ĐỒ TRÒN 1: CƠ CẤU DOANH THU (GÓI TẬP VS SẢN PHẨM) ---
-        $structureData = [
-            'labels' => ['Gói tập', 'Sản phẩm', 'Lớp học'],
-            'data'   => [(int)$packageRevenue, (int)$productRevenue, (int)$classRevenue]
-        ];
-
-
-        // --- 4. BIỂU ĐỒ TRÒN 2: TỶ LỆ CÁC GÓI TẬP ĐƯỢC ĐĂNG KÝ ---
-        $packageStats = DB::table('memberships')
-            ->join('gym_packages', 'memberships.package_id', '=', 'gym_packages.id')
-            ->select('gym_packages.package_name', DB::raw('count(*) as total'))
-            ->groupBy('gym_packages.package_name')
-            ->get();
-
-        $totalSubs = $packageStats->sum('total');
-        $pkgLabels = [];
-        $pkgData   = [];
-
-        foreach ($packageStats as $stat) {
-            $pkgLabels[] = $stat->package_name;
-            // Tính toán % sẵn từ Backend để Frontend chỉ việc hiển thị
-            $pkgData[]   = $totalSubs > 0 ? round(($stat->total / $totalSubs) * 100, 1) : 0;
-        }
-
-        $packageData = [
-            'labels' => $pkgLabels,
-            'data'   => $pkgData
-        ];
-
-
-        // --- 5. BIỂU ĐỒ CỘT: TĂNG TRƯỞNG THÀNH VIÊN MỚI (BAR CHART) ---
-        $usersPerMonth = User::select(
-                DB::raw('COUNT(*) as count'),
-                DB::raw('MONTH(created_at) as month')
-            )
-            ->whereYear('created_at', $currentYear)
-            ->where('role', 'member')
-            ->groupBy('month')
-            ->pluck('count', 'month')
-            ->toArray();
-
-        $newMemberChartData = [];
-        $shortMonthLabels = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $shortMonthLabels[] = "T$i";
-            $newMemberChartData[] = $usersPerMonth[$i] ?? 0;
-        }
-
-        $newMemberData = [
-            'labels' => $shortMonthLabels,
-            'data'   => $newMemberChartData
-        ];
-
-
-        // --- 6. BIỂU ĐỒ HOÀN CHỈNH: TOP SẢN PHẨM BÁN CHẠY (Mặc định 30 ngày gần nhất) ---
-        $endDateDefault = Carbon::now()->format('Y-m-d');
-        $startDateDefault = Carbon::now()->subDays(30)->format('Y-m-d');
-        $productStats = $this->queryTopProductsData($startDateDefault, $endDateDefault);
-
-
-        return view('admin.dashboard', compact(
-            'totalRevenue', 'totalClasses', 'totalNewMembers', 'totalOrders',
-            'revenueData', 'structureData', 'packageData', 'newMemberData', 'productStats'
-        ));
-    }
-
-    // --- 7. HÀM API AJAX PHỤC VỤ BỘ LỌC NGÀY THÁNG CỦA BIỂU ĐỒ SẢN PHẨM ---
-    public function filterTopProducts(Request $request)
-    {
-        $startDate = $request->input('start_date');
-        $endDate   = $request->input('end_date');
-
-        if (!$startDate || !$endDate) {
-            $endDate = Carbon::now()->format('Y-m-d');
-            $startDate = Carbon::now()->subDays(30)->format('Y-m-d');
-        }
-
-        $productStats = $this->queryTopProductsData($startDate, $endDate);
-
-        return response()->json($productStats);
-    }
-
-    // Hàm bổ trợ đóng gói câu SQL truy vấn lồng nhóm sản phẩm theo danh mục (Giống file mẫu 100%)
-    private function queryTopProductsData($startDate, $endDate)
-    {
-        $rawProducts = DB::table('order_items')
-            ->join('orders', 'order_items.order_id', '=', 'orders.id')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->select(
-                'products.name as product_name',
-                DB::raw('SUM(order_items.quantity) as total_qty'),
-                DB::raw('SUM(order_items.subtotal) as total_revenue') 
-            )
+        // 1.1 Chi tiết Doanh thu Sản phẩm (Group theo tên)
+        $productPerformances = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.payment_status', 'Paid')
-            ->whereBetween('orders.order_date', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->groupBy('products.id', 'products.name')
-            ->orderBy('total_qty', 'desc')
-            ->limit(10)
+            ->where('order_items.item_type', 'product')
+            ->whereMonth('orders.order_date', $currentMonth)
+            ->whereYear('orders.order_date', $currentYear)
+            ->select('order_items.name', DB::raw('SUM(order_items.quantity) as total_sold'), DB::raw('SUM(order_items.subtotal) as total_revenue'))
+            ->groupBy('order_items.name')
             ->get();
 
-        // Vì cấu trúc của bạn không có bảng Category rõ ràng trong context, 
-        // tôi sẽ gom tất cả vào một nhóm chung "Sản phẩm" để đảm bảo biểu đồ vẫn hiển thị được.
-        $productStats = [
-            '1' => [
-                'name' => 'Tất cả sản phẩm',
-                'products' => [],
-                'data' => [],
-                'quantities' => []
-            ]
-        ];
+        // 1.2 Chi tiết Doanh thu Gói tập
+        $packagePerformances = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.payment_status', 'Paid')
+            ->where('order_items.item_type', 'package')
+            ->whereMonth('orders.order_date', $currentMonth)
+            ->whereYear('orders.order_date', $currentYear)
+            ->select('order_items.name', DB::raw('COUNT(order_items.id) as total_sold'), DB::raw('SUM(order_items.subtotal) as total_revenue'))
+            ->groupBy('order_items.name')
+            ->get();
 
-        foreach ($rawProducts as $item) {
-            $productStats['1']['products'][] = $item->product_name;
-            $productStats['1']['data'][] = (int)$item->total_revenue;
-            $productStats['1']['quantities'][] = (int)$item->total_qty;
-        }
+        // 1.3 Chi tiết Doanh thu PT (Tính 20% hoa hồng hệ thống thu được)
+        $ptPerformances = PtBooking::join('user', 'pt_bookings.pt_id', '=', 'user.id')
+            ->whereIn('pt_bookings.status', ['confirmed', 'completed'])
+            ->whereMonth('pt_bookings.booking_date', $currentMonth)
+            ->whereYear('pt_bookings.booking_date', $currentYear)
+            ->select('user.full_name', DB::raw('SUM(pt_bookings.price) as total_revenue'), DB::raw('SUM(pt_bookings.price) * 0.2 as admin_commission'))
+            ->groupBy('pt_bookings.pt_id', 'user.full_name')
+            ->get();
 
-        return $productStats;
+        // 2. Dữ liệu điểm danh hôm nay
+        $todayCheckins = CheckIn::with('user')
+            ->whereDate('check_in_time', Carbon::today())
+            ->orderBy('check_in_time', 'desc')
+            ->get();
+        $checkinCount = $todayCheckins->count();
+
+        // 3. Hiệu suất doanh thu lớp nhóm
+        $classPerformances = GymClass::with('pt.user')
+            ->leftJoin('order_items', function($join) use ($currentMonth, $currentYear) {
+                $join->on('gym_classes.id', '=', 'order_items.item_id')
+                     ->where('order_items.item_type', 'class')
+                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                     ->where('orders.payment_status', 'Paid')
+                     ->whereMonth('orders.order_date', $currentMonth)
+                     ->whereYear('orders.order_date', $currentYear);
+            })
+            ->select(
+                'gym_classes.id',
+                'gym_classes.name',
+                'gym_classes.price', // Giá cơ bản của lớp học
+                'gym_classes.pt_id', // Bắt buộc phải có để load quan hệ pt.user
+                DB::raw('COUNT(order_items.id) as total_sold'), // Số lượng suất đã bán
+                DB::raw('SUM(order_items.subtotal) as total_revenue') // Tổng doanh thu từ lớp này
+            )
+            ->groupBy('gym_classes.id', 'gym_classes.name', 'gym_classes.price', 'gym_classes.pt_id')
+            ->orderByDesc('total_revenue')
+            ->get();
+
+        // Truyền dữ liệu sang view
+        return view('admin.dashboard', compact(
+            'packageRevenue',
+            'shopRevenue',
+            'ptRevenue',
+            'groupRevenue',
+            'todayCheckins',
+            'checkinCount',
+            'classPerformances',
+            'productPerformances',
+            'packagePerformances',
+            'ptPerformances'
+        ));
     }
 }

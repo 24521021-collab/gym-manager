@@ -28,7 +28,7 @@ class ProductSeeder extends Seeder
                 'price' => 250000,
                 'product_category' =>'gear',
                 'stock_quantity' => 15,
-                //'image' => 'products/dumbbell-5kg.jpg',
+                'image' => 'dumbbell-5kg.jpg',
             ],
             [
                 'name' => 'Tạ tay cao su 10kg',

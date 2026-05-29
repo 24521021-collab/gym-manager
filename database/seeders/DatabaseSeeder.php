@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Hash; // Để mã hóa mật khẩu
 class DatabaseSeeder extends Seeder
 {
     //sau nay phai fix lai thanh user.seeder
-    public function run(): void
-    {
+    public function run(): void{
         // Thứ tự gọi seeder quan trọng vì quan hệ khóa ngoại
         $this->call([
             UserSeeder::class,
@@ -19,7 +18,7 @@ class DatabaseSeeder extends Seeder
             PTProfileSeeder::class,
             GymClassSeeder::class,
             OrderSeeder::class,
+            PtBookingSeeder::class,
         ]);
-
     }
 }

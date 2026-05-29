@@ -139,8 +139,33 @@
             </div>
         </div>
     </div>
+
+    <!-- KHỐI GÓI HỘI VIÊN DỮ LIỆU ĐỘNG (SAO CHÉP TỪ INDEX.HTML) -->
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+        <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2" style="font-family: 'Oswald', sans-serif;">
+            <span class="material-symbols-outlined text-primary">workspace_premium</span> Gói hội viên & Đăng ký dịch vụ
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($goiTaps as $package)
+            @php
+                // Một chút logic để giữ giao diện đặc biệt cho gói "Elite" hoặc "Nâng cao" từ bản mẫu
+                $isElite = str_contains(strtolower($package->package_name), 'elite') || str_contains(strtolower($package->package_name), 'nâng cao');
+            @endphp
+            <div class="{{ $isElite ? 'bg-primary/10 border border-primary relative' : 'bg-black/20 border border-white/5' }} rounded-xl p-5 hover:border-primary transition-colors">
+                @if($isElite)
+                <span class="absolute -top-3 right-4 bg-primary text-[10px] font-bold px-2 py-0.5 rounded text-white">PHỔ BIẾN</span>
+                @endif
+                <h3 class="text-lg font-bold text-white mb-2">{{ $package->package_name }}</h3>
+                <p class="text-xs text-gray-400 mb-4">{{ $package->description }}</p>
+                <div class="text-2xl font-bold text-primary mb-4">{{ number_format($package->price, 0, ',', '.') }}đ<span class="text-xs text-gray-500 font-normal">/{{ $package->duration_days }} ngày</span></div>
+                <button data-id="{{ $package->id }}" class="btn-register w-full py-2 {{ $isElite ? 'bg-primary hover:bg-red-700' : 'bg-white/5 hover:bg-primary' }} text-white text-xs font-bold uppercase rounded transition-colors">Đăng ký ngay</button>
+            </div>
+            @endforeach
+        </div>
+    </div>
 </main>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // Hàm tính toán và hiển thị BMI, gợi ý AI
     function updateHealthMetricsDisplay(height, weight, bodyFat) {
@@ -381,6 +406,30 @@
         @auth
             fetchReviewableTargets(); // Chỉ gọi API này khi người dùng đã đăng nhập thành công
         @endauth
+    });
+
+    // SCRIPT ĐĂNG KÝ HỘI VIÊN (TẬN DỤNG TỪ YÊU CẦU CỦA BẠN)
+    $(document).ready(function() {
+        $('.btn-register').on('click', function() {
+            let packageId = $(this).data('id');
+            $.ajax({
+                url: "{{ route('membership.register') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    package_id: packageId
+                },
+                success: function(res) {
+                    if(res.success && res.redirect_url) {
+                        window.location.href = res.redirect_url;
+                    }
+                },
+                error: function(xhr) {
+                    alert('Vui lòng đăng nhập để đăng ký gói tập!');
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+        });
     });
 </script>
 @endsection

@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
+    public function index(){
+        return view('profile');
+    }
+
     public function changePassword(Request $request)
     {
         // 1. Validate chặt chẽ

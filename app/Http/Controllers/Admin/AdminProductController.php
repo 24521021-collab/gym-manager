@@ -27,7 +27,7 @@ class AdminProductController extends Controller
                 });
             }
             // Sắp xếp sản phẩm mới nhất lên đầu và lấy dữ liệu dạng mảng sạch
-            $products = $query->orderBy('id', 'desc')->paginate(10);   
+            $products = $query->orderBy('id', 'desc')->paginate(10);
             return response()->json($products);
         }
         // Nếu người dùng vào bằng trình duyệt thông thường, trả về khung giao diện

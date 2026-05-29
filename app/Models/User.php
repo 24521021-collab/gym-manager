@@ -56,10 +56,13 @@ public function orders() { return $this->hasMany(Order::class); }
 public function checkIns() { return $this->hasMany(CheckIn::class); }
 public function bodyMetrics() { return $this->hasMany(BodyMetric::class); }
 
-public function ptBookingsAsPt()
-{
-    return $this->hasMany(PtBooking::class, 'pt_id');
-}
+    public function ptBookingsAsPt() {
+        return $this->hasMany(PtBooking::class, 'pt_id');
+    }
+
+    public function latestBodyMetric() {
+        return $this->hasOne(BodyMetric::class)->latestOfMany('measured_at');
+    }
 
 public function enrolledClasses()
 {
@@ -68,4 +71,5 @@ public function enrolledClasses()
     return $this->belongsToMany(GymClass::class, 'bookings', 'user_id', 'class_id')
                 ->withPivot('status', 'booking_date');
 }
+
 }

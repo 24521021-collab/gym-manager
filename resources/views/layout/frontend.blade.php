@@ -1,4 +1,3 @@
-
 <html class="dark" lang="vi">
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -14,10 +13,18 @@
 <nav class="bg-background/90 backdrop-blur-xl border-b border-white/10 sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 h-16 shadow-lg">
     <div class="flex items-center gap-8">
         <a class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic" href="/">KOR GYM</a>
+        
+        {{-- MENU ĐIỀU HƯỚNG CHÍNH - ĐÃ ĐƯỢC XỬ LÝ ACTIVE STATE CHỈ ĐỔI MÀU CHỮ --}}
         <div class="hidden md:flex gap-6 items-center">
-            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="/products">Cửa hàng</a>
-            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="#">Lớp học</a>
-            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="{{ route('booking.pt.index') }}">Đặt Lịch</a>
+            <a class="{{ request()->is('products*') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="/products">
+                Cửa hàng
+            </a>
+            <a class="{{ request()->is('classes*') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="/classes">
+                Lớp học
+            </a>
+            <a class="{{ request()->is('booking*') || request()->routeIs('booking.pt.index') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="{{ route('booking.pt.index') }}">
+                Đặt Lịch
+            </a>
         </div>
     </div>
     
@@ -26,7 +33,7 @@
             <button class="text-sm font-medium text-white border border-white/20 hover:bg-white/10 px-4 py-1.5 rounded-xl transition-colors" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
             <button class="text-sm font-bold bg-primary hover:bg-red-700 text-white px-4 py-1.5 rounded-xl transition-colors" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
         @else
-            <a href="/products" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors relative flex items-center justify-center">
+            <a href="/cart" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors relative flex items-center justify-center">
                 <span class="material-symbols-outlined">shopping_cart</span>
                 @if(session('cart') && count(session('cart')) > 0)
                     <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-[0_0_8px_rgba(227,24,55,0.8)]">
@@ -37,34 +44,15 @@
                 @endif
             </a>
             
-            <a href="#" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
+            <a href="{{ route('notifications') }}" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
                 <span class="material-symbols-outlined">notifications</span>
             </a>
 
-            <div class="relative">
-                <button onclick="toggleProfileDropdown(event)" class="flex items-center gap-2 focus:outline-none py-1">
-                    <img alt="Avatar" class="w-8 h-8 rounded-full border border-white/20 object-cover hover:border-primary transition-colors" 
-                         src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=random&color=fff"/>
-                    <span class="hidden md:inline text-sm font-medium text-gray-300 hover:text-white transition-colors">{{ Auth::user()->full_name }}</span>
-                    <span class="material-symbols-outlined text-gray-400 text-sm hover:text-white">arrow_drop_down</span>
-                </button>
-                
-                <div id="profileDropdown" class="absolute right-0 mt-2 w-56 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-2xl py-2 hidden z-50">
-                    <a class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors" href="{{ route('my.membership') }}">
-                        <span class="material-symbols-outlined text-gray-400 text-lg">fitness_center</span> Gói tập của tôi
-                    </a>
-                    <a class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors" href="{{ route('orders.index') }}">
-                        <span class="material-symbols-outlined text-gray-400 text-lg">shopping_basket</span> Giỏ hàng của tôi
-                    </a>
-                    <div class="border-t border-white/10 my-1"></div>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-start">
-                            <span class="material-symbols-outlined text-lg">logout</span> Đăng xuất
-                        </button>
-                    </form>
-                </div>
-            </div>
+            <a href="{{ route('profile') }}" class="flex items-center gap-2 py-1 group">
+                <img alt="Avatar" class="w-8 h-8 rounded-full border border-white/20 object-cover group-hover:border-primary transition-colors" 
+                     src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=random&color=fff"/>
+                <span class="hidden md:inline text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{{ Auth::user()->full_name }}</span>
+            </a>
         @endguest
     </div>
 </nav>
@@ -150,9 +138,7 @@
         </div>
     </div>
 @endguest
-
 @stack('scripts')
-
 <script>
     function toggleTailwindModal(id) {
         const modal = document.getElementById(id);
@@ -180,21 +166,7 @@
             const targetId = target.getAttribute('data-bs-target').replace('#', '');
             toggleTailwindModal(targetId);
         }
-
-        // Tự động đóng menu hồ sơ nếu bấm ra ngoài vùng menu
-        const profileMenu = document.getElementById('profileDropdown');
-        if (profileMenu && !profileMenu.classList.contains('hidden') && !profileMenu.contains(e.target)) {
-            profileMenu.classList.add('hidden');
-        }
     });
-
-    function toggleProfileDropdown(event) {
-        event.stopPropagation(); // Ngăn sự kiện click lan ra ngoài làm đóng menu ngay lập tức
-        const dropdown = document.getElementById('profileDropdown');
-        if (dropdown) {
-            dropdown.classList.toggle('hidden');
-        }
-    }
     async function sendDefaultPassword(event) {
         event.preventDefault(); // Chặn việc reload lại trang của form mặc định
         

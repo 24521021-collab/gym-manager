@@ -1,308 +1,233 @@
+@extends('layout.frontend')
+@section('content')
+    <header class="border-b border-white/10 pb-6 space-y-1 max-w-7xl mx-auto px-4 md:px-8">
+        <div class="flex items-center gap-2 text-primary font-headline text-xs font-bold uppercase tracking-widest">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> KOR Group Session
+        </div>
+        <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight font-extrabold">Lớp Học Nhóm Linh Hoạt</h1>
+        <p class="text-sm text-gray-400 max-w-xl">Hệ thống giám sát và quét mã tham gia các lớp tập nhóm được chốt lịch chủ động giữa PT và học viên.</p>
+    </header>
 
-<style>
-    .class-card {
-        border: none;
-        border-radius: 16px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        transition: transform 0.25s, box-shadow 0.25s;
-        overflow: hidden;
-    }
-    .class-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-    }
-    .class-card .card-top-bar {
-        height: 5px;
-        background: linear-gradient(90deg, #0d6efd, #6610f2);
-    }
-    .class-card .card-top-bar.full   { background: linear-gradient(90deg, #dc3545, #fd7e14); }
-    .class-card .card-top-bar.booked { background: linear-gradient(90deg, #198754, #20c997); }
-    .progress-slot { height: 5px; border-radius: 10px; }
-    .status-badge {
-        position: absolute; top: 14px; right: 14px;
-        font-size: 11px; font-weight: 600;
-        padding: 3px 10px; border-radius: 20px;
-    }
-    .badge-full   { background: #fee2e2; color: #dc3545; }
-    .badge-booked { background: #d1fae5; color: #198754; }
-    .hero-classes {
-        background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
-        padding: 50px 0 35px;
-        color: white;
-        margin-bottom: 35px;
-    }
-    .filter-bar {
-        background: white;
-        border-radius: 12px;
-        padding: 14px 18px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-        margin-bottom: 28px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-    }
-    .btn-register {
-        background: linear-gradient(135deg, #0d6efd, #6610f2);
-        border: none; color: white;
-        border-radius: 8px; font-weight: 600;
-        transition: opacity .2s;
-    }
-    .btn-register:hover { opacity: .88; color: white; }
-    .btn-cancel {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        color: #6c757d;
-        border-radius: 8px; font-weight: 500;
-    }
-    .btn-cancel:hover { background: #fee2e2; color: #dc3545; border-color: #dc3545; }
-    .info-icon { color: #0d6efd; }
-</style>
+    {{-- Thanh công cụ: Bộ lọc Category và Ô tìm kiếm nhanh --}}
+    <div class="flex flex-wrap items-center justify-between gap-4 pb-2 mt-4 max-w-7xl mx-auto px-4 md:px-8">
+        <div class="flex flex-wrap items-center gap-2">
+            <button onclick="updateFilter('all', this)" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all">Tất cả</button>
+            <button onclick="updateFilter('yoga', this)" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Yoga & Pilates</button>
+            <button onclick="updateFilter('cardio', this)" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Cardio / Spinning</button>
+            <button onclick="updateFilter('boxing', this)" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Kickboxing & Combat</button>
+        </div>
 
-{{-- Hero --}}
-<div class="hero-classes">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="fw-bold mb-2">
-                    <i class="fas fa-calendar-alt me-3"></i>Đăng Ký Lớp Học
-                </h1>
-                <p class="mb-0 opacity-75 fs-5">Chọn lớp học phù hợp và đặt chỗ ngay hôm nay</p>
-            </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <div class="d-inline-block bg-white bg-opacity-20 rounded-3 px-4 py-3 text-center">
-                    <div class="fs-2 fw-bold">{{ $classes->count() }}</div>
-                    <div class="small opacity-75">Lớp học có sẵn</div>
-                </div>
+        {{-- Thanh tìm kiếm được tích hợp từ logic classes1 --}}
+        <div class="w-full md:w-72">
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-2.5 text-gray-500 text-sm">search</span>
+                <input type="text" id="classSearchInput" onkeyup="handleSearch()" placeholder="Tìm tên lớp học..." class="w-full bg-black/20 border border-white/10 rounded-full text-white pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:border-primary transition-all">
             </div>
         </div>
     </div>
-</div>
 
-<div class="container pb-5">
-
-    {{-- Thông báo --}}
+    {{-- Khối thông báo Alert hệ thống (nếu có) từ classes1 --}}
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="simple-alert bg-green-500/10 border border-green-500/20 text-green-400 text-xs p-4 rounded-xl mt-4 flex items-center justify-between">
+            <span>{{ session('success') }}</span>
+            <button type="button" class="btn-close text-white opacity-50 hover:opacity-100" onclick="this.parentElement.remove()">✕</button>
         </div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4">
-            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="simple-alert bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-4 rounded-xl mt-4 flex items-center justify-between">
+            <span>{{ session('error') }}</span>
+            <button type="button" class="btn-close text-white opacity-50 hover:opacity-100" onclick="this.parentElement.remove()">✕</button>
         </div>
     @endif
 
-    {{-- Filter bar --}}
-    <div class="filter-bar">
-        <span class="fw-semibold text-secondary me-1">
-            <i class="fas fa-filter me-1"></i>Lọc:
-        </span>
-        <button class="btn btn-sm btn-primary rounded-pill px-3 filter-btn active" data-filter="all">Tất cả</button>
-        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 filter-btn" data-filter="available">Còn chỗ</button>
-        <button class="btn btn-sm btn-outline-danger rounded-pill px-3 filter-btn" data-filter="full">Hết chỗ</button>
-        @auth
-        <button class="btn btn-sm btn-outline-success rounded-pill px-3 filter-btn" data-filter="booked">Đã đăng ký</button>
-        @endauth
-        <div class="ms-auto">
-            <input type="text" id="searchClass" class="form-control form-control-sm rounded-pill"
-                   placeholder="🔍 Tìm lớp học..." style="min-width:200px;">
-        </div>
+    {{-- Vùng hiển thị danh sách lớp học nhóm --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 max-w-7xl mx-auto px-4 md:px-8" id="classes-container">
+        
+        <div class="col-span-full text-center py-20 text-gray-500 animate-pulse italic">Đang tải danh sách lớp học...</div>
     </div>
-    {{-- Danh sách --}}
-    @if($classes->isEmpty())
-        <div class="text-center py-5">
-            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
-            <h5 class="text-muted">Chưa có lớp học nào</h5>
-        </div>
-    @else
-        <div class="row g-4" id="classesGrid">
-            @foreach($classes as $class)
-                @php
-                    $remaining = $class->max_capacity - $class->booked_count;
-                    $isFull    = $remaining <= 0;
-                    $isBooked  = in_array($class->id, $bookedClassIds);
-                    $percent   = $class->max_capacity > 0
-                                    ? round(($class->booked_count / $class->max_capacity) * 100) : 0;
-                    $ptName    = optional(optional($class->pt)->user)->full_name ?? 'Chưa cập nhật';
-                    $barColor  = $isFull ? 'bg-danger' : ($percent >= 70 ? 'bg-warning' : 'bg-success');
-                    $slotColor = $isFull ? 'text-danger' : ($percent >= 70 ? 'text-warning' : 'text-success');
-                @endphp
-                <div class="col-lg-4 col-md-6 class-item"
-                     data-status="{{ $isFull ? 'full' : 'available' }}"
-                     data-booked="{{ $isBooked ? 'true' : 'false' }}"
-                     data-name="{{ strtolower($class->name) }}">
-                    <div class="class-card card h-100 position-relative">
-                        <div class="card-top-bar {{ $isBooked ? 'booked' : ($isFull ? 'full' : '') }}"></div>
-                        <div class="card-img-top-wrapper" style="height: 200px; overflow: hidden;">
-                            <img src="{{ asset('images/products/' . ($class->image ?? 'default-class.jpg')) }}"
-                                 class="card-img-top w-100 h-100"
-                                 style="object-fit: cover;"
-                                 alt="{{ $class->name }}">
-                        </div>
+    
+    {{-- Thông báo trống --}}
+    <div id="emptySearchMessage" class="hidden text-center py-20 bg-[#1A1A1A] rounded-2xl border border-white/5 mt-6">
+        <span class="material-symbols-outlined text-5xl text-gray-700 block mb-3">event_busy</span>
+        <p class="text-gray-400 text-sm italic">Không tìm thấy lớp học phù hợp với yêu cầu của bạn.</p>
+    </div>
+@endsection
 
-                        @if($isBooked)
-                            <span class="status-badge badge-booked">
-                                <i class="fas fa-check me-1"></i>Đã đăng ký
-                            </span>
-                        @elseif($isFull)
-                            <span class="status-badge badge-full">
-                                <i class="fas fa-ban me-1"></i>Hết chỗ
-                            </span>
-                        @endif
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-1">{{ $class->name }}</h5>
-                            <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 10; -webkit-box-orient: vertical; overflow: hidden;">
-                                {{ $class->description }}
-                            </p>
-                            <div class="d-flex flex-column gap-2 mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-calendar-check info-icon me-2 fa-fw"></i>
-                                    <span class="small">Thời lượng: <strong>{{ $class->total_sessions }} buổi</strong></span>
-                                </div>
-                                <div class="d-flex align-items-center mt-1">
-                                    @if($class->pt && $class->pt->image)
-                                        <img src="{{ asset('images/pt/' . ($class->pt->image ?? 'pt.jpg')) }}" class="rounded-circle me-2 border border-white/20" style="width: 24px; height: 24px; object-fit: cover;" alt="PT" onerror="this.src='{{ asset('images/pt/pt.jpg') }}'">
-                                    @else
-                                        <i class="fas fa-user-tie info-icon me-2 fa-fw"></i>
-                                    @endif
-                                    <span class="small">PT: <strong>{{ $ptName }}</strong></span>
-                                </div>
-                                <div class="mt-2">
-                                    <span class="h5 fw-bold text-primary">{{ number_format($class->price) }}đ</span>
-                                    <span class="text-muted small">/ khóa</span>
-                                </div>
-                            </div>
-                            {{-- Thanh chỗ --}}
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between small mb-1">
-                                    <span class="text-muted">Sức chứa</span>
-                                    <span class="{{ $slotColor }} fw-semibold">
-                                        {{ $class->booked_count }}/{{ $class->max_capacity }}
-                                        @if(!$isFull) · Còn {{ $remaining }} chỗ @endif
-                                    </span>
-                                </div>
-                                <div class="progress progress-slot">
-                                    <div class="progress-bar {{ $barColor }}" style="width:{{ $percent }}%"></div>
-                                </div>
-                            </div>
-
-                            {{-- Nút hành động --}}
-                            @auth
-                                @if($isBooked)
-                                    <form action="{{ route('classes.cancel') }}" method="POST"
-                                          onsubmit="return confirm('Xác nhận hủy đăng ký lớp này?')">
-                                        @csrf @method('DELETE')
-                                        <input type="hidden" name="class_id" value="{{ $class->id }}">
-                                        <button type="submit" class="btn btn-cancel w-100 py-2">
-                                            <i class="fas fa-times me-2"></i>Hủy đăng ký
-                                        </button>
-                                    </form>
-                                @elseif($isFull)
-                                    <button class="btn btn-secondary w-100 py-2" disabled>
-                                        <i class="fas fa-ban me-2"></i>Đã hết chỗ
-                                    </button>
-                                @else
-                                    <form action="{{ route('classes.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="class_id" value="{{ $class->id }}">
-                                        <button type="submit" class="btn btn-register w-100 py-2">
-                                            <i class="fas fa-plus-circle me-2"></i>Đăng Ký Ngay
-                                        </button>
-                                    </form>
-                                @endif
-                            @else
-                                <a href="{{ route('login') }}" class="btn btn-outline-primary w-100 py-2">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập để đăng ký
-                                </a>
-                            @endauth
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <div id="emptyFilter" class="text-center py-5 d-none">
-            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-            <h6 class="text-muted">Không tìm thấy lớp học phù hợp</h6>
-        </div>
-    @endif
-</div>
-
-<script>
-const items      = document.querySelectorAll('.class-item');
-const filterBtns = document.querySelectorAll('.filter-btn');
-const searchInput = document.getElementById('searchClass');
-const emptyDiv   = document.getElementById('emptyFilter');
-let currentFilter = 'all';
-
-filterBtns.forEach(btn => {
-    btn.addEventListener('click', function () {
-        filterBtns.forEach(b => b.classList.remove('active','btn-primary','btn-success','btn-danger'));
-        this.classList.add('active');
-        if (this.dataset.filter === 'booked') this.classList.add('btn-success');
-        else if (this.dataset.filter === 'full') this.classList.add('btn-danger');
-        else this.classList.add('btn-primary');
-        currentFilter = this.dataset.filter;
-        applyFilters();
-    });
-});
-
-searchInput.addEventListener('input', applyFilters);
-
-function applyFilters() {
-    const kw = searchInput.value.toLowerCase().trim();
-    let visible = 0;
-    items.forEach(item => {
-        const matchFilter =
-            currentFilter === 'all' ||
-            (currentFilter === 'available' && item.dataset.status === 'available') ||
-            (currentFilter === 'full'      && item.dataset.status === 'full') ||
-            (currentFilter === 'booked'    && item.dataset.booked === 'true');
-        const matchSearch = !kw || item.dataset.name.includes(kw);
-        item.style.display = (matchFilter && matchSearch) ? '' : 'none';
-        if (matchFilter && matchSearch) visible++;
-    });
-    if (emptyDiv) emptyDiv.classList.toggle('d-none', visible > 0);
-}
-
-// Tự đóng alert sau 4 giây
-setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(a => new bootstrap.Alert(a).close());
-}, 4000);
-</script>
-
+{{-- NHÚNG CÁC THƯ VIỆN HỖ TRỢ XỬ LÝ LOGIC TỪ CLASSES1 --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-$(document).ready(function() {
-    // Xử lý nút "Đăng Ký Ngay" cho lớp học
-    $('.form-book-class').on('submit', function(e) {
-        e.preventDefault();
-        let form = $(this);
-        let classId = form.find('input[name="class_id"]').val();
 
-        $.ajax({
-            url: form.attr('action'), // Sẽ là route('classes.store')
-            method: form.attr('method'),
-            data: form.serialize(),
-            success: function(res) {
-                if (res.success && res.redirect_url) {
-                    Swal.fire('Thành công!', res.message, 'success').then(() => {
-                        window.location.href = res.redirect_url;
-                    });
-                } else {
-                    Swal.fire('Thông báo!', res.message, 'info');
-                }
-            },
-            error: function(xhr) {
-                Swal.fire('Lỗi!', xhr.responseJSON.error || 'Không thể đăng ký lớp học.', 'error').then(() => {
-                    window.location.reload(); // Tải lại trang để cập nhật trạng thái
-                });
-            }
+<script>
+    let allData = { classes: [], bookedClassIds: [] };
+    let currentCategory = 'all';
+    let currentSearch = '';
+    let searchTimer;
+    // Bảo mật: Hàm lọc ký tự đặc biệt ngăn chặn XSS
+    function escapeHtml(text) {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text ? String(text).replace(/[&<>"']/g, m => map[m]) : '';
+    }
+    // LOGIC: Tải dữ liệu bằng Fetch API - Tận dụng hàm lọc từ Controller
+    async function fetchClasses() {
+        try {
+            // Thêm query params để Controller xử lý lọc & tránh lỗi cache dữ liệu thô khi nhấn Back
+            const response = await fetch(`{{ route('classes.index') }}?category=${currentCategory}&search=${encodeURIComponent(currentSearch)}&ajax_call=1`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            allData = await response.json();
+            renderClasses();
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            document.getElementById('classes-container').innerHTML = '<p class="col-span-full text-center text-primary text-xs">Lỗi tải dữ liệu hệ thống!</p>';
+        }
+    }
+
+    function updateFilter(category, btn) {
+        currentCategory = category;
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(b => b.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all");
+        btn.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all";
+        fetchClasses(); // Gọi server để lọc
+    }
+
+    function handleSearch() {
+        clearTimeout(searchTimer);
+        currentSearch = document.getElementById('classSearchInput').value.trim();
+        // Đợi 300ms sau khi ngừng gõ mới gửi request để tối ưu hiệu năng
+        searchTimer = setTimeout(() => {
+            fetchClasses();
+        }, 300);
+    }
+
+    function renderClasses() {
+        const container = document.getElementById('classes-container');
+        const emptyMsg = document.getElementById('emptySearchMessage');
+        container.innerHTML = '';
+        const filtered = allData.classes; // Dữ liệu đã được server lọc sẵn
+
+        if (filtered.length === 0) {
+            emptyMsg.classList.remove('hidden');
+            return;
+        }
+        emptyMsg.classList.add('hidden');
+        
+        filtered.forEach(c => {
+            const remaining = c.max_capacity - c.booked_count;
+            const isFull = remaining <= 0;
+            const isBooked = allData.bookedClassIds.includes(c.id);
+            const percent = c.max_capacity > 0 ? Math.round((c.booked_count / c.max_capacity) * 100) : 0;
+            const barColor = isFull ? 'bg-primary' : (percent >= 80 ? 'bg-yellow-500' : 'bg-emerald-500');
+            
+            const html = `
+                <div class="class-item bg-gradient-to-b from-[#1E1E1E] to-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:border-primary/40 transition-all duration-300 flex flex-col group">
+                    <div class="h-44 w-full overflow-hidden relative">
+                        <img class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" 
+                             src="/images/products/${c.image || 'default-class.jpg'}" alt="${escapeHtml(c.name)}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent"></div>
+                        ${isBooked ? '<span class="absolute top-4 right-4 z-20 text-[10px] font-bold bg-emerald-500 text-white px-3 py-1 rounded-md uppercase tracking-wider">Đã đăng ký</span>' : ''}
+                    </div>
+                    <div class="p-5 flex-grow space-y-3">
+                        <h3 class="class-name font-headline text-lg text-white uppercase font-bold group-hover:text-primary transition-colors">${escapeHtml(c.name)}</h3>
+                        <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                            <div class="flex flex-col gap-1.5 text-[11px] text-gray-400">
+                                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary">person</span> PT: <strong class="text-white font-normal">${escapeHtml(c.pt?.user?.full_name || 'Hệ thống KOR')}</strong></span>
+                                <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary">payments</span> Giá: <strong class="text-white font-normal">${new Intl.NumberFormat('vi-VN').format(c.price)}đ</strong></span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-400 text-xs line-clamp-4 italic">${escapeHtml(c.description || 'Chưa có mô tả chi tiết cho lớp học này.')}</p>
+
+                        <div class="space-y-1.5 pt-4">
+                            <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                                <span class="text-gray-500">Sức chứa</span>
+                                <span class="${isFull ? 'text-primary' : 'text-emerald-500'}">${c.booked_count}/${c.max_capacity}</span>
+                            </div>
+                            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full ${barColor} transition-all duration-500" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        ${isBooked ? `
+                            <button class="w-full border border-white/10 text-gray-500 text-xs font-bold py-3 rounded-xl uppercase tracking-wider" disabled>Đã có trong lịch tập</button>
+                        ` : (isFull ? `
+                            <button class="w-full bg-white/5 text-gray-700 text-xs font-bold py-3 rounded-xl uppercase tracking-wider" disabled>Đã hết chỗ</button>
+                        ` : `
+                            <form action="{{ route('classes.store') }}" method="POST" class="form-book-class">
+                                @csrf
+                                <input type="hidden" name="class_id" value="${c.id}">
+                                <button type="submit" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase py-3 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider">
+                                    Đăng ký suất tập
+                                </button>
+                            </form>
+                        `)}
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
         });
+    }
+
+    /**
+     * LOGIC 3: AJAX ĐĂNG KÝ & THÔNG BÁO ĐƠN GIẢN
+     */
+    function showSimpleToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] px-6 py-3 rounded-full text-white text-xs font-bold shadow-2xl transition-all duration-500 animate-bounce ${isError ? 'bg-red-600' : 'bg-emerald-600'}`;
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    $(document).ready(function() {
+        fetchClasses();
+
+        $(document).on('submit', '.form-book-class', function(e) {
+            e.preventDefault();
+            
+            let form = $(this);
+            let submitBtn = form.find('button[type="submit"]');
+            
+            submitBtn.prop('disabled', true).addClass('opacity-50');
+
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: form.serialize(),
+                success: function(res) {
+                    if (res.success) {
+                        showSimpleToast(res.message || "Đã thêm vào giỏ hàng!");
+                        setTimeout(() => {
+                            window.location.href = res.redirect_url;
+                        }, 1000);
+                    } else {
+                        submitBtn.prop('disabled', false).removeClass('opacity-50');
+                        showSimpleToast(res.message || "Có lỗi xảy ra", true);
+                    }
+                },
+                error: function(xhr) {
+                    submitBtn.prop('disabled', false).removeClass('opacity-50');
+                    if (xhr.status === 401) {
+                        window.location.href = "{{ route('login') }}";
+                    } else {
+                        let error = xhr.responseJSON?.error || 'Không thể đăng ký!';
+                        showSimpleToast(error, true);
+                    }
+                }
+            });
+        });
+
+        // Tự động đóng thông báo sau 4 giây 
+        setTimeout(() => {
+            $('.alert').fadeOut('slow', function() {
+                $(this).remove();
+            });
+        }, 4000);
     });
-});
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchClasses();
+    });
 </script>

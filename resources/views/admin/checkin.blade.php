@@ -125,7 +125,12 @@ function onScanSuccess(decodedText) {
                 // Nếu có lỗi (hết hạn, không tồn tại): Hiện thông báo màu đỏ
                 resDiv.classList.add('alert-danger');
                 resDiv.innerHTML = `❌ ${data.message}`;
+                isProcessing = false; // Cho phép quét lại sau khi hiện lỗi
             }
+        })
+        .catch(err => {
+            console.error("Lỗi kết nối:", err);
+            isProcessing = false;
         });
     }
 </script>

@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\PT\PtClassController;
 use App\Http\Controllers\Pt\PtDashboardController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\AdminPt_BookingController;
 // 1. Trang chủ (hiện chữ chào mừng hoặc file welcome có sẵn)
 
 //home( trang chủ )
@@ -49,7 +51,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     // CRUD Hội viên 
     // 1. Route chính cho admin quản lý hội viên (Index, Store, Update, Destroy)
     // Tên route sẽ tự động là: memberships.index, memberships.store, v.v...
-    Route::resource('members', AdminMembershipController::class);
+    Route::get('memberships', [AdminMembershipController::class,'index'])->name('memberships.index');
+    Route::post('members/{id}/send-expiration-notification', [AdminMembershipController::class, 'sendExpirationNotification'])->name('admin.members.sendExpirationNotification');
     
     // Các route quản lý gói tập khác của bạn...
     // route quản lý gói tặp CRUD của admin
@@ -62,6 +65,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::get('transaction', [AdminOrderController::class, 'index'])->name('admin.transaction');
     Route::put('/orders/update-status/{id}',[AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+    // Quản lý lịch đặt PT
+    Route::get('pt-bookings', [AdminPt_BookingController::class, 'index'])->name('admin.pt-bookings');
 });
 
 // Nhóm Route dành riêng cho PT
@@ -74,6 +79,9 @@ Route::middleware(['auth', 'CheckRole:pt'])->prefix('pt')->group(function () {
     // Quản lý đặt lịch riêng
     Route::get('/bookings', [PtDashboardController::class, 'bookings'])->name('pt.bookings.index');
     Route::patch('/bookings/{id}/status', [PtDashboardController::class, 'updateBookingStatus'])->name('pt.bookings.updateStatus');
+
+    // Lưu nhật ký huấn luyện
+    Route::post('/logs/store', [PtDashboardController::class, 'storeLog'])->name('pt.logs.store');
 });
 
 // Route lưu gói tập khách hàng 
@@ -84,6 +92,8 @@ Route::post('/register-package', [UserMembershipController::class, 'register'])-
 //route để xem body metric, chỉ người đăng nhập mới xem được vì có middleware,dùng put để update body metric theo từng giai đoạn 
 Route::middleware('auth')->group(function () {
     Route::get('/body_metric', [BodyMetricController::class, 'index'])->name('body.metric');
+    // profile người dùng 
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::put('/body_metric/update', [BodyMetricController::class, 'update'])->name('metric.update');
     // route để xem đơn hàng người dùng 
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
@@ -106,6 +116,12 @@ Route::middleware('auth')->group(function () {
 
     // Quên & Đổi mật khẩu
     Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
+
+    // ─── HỆ THỐNG THÔNG BÁO ──────────────────────────────────────────
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::delete('/notifications/clear/read', [NotificationController::class, 'clearRead'])->name('notifications.clearRead');
 });
 
 // Route lấy tất cả phản hồi cho trang chủ (Công khai)

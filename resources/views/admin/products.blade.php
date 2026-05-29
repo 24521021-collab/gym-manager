@@ -32,7 +32,7 @@
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end text-xs">
                 <div>
                     <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Hình ảnh</label>
-                    <input id="prod-image" name="image" type="file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg text-gray-400 px-2 py-1.5 focus:ring-1 focus:ring-primary focus:border-primary">
+                    <input id="prod-image" name="image" type="file" accept="image/*" class="w-full bg-black/40 border border-white/10 rounded-lg text-gray-400 px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary">
                 </div>
                 <div>
                     <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Tên sản phẩm</label>

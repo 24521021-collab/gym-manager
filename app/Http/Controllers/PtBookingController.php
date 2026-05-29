@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\PtBooking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Notification;
 
 class PtBookingController extends Controller
 {
@@ -68,6 +69,16 @@ class PtBookingController extends Controller
             'status' => 'pending', // Chờ huấn luyện viên duyệt lịch
             'note' => $request->note,
         ]);
+
+        // Gửi thông báo cho khách hàng
+        $pt = User::find($request->pt_id);
+        Notification::create([
+            'user_id' => auth()->id(),
+            'type'    => 'booking',
+            'title'   => 'Đặt lịch thành công',
+            'content' => "Hệ thống KOR: Yêu cầu đặt lịch tập 1-kèm-1 với HLV {$pt->full_name} vào lúc {$startTime->format('H:i d/m/Y')} của bạn đã được gửi đi thành công. Vui lòng đợi HLV xác nhận."
+        ]);
+
         return back()->with('success', 'Đăng ký lịch tập riêng thành công! Vui lòng chờ PT xác nhận.');
     }
 }
