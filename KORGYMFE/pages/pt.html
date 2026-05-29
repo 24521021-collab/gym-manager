@@ -141,23 +141,74 @@
                 </div>
             </div>
 
-            <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4">
-                <h2 class="font-headline text-base uppercase tracking-wider text-white font-bold" style="font-family: 'Oswald', sans-serif;">Không gian tập luyện trực quan tại cơ sở</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="relative overflow-hidden rounded-xl border border-white/10 group h-40">
-                        <img class="w-full h-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105" src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=600" alt="KOR Gym Area">
-                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black p-3 text-xs">
-                            <p class="font-bold text-white font-['Oswald'] uppercase">Khu vực Free Weights</p>
-                        </div>
+            <!-- PHẦN NHẬT KÝ HUẤN LUYỆN ĐÃ ĐƯỢC THAY THẾ -->
+            <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl space-y-5">
+                <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">history_edu</span>
+                        <h2 class="font-headline text-base uppercase tracking-wider text-white font-bold" style="font-family: 'Oswald', sans-serif;">Nhật Ký Huấn Luyện</h2>
                     </div>
-                    <div class="relative overflow-hidden rounded-xl border border-white/10 group h-40">
-                        <img class="w-full h-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105" src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?q=80&w=600" alt="Yoga Studio">
-                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black p-3 text-xs">
-                            <p class="font-bold text-white font-['Oswald'] uppercase">Phòng Studio Yoga Nhóm</p>
-                        </div>
-                    </div>
+                    <span class="bg-gray-800 text-gray-300 border border-gray-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono flex items-center gap-1 cursor-pointer hover:bg-gray-700 transition-colors">
+                        <span class="material-symbols-outlined text-[12px]">calendar_today</span> Hôm nay
+                    </span>
                 </div>
+
+                <!-- Timeline Container -->
+                <div class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-white/10 before:via-white/5 before:to-transparent">
+                    
+                    <!-- Log Item 1: Đã xong -->
+                    <div class="relative flex items-start gap-3">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#131313] border border-green-500/30 z-10 shrink-0 shadow-lg">
+                            <span class="material-symbols-outlined text-green-400 text-sm">check_circle</span>
+                        </div>
+                        <div class="bg-black/30 border border-white/5 rounded-xl p-3 flex-1 space-y-1.5 hover:border-white/10 transition-colors">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[10px] text-gray-500 font-mono">08:00 AM - 09:00 AM</span>
+                                <span class="text-[9px] bg-green-500/10 text-green-400 border border-green-500/20 px-1.5 py-0.5 rounded uppercase font-bold tracking-wide">Hoàn thành</span>
+                            </div>
+                            <h4 class="font-bold text-white uppercase text-xs" style="font-family: 'Oswald', sans-serif;">Lớp Yoga Core Cân Bằng Sâu</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">Các học viên theo nhịp tốt. Suboi cần cải thiện tư thế chiến binh 2, đã nhắc nhở chỉnh hông cho cân bằng.</p>
+                        </div>
+                    </div>
+
+                    <!-- Log Item 2: Đang lưu/Vừa dạy xong -->
+                    <div class="relative flex items-start gap-3">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#131313] border border-primary/30 z-10 shrink-0 shadow-lg">
+                            <span class="material-symbols-outlined text-primary text-sm">edit_document</span>
+                        </div>
+                        <div class="bg-black/30 border border-white/5 rounded-xl p-3 flex-1 space-y-1.5 hover:border-white/10 transition-colors">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[10px] text-gray-500 font-mono">10:00 AM - 11:30 AM</span>
+                                <span class="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded uppercase font-bold tracking-wide">Đã lưu nháp</span>
+                            </div>
+                            <h4 class="font-bold text-white uppercase text-xs" style="font-family: 'Oswald', sans-serif;">Sơn Tùng M-TP (1-Kèm-1)</h4>
+                            <p class="text-xs text-gray-400 leading-relaxed">Tập trung Deadlift. Up tạ lên 80kg mượt. Tuy nhiên cần chú ý dặn siết core chặt hơn ở 2 rep cuối cùng.</p>
+                        </div>
+                    </div>
+
+                     <!-- Log Item 3: Sắp tới -->
+                     <div class="relative flex items-start gap-3">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-[#131313] border border-gray-700 z-10 shrink-0">
+                            <span class="material-symbols-outlined text-gray-500 text-sm">schedule</span>
+                        </div>
+                        <div class="bg-black/10 border border-white/5 rounded-xl p-3 flex-1 space-y-1.5 opacity-50">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[10px] text-gray-500 font-mono">15:00 PM - 16:00 PM</span>
+                                <span class="text-[9px] bg-gray-800 text-gray-400 border border-gray-700 px-1.5 py-0.5 rounded uppercase font-bold tracking-wide">Sắp tới</span>
+                            </div>
+                            <h4 class="font-bold text-white uppercase text-xs" style="font-family: 'Oswald', sans-serif;">Binz (1-Kèm-1)</h4>
+                            <p class="text-xs text-gray-500 italic">Chưa có ghi chú huấn luyện...</p>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <button onclick="openNoteModal('Ghi Chú Nhanh')" class="w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 border-dashed text-gray-300 hover:text-white text-xs font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5" style="font-family: 'Oswald', sans-serif;">
+                    <span class="material-symbols-outlined text-base">add</span> Thêm ghi chú tự do
+                </button>
             </div>
+            <!-- KẾT THÚC PHẦN NHẬT KÝ HUẤN LUYỆN -->
+
         </section>
 
         <section class="col-span-12 lg:col-span-4 space-y-6">

@@ -4,42 +4,47 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Lớp học nhóm - KOR GYM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="../assets/js/tailwind-config.js"></script>
     <link rel="stylesheet" href="../assets/css/main.css">
 </head>
-<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white pb-12">
+<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white pb-12" style="font-family: 'Inter', sans-serif;">
 
-<nav class="sticky top-0 z-50 bg-[#131313]/90 backdrop-blur-xl border-b border-white/10 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
-        <a href="../index.html" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic">KOR GYM</a>
-        
-        <div class="hidden md:flex gap-8 items-center font-headline text-lg uppercase tracking-tight">
-            <a class="text-gray-400 hover:text-primary transition-colors" href="shop.html">Cửa hàng</a>
-            <a class="text-gray-400 hover:text-primary transition-colors" href="booking.html">Đặt Lịch PT</a>
-            <a class="text-primary border-b-2 border-primary pb-1 font-bold" href="lophoc.html">Lớp Học Nhóm</a>
-        </div>
+<nav class="bg-background/90 backdrop-blur-xl border-b border-white/10 sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 h-16 shadow-lg">
+    <div class="flex items-center">
+        <a href="../index.html" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic" style="font-family: 'Oswald', sans-serif;">KOR GYM</a>
+    </div>
 
-        <div class="flex items-center gap-4">
-            <a href="notifications.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
-                <span class="material-symbols-outlined">notifications</span>
-                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span>
-            </a>
-            <a href="profile.html" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden block">
-                <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
-            </a>
-        </div>
+    <!-- CĂN GIỮA MENU VÀ LÀM SÁNG "LỚP HỌC NHÓM" -->
+    <div class="hidden md:flex gap-8 items-center justify-center flex-1 mx-auto font-headline text-lg uppercase tracking-tight">
+        <a class="text-gray-400 hover:text-primary transition-colors" href="shop.html" style="font-family: 'Oswald', sans-serif;">Cửa hàng</a>
+        <a class="text-gray-400 hover:text-primary transition-colors" href="booking.html" style="font-family: 'Oswald', sans-serif;">Đặt Lịch PT</a>
+        <a class="text-white font-bold border-b-2 border-primary pb-1" href="lophoc.html" style="font-family: 'Oswald', sans-serif;">Lớp Học Nhóm</a>
+        <a class="text-gray-400 hover:text-primary transition-colors" href="blog_detail.html" style="font-family: 'Oswald', sans-serif;">Tin Tức</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <a href="shop.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors relative flex items-center justify-center">
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </a>
+        <a href="notifications.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span>
+        </a>
+        <a href="profile.html" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden block">
+            <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
+        </a>
     </div>
 </nav>
 
 <main class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-8">
-    
     <header class="border-b border-white/10 pb-6 space-y-1">
-        <div class="flex items-center gap-2 text-primary font-headline text-xs font-bold uppercase tracking-widest">
+        <div class="flex items-center gap-2 text-primary font-headline text-xs font-bold uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
             <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> KOR Group Session
         </div>
-        <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight font-extrabold">Lớp Học Nhóm Linh Hoạt</h1>
+        <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight font-extrabold" style="font-family: 'Oswald', sans-serif;">Lớp Học Nhóm Linh Hoạt</h1>
         <p class="text-sm text-gray-400 max-w-xl">Hệ thống giám sát và quét mã tham gia các lớp tập nhóm được chốt lịch chủ động giữa PT và học viên.</p>
     </header>
 
@@ -51,7 +56,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
         <div class="class-item bg-gradient-to-b from-[#1E1E1E] to-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group" data-category="yoga">
             <div>
                 <div class="h-48 w-full overflow-hidden relative">
@@ -59,29 +63,17 @@
                     <img class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=500" alt="Yoga">
                     <span class="absolute top-4 left-4 z-20 text-[10px] uppercase font-bold tracking-widest text-purple-400 bg-purple-500/10 backdrop-blur-md border border-purple-500/20 px-3 py-1 rounded-md">Yoga & Pilates</span>
                 </div>
-                
                 <div class="p-6 space-y-4">
-                    <h3 class="font-headline text-xl text-white uppercase tracking-wide font-bold group-hover:text-primary transition-colors">YOGA CORE CÂN BẰNG SÂU</h3>
-                    
+                    <h3 class="font-headline text-xl text-white uppercase tracking-wide font-bold group-hover:text-primary transition-colors" style="font-family: 'Oswald', sans-serif;">YOGA CORE CÂN BẰNG SÂU</h3>
                     <div class="space-y-2 bg-black/30 p-3 rounded-xl border border-white/5 text-xs font-medium">
-                        <p class="text-gray-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base text-primary">schedule</span> 
-                            <span>Thời gian: <strong class="text-white font-normal">08:00 AM - Hôm nay</strong></span>
-                        </p>
-                        <p class="text-gray-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base text-primary">person_check</span>
-                            <span>Người hướng dẫn: <strong class="text-white font-normal">HLV Thu Thảo</strong></span>
-                        </p>
+                        <p class="text-gray-400 flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">schedule</span> <span>Thời gian: <strong class="text-white font-normal">08:00 AM - Hôm nay</strong></span></p>
+                        <p class="text-gray-400 flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">person_check</span><span>Người hướng dẫn: <strong class="text-white font-normal">HLV Thu Thảo</strong></span></p>
                     </div>
-                    
                     <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">Lớp học giải phóng cơ bắp toàn thân phối hợp nhịp nhàng giữa huấn luyện viên và nhóm thành viên tự thỏa thuận giờ tập.</p>
                 </div>
             </div>
-
             <div class="p-6 pt-0">
-                <button onclick="bookGroupClass('YOGA CORE CÂN BẰNG SÂU', '150.000đ')" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-base uppercase py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider">
-                    <span class="material-symbols-outlined text-base">payments</span> Đăng ký suất • 150.000đ
-                </button>
+                <button onclick="bookGroupClass('YOGA CORE CÂN BẰNG SÂU', '150.000đ')" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-base uppercase py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider" style="font-family: 'Oswald', sans-serif;"><span class="material-symbols-outlined text-base">payments</span> Đăng ký suất • 150.000đ</button>
             </div>
         </div>
 
@@ -92,29 +84,17 @@
                     <img class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=500" alt="Spinning">
                     <span class="absolute top-4 left-4 z-20 text-[10px] uppercase font-bold tracking-widest text-blue-400 bg-blue-500/10 backdrop-blur-md border border-blue-500/30 px-3 py-1 rounded-md">Cardio / Spinning</span>
                 </div>
-                
                 <div class="p-6 space-y-4">
-                    <h3 class="font-headline text-xl text-white uppercase tracking-wide font-bold group-hover:text-primary transition-colors">LỚP ĐẠP XE SPINNING ĐỐT MỠ</h3>
-                    
+                    <h3 class="font-headline text-xl text-white uppercase tracking-wide font-bold group-hover:text-primary transition-colors" style="font-family: 'Oswald', sans-serif;">LỚP ĐẠP XE SPINNING ĐỐT MỠ</h3>
                     <div class="space-y-2 bg-black/30 p-3 rounded-xl border border-white/5 text-xs font-medium">
-                        <p class="text-gray-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base text-primary">schedule</span> 
-                            <span>Thời gian: <strong class="text-white font-normal">10:00 AM - Thứ Ba</strong></span>
-                        </p>
-                        <p class="text-gray-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base text-primary">person_check</span>
-                            <span>Người hướng dẫn: <strong class="text-white font-normal">HLV Lê Quân</strong></span>
-                        </p>
+                        <p class="text-gray-400 flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">schedule</span> <span>Thời gian: <strong class="text-white font-normal">10:00 AM - Thứ Ba</strong></span></p>
+                        <p class="text-gray-400 flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">person_check</span><span>Người hướng dẫn: <strong class="text-white font-normal">HLV Lê Quân</strong></span></p>
                     </div>
-                    
                     <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">Đạp xe nhịp điệu tốc độ cao trên nền nhạc bốc lửa giúp tối ưu hệ tim mạch và đốt mỡ thừa siêu tốc cho nhóm tự hẹn lịch.</p>
                 </div>
             </div>
-
             <div class="p-6 pt-0">
-                <button onclick="bookGroupClass('LỚP ĐẠP XE SPINNING ĐỐT MỠ', '120.000đ')" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-base uppercase py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider">
-                    <span class="material-symbols-outlined text-base">payments</span> Đăng ký suất • 120.000đ
-                </button>
+                <button onclick="bookGroupClass('LỚP ĐẠP XE SPINNING ĐỐT MỠ', '120.000đ')" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-base uppercase py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider" style="font-family: 'Oswald', sans-serif;"><span class="material-symbols-outlined text-base">payments</span> Đăng ký suất • 120.000đ</button>
             </div>
         </div>
 
@@ -125,32 +105,19 @@
                     <img class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" src="https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=500" alt="Kickboxing">
                     <span class="absolute top-4 left-4 z-20 text-[10px] uppercase font-bold tracking-widest text-red-400 bg-red-500/10 backdrop-blur-md border border-red-500/30 px-3 py-1 rounded-md">Kickboxing & Combat</span>
                 </div>
-                
                 <div class="p-6 space-y-4">
-                    <h3 class="font-headline text-xl text-white uppercase tracking-wide font-bold group-hover:text-primary transition-colors">KICKBOXING ĐỐI KHÁNG ĐỐT CALO</h3>
-                    
+                    <h3 class="font-headline text-xl text-white uppercase tracking-wide font-bold group-hover:text-primary transition-colors" style="font-family: 'Oswald', sans-serif;">KICKBOXING ĐỐI KHÁNG ĐỐT CALO</h3>
                     <div class="space-y-2 bg-black/30 p-3 rounded-xl border border-white/5 text-xs font-medium">
-                        <p class="text-gray-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base text-primary">schedule</span> 
-                            <span>Thời gian: <strong class="text-white font-normal">05:30 PM - Thứ Năm</strong></span>
-                        </p>
-                        <p class="text-gray-400 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-base text-primary">person_check</span>
-                            <span>Người hướng dẫn: <strong class="text-white font-normal">HLV Hoàng Nam</strong></span>
-                        </p>
+                        <p class="text-gray-400 flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">schedule</span> <span>Thời gian: <strong class="text-white font-normal">05:30 PM - Thứ Năm</strong></span></p>
+                        <p class="text-gray-400 flex items-center gap-2"><span class="material-symbols-outlined text-base text-primary">person_check</span><span>Người hướng dẫn: <strong class="text-white font-normal">HLV Hoàng Nam</strong></span></p>
                     </div>
-                    
                     <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">Rèn luyện thể lực cốt lõi, tăng phản xạ nhanh thông qua các tổ hợp đấm đá cường độ cao cùng huấn luyện viên.</p>
                 </div>
             </div>
-
             <div class="p-6 pt-0">
-                <button onclick="bookGroupClass('KICKBOXING ĐỐI KHÁNG ĐỐT CALO', '200.000đ')" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-base uppercase py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider">
-                    <span class="material-symbols-outlined text-base">payments</span> Đăng ký suất • 200.000đ
-                </button>
+                <button onclick="bookGroupClass('KICKBOXING ĐỐI KHÁNG ĐỐT CALO', '200.000đ')" class="w-full bg-primary hover:bg-red-700 text-white font-headline text-base uppercase py-3.5 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 tracking-wider" style="font-family: 'Oswald', sans-serif;"><span class="material-symbols-outlined text-base">payments</span> Đăng ký suất • 200.000đ</button>
             </div>
         </div>
-
     </div>
 </main>
 

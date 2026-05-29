@@ -12,17 +12,18 @@
 </head>
 <body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white pb-24 md:pb-12" style="font-family: 'Inter', sans-serif;">
 
-<!-- NAVBAR ĐÃ CĂN GIỮA MENU VÀ ĐỂ TRẠNG THÁI CHỮ THƯỜNG -->
+<!-- NAVBAR ĐÃ CĂN GIỮA MENU VÀ THÊM MỤC TIN TỨC -->
 <nav class="bg-background/90 backdrop-blur-xl border-b border-white/10 sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 h-16 shadow-lg">
     <div class="flex items-center">
         <a href="index.html" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic" style="font-family: 'Oswald', sans-serif;">KOR GYM</a>
     </div>
 
-    <!-- CĂN GIỮA MENU ĐIỀU HƯỚNG -->
+    <!-- CĂN GIỮA MENU ĐIỀU HƯỚNG VÀ THÊM "TIN TỨC" -->
     <div class="hidden md:flex gap-8 items-center justify-center flex-1 mx-auto font-headline text-lg uppercase tracking-tight">
         <a class="text-gray-400 hover:text-primary transition-colors" href="pages/shop.html" style="font-family: 'Oswald', sans-serif;">Cửa hàng</a>
         <a class="text-gray-400 hover:text-primary transition-colors" href="pages/booking.html" style="font-family: 'Oswald', sans-serif;">Đặt Lịch PT</a>
         <a class="text-gray-400 hover:text-primary transition-colors" href="pages/lophoc.html" style="font-family: 'Oswald', sans-serif;">Lớp Học Nhóm</a>
+        <a class="text-gray-400 hover:text-primary transition-colors" href="pages/blog_detail.html" style="font-family: 'Oswald', sans-serif;">Tin Tức</a>
     </div>
 
     <div class="flex items-center gap-3">
@@ -181,6 +182,54 @@
                         <div class="flex items-center gap-2"><span class="font-bold text-white">Lê Quân (Hội viên Elite)</span><span class="text-yellow-500">★★★★★</span></div>
                         <p class="text-gray-300">Đơn hàng Whey Gold Standard giao siêu nhanh, đóng gói kỹ lồng tem chống hàng giả. Vị socola đôi rất dễ uống, không bị ngọt gắt.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHỐI MỚI THÊM: BLOG CHIA SẺ KIẾN THỨC SÂU CHO TRANG CHỦ ĐƯỢC THIẾT KẾ CHUYÊN NGHIỆP CÓ HÌNH ẢNH MINH HỌA -->
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+        <div class="flex justify-between items-end border-b border-white/10 pb-4 mb-6">
+            <h2 class="font-headline text-xl uppercase text-white tracking-wide flex items-center gap-2" style="font-family: 'Oswald', sans-serif;">
+                <span class="material-symbols-outlined text-primary">auto_stories</span> KOR Fitness Blog
+            </h2>
+            <a href="pages/blog_detail.html" class="text-xs text-gray-400 hover:text-primary transition-colors flex items-center gap-1 font-bold uppercase tracking-wider" style="font-family: 'Oswald', sans-serif;">Xem tất cả bài viết <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Bài viết Blog 1 (Có ảnh xịn) ĐÃ SỬA ĐƯỜNG DẪN -->
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors flex flex-col">
+                <div class="h-48 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1593095948071-474c5cc2989d?q=80&w=600" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Creatine Supplement">
+                    <div class="absolute top-3 left-3 bg-primary text-white text-[9px] font-bold uppercase px-2 py-1 rounded shadow-md tracking-wider">Nutrition</div>
+                </div>
+                <div class="p-5 flex flex-col flex-1 justify-between gap-4">
+                    <div class="space-y-2">
+                        <div class="flex gap-3 items-center text-[10px] text-gray-500 font-mono">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">calendar_today</span> 28/05/2026</span>
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">person</span> HLV Hoàng Long</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-headline tracking-wide uppercase line-clamp-2" style="font-family: 'Oswald', sans-serif;">Sử dụng Creatine đúng cách để bứt phá sức mạnh bùng nổ</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-3">Creatine Monohydrate giúp tích trữ năng lượng ATP tế bào cơ. Hướng dẫn nạp 5g mỗi ngày liên tục giúp tăng cường hiệu suất nâng tạ nặng, tối ưu hóa kích thước sợi cơ an toàn và hiệu quả nhất.</p>
+                    </div>
+                    <a href="pages/blog_detail.html" class="text-xs text-primary font-bold uppercase tracking-wider font-['Oswald'] flex items-center gap-1 hover:underline w-fit">Đọc tiếp bài viết <span class="material-symbols-outlined text-xs">arrow_right_alt</span></a>
+                </div>
+            </div>
+            <!-- Bài viết Blog 2 (Có ảnh xịn) -->
+            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors flex flex-col">
+                <div class="h-48 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=600" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Workout Training Plan">
+                    <div class="absolute top-3 left-3 bg-purple-500 text-white text-[9px] font-bold uppercase px-2 py-1 rounded shadow-md tracking-wider">Training Plan</div>
+                </div>
+                <div class="p-5 flex flex-col flex-1 justify-between gap-4">
+                    <div class="space-y-2">
+                        <div class="flex gap-3 items-center text-[10px] text-gray-500 font-mono">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">calendar_today</span> 25/05/2026</span>
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">smart_toy</span> KOR Nutrition-AI</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white font-headline tracking-wide uppercase line-clamp-2" style="font-family: 'Oswald', sans-serif;">Lộ trình thiết kế giáo án xả cơ - siết cơ theo tuần thể trạng</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed line-clamp-3">Xây dựng chu kỳ thâm hụt và dư thừa calo nhịp nhàng kết hợp các bài tập kháng lực đa khớp (Compound). Chìa khóa vàng giúp chuyển hóa mỡ thừa thành khối cơ bắp căng nét và sắc sảo hơn.</p>
+                    </div>
+                    <a href="pages/blog_detail.html" class="text-xs text-primary font-bold uppercase tracking-wider font-['Oswald'] flex items-center gap-1 hover:underline w-fit">Đọc tiếp bài viết <span class="material-symbols-outlined text-xs">arrow_right_alt</span></a>
                 </div>
             </div>
         </div>

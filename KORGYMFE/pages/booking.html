@@ -4,45 +4,49 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Đặt lịch PT - KOR GYM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="../assets/js/tailwind-config.js"></script>
     <link rel="stylesheet" href="../assets/css/main.css">
 </head>
-<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white">
+<body class="bg-background text-on-background min-h-screen antialiased selection:bg-primary-container selection:text-white" style="font-family: 'Inter', sans-serif;">
 
-<nav class="sticky top-0 z-50 bg-[#131313]/90 backdrop-blur-xl border-b border-white/10 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
-        <a href="../index.html" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic">KOR GYM</a>
-        
-        <div class="hidden md:flex gap-8 items-center font-headline text-lg uppercase tracking-tight">
-            <a class="text-gray-400 hover:text-primary transition-colors" href="shop.html">Cửa hàng</a>
-            <a class="text-primary border-b-2 border-primary pb-1" href="booking.html">Đặt Lịch PT</a>
-            <a class="text-gray-400 hover:text-primary transition-colors" href="lophoc.html">Lớp Học Nhóm</a>
-        </div>
+<nav class="bg-background/90 backdrop-blur-xl border-b border-white/10 sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 h-16 shadow-lg">
+    <div class="flex items-center">
+        <a href="../index.html" class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic" style="font-family: 'Oswald', sans-serif;">KOR GYM</a>
+    </div>
 
-        <div class="flex items-center gap-4">
-            <a href="notifications.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
-                <span class="material-symbols-outlined">notifications</span>
-                <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
-            </a>
-            <a href="profile.html" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden block hover:border-primary transition-colors">
-                <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
-            </a>
-        </div>
+    <!-- CĂN GIỮA MENU VÀ LÀM SÁNG "ĐẶT LỊCH PT" -->
+    <div class="hidden md:flex gap-8 items-center justify-center flex-1 mx-auto font-headline text-lg uppercase tracking-tight">
+        <a class="text-gray-400 hover:text-primary transition-colors" href="shop.html" style="font-family: 'Oswald', sans-serif;">Cửa hàng</a>
+        <a class="text-white font-bold border-b-2 border-primary pb-1" href="booking.html" style="font-family: 'Oswald', sans-serif;">Đặt Lịch PT</a>
+        <a class="text-gray-400 hover:text-primary transition-colors" href="lophoc.html" style="font-family: 'Oswald', sans-serif;">Lớp Học Nhóm</a>
+        <a class="text-gray-400 hover:text-primary transition-colors" href="blog_detail.html" style="font-family: 'Oswald', sans-serif;">Tin Tức</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <a href="shop.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors relative flex items-center justify-center">
+            <span class="material-symbols-outlined">shopping_cart</span>
+        </a>
+        <a href="notifications.html" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
+        </a>
+        <a href="profile.html" class="w-8 h-8 rounded-full border border-white/20 overflow-hidden block hover:border-primary transition-colors">
+            <img alt="Avatar" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop"/>
+        </a>
     </div>
 </nav>
 
 <main class="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-6">
     <header>
-        <h1 class="font-headline text-3xl text-white uppercase tracking-tight">Đặt lịch hẹn Huấn luyện viên</h1>
+        <h1 class="font-headline text-3xl text-white uppercase tracking-tight" style="font-family: 'Oswald', sans-serif;">Đặt lịch hẹn Huấn luyện viên</h1>
         <p class="text-sm text-gray-400 mt-1">Lọc nhanh PT theo chuyên môn, bốc chọn ngày và khung giờ trống trên Calendar hệ thống.</p>
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
         <section class="col-span-12 lg:col-span-7 space-y-6">
-            
             <div class="flex gap-2 overflow-x-auto pb-2 border-b border-white/10 hide-scrollbar">
                 <button onclick="filterPT('all')" class="pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all">Tất cả HLV</button>
                 <button onclick="filterPT('Gym')" class="pt-filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Thể hình (Gym)</button>
@@ -50,7 +54,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pt-grid">
-                
                 <div id="default-pt-card" class="pt-card bg-[#1A1A1A] rounded-xl border-2 border-primary p-4 shadow-md flex gap-4 items-center cursor-pointer transition-colors" data-spec="Gym" onclick="selectPersonalTrainer(this, 'HLV Hoàng Long', 'Thể hình (Gym)', 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=150')">
                     <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=150&auto=format&fit=crop" class="w-14 h-14 object-cover rounded-xl border border-white/10 bg-gray-800" alt="PT"/>
                     <div>
@@ -68,13 +71,12 @@
                         <p class="text-[11px] text-gray-500 mt-0.5">Kinh nghiệm: 4 năm • Yoga Alliance</p>
                     </div>
                 </div>
-
             </div>
         </section>
 
         <section class="col-span-12 lg:col-span-4">
             <div class="bg-[#1A1A1A] rounded-2xl p-4 border border-white/10 shadow-2xl sticky top-24 space-y-4">
-                <h2 class="font-headline text-base uppercase tracking-wider text-white border-b border-white/10 pb-3">Cấu hình lịch tập hẹn</h2>
+                <h2 class="font-headline text-base uppercase tracking-wider text-white border-b border-white/10 pb-3" style="font-family: 'Oswald', sans-serif;">Cấu hình lịch tập hẹn</h2>
                 
                 <div id="selected-pt-panel" class="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
                     <img id="selected-pt-img" src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=150" class="w-10 h-10 rounded-full object-cover border border-white/10 bg-gray-800" alt="Avatar PT">
@@ -102,10 +104,9 @@
                     </div>
                 </div>
 
-                <button onclick="confirmBookingAppointment()" class="w-full py-3.5 bg-primary hover:bg-red-700 text-white font-headline text-base uppercase rounded-xl transition-all shadow-lg shadow-primary/20">Xác nhận đặt lịch tập PT</button>
+                <button onclick="confirmBookingAppointment()" class="w-full py-3.5 bg-primary hover:bg-red-700 text-white font-headline text-base uppercase rounded-xl transition-all shadow-lg shadow-primary/20" style="font-family: 'Oswald', sans-serif;">Xác nhận đặt lịch tập PT</button>
             </div>
         </section>
-
     </div>
 </main>
 
