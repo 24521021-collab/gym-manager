@@ -1,7 +1,5 @@
 @extends('layout.admin_layout')
 @section('content')
-
-< class="container-fluid py-6 px-4">
     <!-- HEADER -->
     <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
         <div>
@@ -63,7 +61,7 @@
             </div>
         </form>
     </div>
-    <br>
+
     <!-- DATA TABLE -->
     <div class="bg-[#1A1A1A] border border-white/10 rounded-xl overflow-hidden shadow-xl">
         <div class="overflow-x-auto">

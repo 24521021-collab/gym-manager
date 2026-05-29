@@ -37,21 +37,19 @@ class CheckInController extends Controller
 
         $userId = $request->user_id;
 
-        // BƯỚC A: Kiểm tra xem User có tồn tại không
-        $user = User::find($userId);
+        // TỐI ƯU: Gộp các câu lệnh truy vấn để giảm latency (độ trễ)
+        // Lấy User và gói tập Active còn hạn trong cùng 1 lần truy vấn
+        $user = User::with(['memberships' => function($query) {
+            $query->where('status', 'Active')
+                  ->where('end_date', '>=', Carbon::today())
+                  ->latest(); // Ưu tiên gói mới nhất
+        }])->find($userId);
+
         if (!$user) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Không tìm thấy hội viên này!'
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Không tìm thấy hội viên!'], 404);
         }
 
-        // BƯỚC B: Kiểm tra gói tập (Membership) còn hạn không
-        // Logic: Trạng thái là 'Đang tập' VÀ ngày hết hạn phải >= ngày hôm nay
-        $activeMembership = Membership::where('user_id', $userId)
-            ->where('status', 'Active')
-            ->where('end_date', '>=', Carbon::today())
-            ->first();
+        $activeMembership = $user->memberships->first();
 
         if (!$activeMembership) {
             return response()->json([
@@ -74,6 +72,7 @@ class CheckInController extends Controller
             'user_name' => $user->full_name, // Hoặc $user->full_name tùy DB của bạn
             'package_name' => $activeMembership->package_name, // Hiện tên gói khách đang tập
             'check_in_at' => $checkIn->check_in_time->format('H:i:s d/m/Y'),
+            'avatar' => $user->avatar ?? null, // Gửi thêm ảnh để Admin nhận diện nhanh hơn
         ]);
     }
 }

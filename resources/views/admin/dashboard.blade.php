@@ -235,12 +235,7 @@
                     @empty
                     <p class="text-center text-gray-500 italic py-4">Chưa có lượt check-in nào.</p>
                     @endforelse
-
                 </div>
-                
-                <a href="{{ route('admin.checkin') }}" class="w-full mt-3 bg-white/5 hover:bg-white/10 text-gray-400 border border-white/10 text-[10px] font-bold uppercase py-2 rounded-lg transition-all shadow-sm text-center">
-                    Xem toàn bộ lịch sử ({{ $checkinCount }})
-                </a>
             </div>
         </section>
     </div>
