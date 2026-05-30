@@ -58,7 +58,7 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::findOrFail($id);
-        
+
         $data = $request->validate([
             'title' => 'required|max:255',
             'content' => 'required',
@@ -86,7 +86,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
-        
+
         // Xóa ảnh trong storage trước khi xóa bài viết trong database
         if ($post->header_image) {
             Storage::disk('public')->delete($post->header_image);
@@ -95,5 +95,22 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã xóa bài viết.');
+    }
+
+    public function index()
+    {
+        $posts = Post::latest()->paginate(10);
+        return view('admin.posts.index', compact('posts'));
+    }
+
+    public function create()
+    {
+        return view('admin.posts.create');
+    }
+
+    public function edit($id)
+    {
+        $post = Post::findOrFail($id);
+        return view('admin.edit', compact('post'));
     }
 }

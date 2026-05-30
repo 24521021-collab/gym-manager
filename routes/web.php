@@ -175,6 +175,11 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
 });
 
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Tạo 7 đường dẫn CRUD (Danh sách, Thêm, Lưu, Sửa, Cập nhật, Xóa) chỉ bằng 1 dòng
+    Route::resource('posts', PostController::class);
+});
+
 // Cấu hình route ảo để làm sạch lỗi của môi trường phát triển ngầm (IDX/Vite)
 Route::put('/', function () {
     return response()->json(['status' => 'ok']);
