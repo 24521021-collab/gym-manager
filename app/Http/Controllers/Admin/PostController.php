@@ -97,12 +97,6 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Đã xóa bài viết.');
     }
 
-    public function index()
-    {
-        $posts = Post::latest()->paginate(10);
-        return view('admin.posts.index', compact('posts'));
-    }
-
     public function create()
     {
         return view('admin.posts.create');
