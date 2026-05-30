@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ $latestMetric ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span></span>
+                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ isset($latestMetric->measured_at) ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span>
                 <button id="update-metrics-btn" class="bg-primary text-white text-xs font-bold uppercase py-2 px-4 rounded hover:bg-red-700 transition-colors">Cập nhật chỉ số</button>
             </div>
         </div>
@@ -146,7 +146,7 @@
             <span class="material-symbols-outlined text-primary">workspace_premium</span> Gói hội viên & Đăng ký dịch vụ
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach($goiTaps as $package)
+            @foreach($goiTaps ?? [] as $package)
             @php
                 // Một chút logic để giữ giao diện đặc biệt cho gói "Elite" hoặc "Nâng cao" từ bản mẫu
                 $isElite = str_contains(strtolower($package->package_name), 'elite') || str_contains(strtolower($package->package_name), 'nâng cao');
