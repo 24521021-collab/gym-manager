@@ -94,10 +94,8 @@ Route::post('/register-package', [UserMembershipController::class, 'register'])-
 
 //route để xem body metric, chỉ người đăng nhập mới xem được vì có middleware,dùng put để update body metric theo từng giai đoạn 
 Route::middleware('auth')->group(function () {
-    Route::get('/body_metric', [BodyMetricController::class, 'index'])->name('body.metric');
     // profile người dùng 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    Route::put('/body_metric/update', [BodyMetricController::class, 'update'])->name('metric.update');
     // route để xem đơn hàng người dùng 
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
@@ -112,11 +110,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout/bank-qr/{order_id}', [CheckoutController::class, 'showBankQR'])->name('checkout.bank_qr');
     Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
- // ─── ĐẶT LỊCH RIÊNG PT (THÊM VÀO ĐÂY) ───────
-    Route::get('/booking-pt', [PtBookingController::class, 'index'])->name('booking.pt.index');
-    Route::get('/api/pt-booked-slots', [PtBookingController::class, 'getBookedSlots'])->name('api.pt.booked_slots');
-    Route::post('/booking-pt', [PtBookingController::class, 'store'])->name('booking.pt.store');
-
     // Quên & Đổi mật khẩu
     Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
 
@@ -127,12 +120,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/notifications/clear/read', [NotificationController::class, 'clearRead'])->name('notifications.clearRead');
 });
 
+// ─── ĐẶT LỊCH RIÊNG PT (CHO PHÉP KHÁCH XEM) ───────
+Route::get('/booking-pt', [PtBookingController::class, 'index'])->name('booking.pt.index');
+Route::get('/api/pt-booked-slots', [PtBookingController::class, 'getBookedSlots'])->name('api.pt.booked_slots');
+Route::post('/booking-pt', [PtBookingController::class, 'store'])->middleware('auth')->name('booking.pt.store');
+
 // Route lấy tất cả phản hồi cho trang chủ (Công khai)
 Route::get('/api/all-reviews', [ReviewController::class, 'index'])->name('reviews.all');
 
 // Route quên mật khẩu công khai
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetEmail'])->name('password.forgot.post');
-
+// Route cập nhật body metric
+Route::put('/body_metric/update', [BodyMetricController::class, 'update'])->name('metric.update');
 
 // route để người dùng thực hiện checkins
 Route::get('/admin/checkin', [CheckInController::class, 'index'])->name('admin.checkin');

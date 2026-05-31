@@ -59,7 +59,7 @@ class PTProfileSeeder extends Seeder
         
             ],
             'trainer5@gmail.com' => [
-                'specialization'       => 'Yoga/Pilate',
+                'specialization'       => 'Võ Thuật/Boxing',
                 'bio'                  => 'Giúp học viên làm chủ cơ thể, cải thiện sự linh hoạt, dẻo dai và sở hữu vóc dáng thon gọn tự nhiên.',
                 'commission' => 150000,
                 'image' => 'pt-5.jpg',
@@ -72,7 +72,7 @@ class PTProfileSeeder extends Seeder
 
             ],
             'trainer7@gmail.com' => [
-                'specialization'       => 'Yoga/Pilate',
+                'specialization'       => 'Võ Thuật/Boxing',
                 'bio'                  => 'Vui vẻ, nhiệt tình và nhiều năng lượng. Cam kết giúp học viên giải tỏa stress và đốt cháy tối đa calo.',
                 'commission' => 170000,
                 'image' => 'pt-7.jpg',

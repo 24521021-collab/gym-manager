@@ -99,7 +99,7 @@ class ReviewController extends Controller
             if (!$hasBooked) {
                 return response()->json([
                     'success' => false, 
-                    'message' => 'Bạn cần hoàn thành buổi tập với HLV này trước khi để lại đánh giá.'
+                    'message' => 'Bạn cần đăng ký với HLV này trước khi để lại đánh giá.'
                 ], 403);
             }
         }

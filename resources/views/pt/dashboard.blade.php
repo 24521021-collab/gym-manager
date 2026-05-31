@@ -123,7 +123,7 @@
             </div>
             @endforelse
 
-            {{-- KHỐI NHẬT KÝ HUẤN LUYỆN - THAY THẾ CHO PHẦN HÌNH ẢNH --}}
+            {{-- KHỐI NHẬT KÝ HUẤN LUYỆN --}}
             <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl space-y-5">
                 <div class="flex justify-between items-center border-b border-white/10 pb-3">
                     <h2 class="font-headline text-base uppercase tracking-wider text-white font-bold" style="font-family: 'Oswald', sans-serif;">Nhật ký huấn luyện hàng ngày</h2>
@@ -139,7 +139,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex items-center gap-2">
                                     <span class="material-symbols-outlined text-primary text-lg">history_edu</span>
-                                    <h4 class="font-bold text-white uppercase text-xs tracking-wide truncate max-w-[150px]" style="font-family: 'Oswald', sans-serif;" title="{{ $log->title }}">{{ $log->title }}</h4>
+                                    <h4 class="font-bold text-white uppercase text-xs tracking-wide" style="font-family: 'Oswald', sans-serif;">{{ $log->title }}</h4>
                                 </div>
                                 <div class="flex flex-col items-end gap-1">
                                     <span class="text-[9px] text-gray-500 font-mono">{{ \Carbon\Carbon::parse($log->log_date)->format('d/m/Y') }}</span>
@@ -219,10 +219,6 @@
                     @empty
                     <p class="text-gray-500 text-xs text-center">Không có yêu cầu đặt lịch riêng nào đang chờ.</p>
                     @endforelse
-                    <div class="bg-[#131313] p-3 rounded-xl border border-white/5 space-y-1 text-xs">
-                        <p class="font-bold text-white uppercase text-[10px]" style="font-family: 'Oswald', sans-serif; tracking-wide">Sổ tay lưu ý ca trực PT</p>
-                        <p class="text-[11px] text-gray-500 leading-relaxed">Kiểm tra kĩ form hông và siết core của idol Sơn Tùng trước khi duyệt ca hẹn và up tạ nặng bài kéo gầm chân.</p>
-                    </div>
                 </div>
             </div>
 
@@ -254,8 +250,8 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1">
-                    <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Ngày ghi</label>
-                    <input type="date" id="log-date" value="{{ date('Y-m-d') }}" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-xs text-white outline-none">
+                    <label class="text-[10px] text-white uppercase font-bold tracking-wider">Ngày ghi</label>
+                    <input type="date" id="log-date" value="{{ date('Y-m-d') }}" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-xs text-white outline-none [color-scheme:dark]">
                 </div>
                 <div class="space-y-1">
                     <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Trạng thái</label>

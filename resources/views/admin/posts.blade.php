@@ -22,7 +22,6 @@
             <tr class="border-b border-white/10 text-gray-400 text-xs uppercase tracking-wider">
                 <th class="pb-4 font-bold w-24">Ảnh</th>
                 <th class="pb-4 font-bold">Tiêu đề</th>
-                <th class="pb-4 font-bold hidden md:table-cell">Xem trước nội dung</th>
                 <th class="pb-4 font-bold">Danh mục</th>
                 <th class="pb-4 font-bold">Tác giả</th>
                 <th class="pb-4 font-bold text-center w-32">Trạng thái</th>
@@ -42,9 +41,6 @@
                     @endif
                 </td>
                 <td class="py-4 font-bold text-gray-100 max-w-[200px] truncate" title="{{ $post->title }}">{{ $post->title }}</td>
-                <td class="py-4 text-gray-500 text-[11px] max-w-xs hidden md:table-cell">
-                    <div class="line-clamp-2">{{ strip_tags($post->content) }}</div>
-                </td>
                 <td class="py-4 text-gray-400">{{ $post->category }}</td>
                 <td class="py-4 text-gray-400 text-xs">{{ $post->author->full_name ?? 'N/A' }}</td>
                 <td class="py-4 text-center">

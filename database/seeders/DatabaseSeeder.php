@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class,
             PtBookingSeeder::class,
             PostSeeder::class,
+            ReviewSeeder::class,
+            BodyMetricSeeder::class,
+            CheckInSeeder::class,
         ]);
     }
 }

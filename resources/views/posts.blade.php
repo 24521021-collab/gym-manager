@@ -43,7 +43,7 @@
             <span class="inline-block {{ $catColor }} text-white text-xs font-bold uppercase px-3 py-1 rounded-full shadow-md tracking-wider">
                 {{ $post->category }}
             </span>
-            <h1 class="font-headline text-3xl md:text-5xl text-white uppercase tracking-tight font-bold leading-tight" style="font-family: 'Oswald', sans-serif;">
+            <h1 class="font-headline text-3xl md:text-3xl text-white uppercase tracking-tight font-bold leading-tight" style="font-family: 'Oswald', sans-serif;">
                 {{ $post->title }}
             </h1>
             <div class="flex justify-center items-center gap-4 text-xs text-gray-400 font-mono pt-2">

@@ -1,33 +1,5 @@
-<html class="dark" lang="vi">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Hồ sơ cá nhân - KOR GYM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-background text-on-background min-h-screen antialiased flex flex-col justify-between">
-
-{{-- 1. NAVBAR TIÊU CHUẨN FRONTEND --}}
-<nav class="bg-background/90 backdrop-blur-xl border-b border-white/10 sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 md:px-8 h-16 shadow-lg">
-    <div class="flex items-center gap-8">
-        <a class="font-headline text-2xl font-bold text-primary tracking-tighter uppercase italic" href="/">KOR GYM</a>
-        <div class="hidden md:flex gap-6 items-center">
-            <a class="text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="/products">Cửa hàng</a>
-            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="/classes">Lớp học</a>
-            <a class="text-gray-400 hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="/booking">Đặt Lịch</a>
-        </div>
-    </div>
-    
-    <div class="flex items-center gap-3">
-        <span class="hidden md:inline text-sm font-medium text-gray-300">Xin chào, {{ Auth::user()->full_name }}</span>
-        <img alt="Avatar" class="w-8 h-8 rounded-full border border-white/20 object-cover" 
-             src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name) }}&background=random&color=fff"/>
-    </div>
-</nav>
-
+@extends('layout.frontend')
+@section('content')
 {{-- 2. VÙNG NỘI DUNG CHÍNH (Dàn theo dạng 1 cột dọc chồng các box chuẩn mẫu) --}}
 <main class="max-w-2xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
     
@@ -83,13 +55,14 @@
 
         <form id="changePasswordForm" action="{{ route('password.change') }}" method="POST" class="space-y-4">
             @csrf
+            @method('PUT')
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu hiện tại</label>
                 <input type="password" name="current_password" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" placeholder="Nhập mật khẩu cũ">
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu mới</label>
-                <input type="password" name="new_password" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" placeholder="Tối thiểu 6 ký tự">
+                <input type="password" name="new_password" required class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" placeholder="Tối thiểu 8 ký tự">
             </div>
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Xác nhận mật khẩu mới</label>
@@ -136,13 +109,13 @@
     </div>
 
 </main>
-
 {{-- 3. FOOTER COPYRIGHT --}}
 <footer class="border-t border-white/5 py-4 bg-black/40">
     <p class="text-center text-[11px] text-gray-600 tracking-wider">© {{ date('Y') }} KOR GYM LUXURY FITNESS. All Rights Reserved.</p>
 </footer>
-
+@endsection
 {{-- 4. JAVASCRIPT ĐIỀU HƯỚNG VÀ XỬ LÝ API AJAX KHÔNG LOAD LẠI TRANG --}}
+@push('scripts')
 <script>
     // Cuộn mượt xuống ô Quên mật khẩu khi ấn link
     function scrollToForgotBox() {
@@ -175,12 +148,18 @@
             const data = await response.json();
 
             if (response.ok && data.success) {
-                msg.className = "text-emerald-400 font-bold italic text-xs";
-                msg.innerText = data.message || "Cập nhật mật khẩu mới thành công!";
-                form.reset();
+                msg.className = "text-emerald-500 font-bold italic text-xs";
+                msg.innerText = data.message || "Cập nhật mật khẩu thành công!";
+                form.reset(); // Xóa sạch dữ liệu trong form sau khi đổi thành công
             } else {
                 msg.className = "text-red-500 font-bold italic text-xs";
-                msg.innerText = data.message || "Mật khẩu cũ không đúng hoặc dữ liệu không hợp lệ.";
+                if (data.errors) {
+                    // Lấy lỗi đầu tiên trong danh sách validation errors trả về từ server
+                    const firstError = Object.values(data.errors)[0][0];
+                    msg.innerText = firstError;
+                } else {
+                    msg.innerText = data.message || "Mật khẩu cũ không đúng hoặc dữ liệu không hợp lệ.";
+                }
             }
         } catch (error) {
             msg.className = "text-red-500 font-bold italic text-xs";
@@ -215,11 +194,16 @@
             const data = await response.json();
 
             if (response.ok) {
-                msg.className = "text-emerald-400 font-bold italic text-xs";
-                msg.innerText = data.message || "Hệ thống đã gửi liên kết đặt lại mật khẩu vào hòm thư thành công!";
+                msg.className = "text-emerald-500 font-bold italic text-xs";
+                msg.innerText = data.message || "Hệ thống đã gửi liên kết khôi phục vào Email của bạn.";
             } else {
                 msg.className = "text-red-500 font-bold italic text-xs";
-                msg.innerText = data.message || "Email không tồn tại trong hệ thống.";
+                if (data.errors) {
+                    const firstError = Object.values(data.errors)[0][0];
+                    msg.innerText = firstError;
+                } else {
+                    msg.innerText = data.message || "Email không tồn tại trong hệ thống.";
+                }
             }
         } catch (error) {
             msg.className = "text-red-500 font-bold italic text-xs";
@@ -230,5 +214,4 @@
         }
     });
 </script>
-</body>
-</html>
+@endpush

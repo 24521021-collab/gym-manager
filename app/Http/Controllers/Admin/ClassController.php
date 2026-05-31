@@ -49,7 +49,7 @@ class ClassController extends Controller
 
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/classes'), $imageName);
+            $request->image->move(public_path('images/classes'), $imageName);
             $data['image'] = $imageName;
         }
 

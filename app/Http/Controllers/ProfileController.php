@@ -16,10 +16,10 @@ class ProfileController extends Controller
     {
         // 1. Validate chặt chẽ
         $request->validate([
-            'old_password' => 'required',
+            'current_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ], [
-            'old_password.required' => 'Vui lòng nhập mật khẩu cũ.',
+            'current_password.required' => 'Bạn chưa nhập mật khẩu hiện tại',
             'new_password.required' => 'Vui lòng nhập mật khẩu mới.',
             'new_password.min' => 'Mật khẩu mới phải từ 8 ký tự.',
             'new_password.confirmed' => 'Xác nhận mật khẩu không khớp.'
@@ -28,7 +28,7 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         // 2. So sánh mật khẩu cũ bằng Hash::check
-        if (!Hash::check($request->old_password, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json([
                 'success' => false, 
                 'message' => 'Mật khẩu cũ không chính xác.'

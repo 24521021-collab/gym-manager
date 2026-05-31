@@ -23,15 +23,18 @@ class LoginController extends Controller
     /* auth- authentification: kiểm tra dữ liệu trong dtbase*/
     if (Auth::attempt($credentials)){
         // C. Nếu đúng: Tạo lại Session (phiên làm việc) để bảo mật
-        $request->session()->regenerate();
-        $user= Auth::user();
-        if($user->role =='admin'){
-            return redirect()->route('admin.dashboard');
+        // Nếu bị lỗi 419 liên tục trên môi trường Dev/IDX, hãy tạm thời comment dòng dưới:
+        // $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // Điều hướng thông minh: Nếu admin cố truy cập trang dashboard trước khi login, intended sẽ đưa họ về đó.
+        if ($user->role == 'admin') {
+            return redirect()->intended(route('admin.dashboard'))->with('success', 'Chào mừng Quản trị viên!');
+        } elseif ($user->role == 'pt') {
+            return redirect()->intended(route('pt.dashboard'))->with('success', 'Chào mừng Huấn luyện viên!');
         }
-        if($user->role =='pt'){
-            return redirect()->route('pt.dashboard');
-        }
-        // D. Chuyển hướng người dùng về trang chủ
+
         return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
     }
     // Trả về nếu sai thông tin  

@@ -14,6 +14,7 @@ return new class extends Migration
        Schema::create('gym_classes', function (Blueprint $table) {
         $table->id();
         $table->string('name');
+         $table->string('image')->nullable()->default('default-class.jpg');
         $table->foreignId('pt_id')->constrained('pt_profiles')->onDelete('cascade');
         $table->integer('max_capacity');
         $table->text('description')->nullable();

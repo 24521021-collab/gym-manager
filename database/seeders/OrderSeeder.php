@@ -29,22 +29,24 @@ class OrderSeeder extends Seeder
 
         if ($users->isEmpty()) return;
 
-        $paymentMethods = ['COD', 'Bank_QR', 'VNPAY'];
+        $paymentMethods = ['COD', 'Bank_QR'];
         $statuses = ['Pending', 'Paid', 'Cancelled'];
 
-        // Tạo 14 giao dịch mẫu rải rác trong 30 ngày qua
-        for ($i = 1; $i <= 14; $i++) {
+        // --- 1. Tạo đơn hàng hỗn hợp SẢN PHẨM ---
+        // Tăng số lượng lên 15 đơn để Dashboard trông đầy đặn
+        for ($i = 1; $i <= 5; $i++) {
             $user = $users->random();
             $method = $paymentMethods[array_rand($paymentMethods)];
-            // 10 đơn đầu tiên cho Paid để Dashboard hiển thị doanh thu cao
-            $status = ($i <= 10) ? 'Paid' : $statuses[array_rand($statuses)];
+            // Tăng tỷ lệ đơn 'Paid' để thấy doanh thu trên biểu đồ
+            $status = (rand(1, 10) > 3) ? 'Paid' : $statuses[array_rand($statuses)];
             
             $order = Order::create([
                 'user_id' => $user->id,
                 'total_amount' => 0,
                 'payment_status' => $status,
                 'payment_method' => $method,
-                'order_date' => Carbon::now()->subDays(rand(0, 30))->subHours(rand(0, 24)),
+                // Mặc định ngày mùng 1 tháng 6
+                'order_date' => Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59)),
             ]);
 
             $totalAmount = 0;
@@ -72,21 +74,39 @@ class OrderSeeder extends Seeder
         }
 
         // --- 2. Tạo các đơn hàng chỉ chứa GÓI TẬP ---
-        for ($i = 0; $i < 5; $i++) { // Tạo 5 đơn hàng chỉ chứa gói tập
+        for ($i = 0; $i < 15; $i++) { 
             if ($packages->isEmpty()) break;
             $user = $users->random();
             $method = $paymentMethods[array_rand($paymentMethods)];
-            $status = 'Paid'; // Giả định đã thanh toán cho các đơn hàng gói tập
-
             $package = $packages->random();
             $totalAmount = $package->price;
+
+            // Logic tạo 3 trạng thái khác nhau cho Membership
+            $type_rand = rand(1, 3);
+            if ($type_rand == 1) {
+                // TRƯỜNG HỢP 1: Đang hoạt động (Ngày đặt là 01/06/2026)
+                $orderDate = Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59));
+                $orderStatus = 'Paid';
+                $membershipStatus = 'Active';
+            } elseif ($type_rand == 2) {
+                // TRƯỜNG HỢP 2: Đã hết hạn (Ngày đặt lùi về tháng trước)
+                // Đặt lùi lại 40 ngày để chắc chắn gói 30 ngày đã hết hạn
+                $orderDate = Carbon::create(2026, 6, 1)->subDays(40);
+                $orderStatus = 'Paid';
+                $membershipStatus = 'Expired';
+            } else {
+                // TRƯỜNG HỢP 3: Đã hủy (Gán trạng thái đơn hàng Cancelled)
+                $orderDate = Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59));
+                $orderStatus = 'Cancelled';
+                $membershipStatus = 'Cancelled';
+            }
 
             $order = Order::create([
                 'user_id' => $user->id,
                 'total_amount' => $totalAmount,
-                'payment_status' => $status,
+                'payment_status' => $orderStatus,
                 'payment_method' => $method,
-                'order_date' => Carbon::now()->subDays(rand(0, 30))->subHours(rand(0, 24)),
+                'order_date' => $orderDate,
             ]);
 
             OrderItem::create([
@@ -104,14 +124,14 @@ class OrderSeeder extends Seeder
             \App\Models\Membership::create([
                 'user_id' => $user->id,
                 'package_id' => $package->id,
-                'start_date' => $order->order_date,
-                'end_date' => (clone $order->order_date)->addDays($package->duration_days),
-                'status' => 'Active'
+                'start_date' => $orderDate,
+                'end_date' => (clone $orderDate)->addDays($package->duration_days),
+                'status' => $membershipStatus
             ]);
         }
 
         // --- 3. Tạo các đơn hàng chỉ chứa LỚP HỌC ---
-        for ($i = 0; $i < 5; $i++) { // Tạo 5 đơn hàng chỉ chứa lớp học
+        for ($i = 0; $i < 15; $i++) { 
             if ($classes->isEmpty()) break;
             $user = $users->random();
             $method = $paymentMethods[array_rand($paymentMethods)];
@@ -125,7 +145,8 @@ class OrderSeeder extends Seeder
                 'total_amount' => $totalAmount,
                 'payment_status' => $status,
                 'payment_method' => $method,
-                'order_date' => Carbon::now()->subDays(rand(0, 30))->subHours(rand(0, 24)),
+                // Mặc định ngày mùng 1 tháng 6
+                'order_date' => Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59)),
             ]);
 
             OrderItem::create([
@@ -159,7 +180,8 @@ class OrderSeeder extends Seeder
                 'total_amount' => 0,
                 'payment_status' => $status,
                 'payment_method' => $method,
-                'order_date' => Carbon::now()->subDays(rand(0, 30))->subHours(rand(0, 24)),
+                // Mặc định ngày mùng 1 tháng 6
+                'order_date' => Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59)),
             ]);
 
             $totalAmount = 0;

@@ -11,19 +11,6 @@
             <p class="text-gray-400 text-sm mt-1 font-body">Thiết kế lộ trình kháng lực và tăng trưởng cơ bắp 1 kèm 1 chuyên nghiệp.</p>
         </div>
 
-        {{-- Hiển thị thông báo phản hồi từ hệ thống --}}
-        @if(session('success'))
-            <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-sm">
-                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm">
-                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-            </div>
-        @endif
-
         <form id="booking-main-form" action="{{ route('booking.pt.store') }}" method="POST">
             @csrf
             
@@ -61,6 +48,7 @@
                             @php
                                 $ptSpec = $pt->ptProfile->specialization ?? 'Thể hình';
                                 $ptImg = $pt->ptProfile->image ?? 'pt.jpg';
+                                $ptBio = $pt->ptProfile->bio ?? 'Chưa có thông tin giới thiệu.';
                             @endphp
                             
                             <div onclick="selectPersonalTrainer(this, {{ $pt->id }}, '{{ addslashes($pt->full_name) }}')" 
@@ -80,6 +68,7 @@
                                 <div class="flex-1 min-w-0 space-y-1">
                                     <h3 class="font-bold text-white text-base truncate">{{ $pt->full_name }}</h3>
                                     <p class="text-xs text-primary font-medium">Chuyên môn: {{ $ptSpec }}</p>
+                                    <p class="text-[10px] text-gray-400 line-clamp-4 italic">{{ $ptBio }}</p>
                                 </div>
                             </div>
                             @endforeach
@@ -135,6 +124,8 @@
                             </div>
                         </div>
 
+                        <div id="booking-msg" class="text-xs transition-all min-h-[16px] italic font-bold"></div>
+
                         <button type="button" onclick="confirmBookingAppointment()" id="btn-submit-booking"
                                 class="w-full py-4 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-xl font-bold tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 opacity-50 cursor-not-allowed" disabled>
                             Xác nhận chốt lịch ngay
@@ -183,6 +174,7 @@
             data.pts.forEach(pt => {
                 const ptSpec = pt.pt_profile ? pt.pt_profile.specialization : 'Thể hình';
                 const ptImg = pt.pt_profile && pt.pt_profile.image ? pt.pt_profile.image : 'pt.jpg';
+                const ptBio = pt.pt_profile ? pt.pt_profile.bio : 'Chưa có thông tin giới thiệu.';
                 const ptNameSafe = pt.full_name.replace(/'/g, "\\'"); // Chống lỗi JS khi tên có dấu nháy
                 const assetBase = "{{ asset('images/pt') }}";
 
@@ -201,6 +193,7 @@
                         <div class="flex-1 min-w-0 space-y-1">
                             <h3 class="font-bold text-white text-base truncate">${pt.full_name}</h3>
                             <p class="text-xs text-primary font-medium">Chuyên môn: ${ptSpec}</p>
+                            <p class="text-[10px] text-gray-400 line-clamp-4 italic">${ptBio}</p>
                         </div>
                     </div>
                 `;
@@ -252,22 +245,17 @@
     // 4. BIÊN DỊCH VÀ TÍCH HỢP LOGIC KIỂM TRA LỊCH TRÙNG QUA AJAX
     function checkAvailableTimeSlotsFromServer() {
         const wrapper = document.getElementById('time-slots-wrapper');
-        
         currentSelectedTime = '';
         document.getElementById('hidden_start_time').value = '';
         document.getElementById('summary-time').innerText = 'Chưa chọn';
-        
         const submitBtn = document.getElementById('btn-submit-booking');
         submitBtn.disabled = true;
         submitBtn.className = "w-full py-4 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-xl font-bold tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 opacity-50 cursor-not-allowed";
-
         if (!currentSelectedPTId || !currentSelectedDate) {
             wrapper.innerHTML = '<p class="text-gray-500 text-xs italic col-span-full py-2" id="slot-notice">Vui lòng chọn Huấn luyện viên và Ngày tập để hệ thống quét ca trống...</p>';
             return;
         }
-
         wrapper.innerHTML = '<p class="text-primary text-xs col-span-full py-2 animate-pulse">Đang rà soát dữ liệu ca trực trống của HLV...</p>';
-
         fetch(`/api/pt-booked-slots?pt_id=${currentSelectedPTId}&date=${currentSelectedDate}`)
             .then(response => response.json())
             .then(bookedSlots => {
@@ -277,7 +265,6 @@
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.innerText = slot;
-                    
                     if (formattedLockedHours.includes(slot)) {
                         btn.className = "time-btn py-2 text-xs font-bold border border-white/5 bg-black/40 text-gray-600 rounded-lg opacity-30 cursor-not-allowed";
                         btn.disabled = true;
@@ -314,13 +301,49 @@
         submitBtn.className = "w-full py-4 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-xl font-bold tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 cursor-pointer";
     }
 
-    // 6. HÀM XÁC NHẬN GỬI FORM THỰC TẾ LÊN CONTROLLER
-    function confirmBookingAppointment() {
+    // 6. HÀM XÁC NHẬN GỬI FORM 
+    async function confirmBookingAppointment() {
         if (!currentSelectedPTId || !currentSelectedDate || !currentSelectedTime) {
             alert("Lỗi tác vụ: Vui lòng hoàn thành đầy đủ 3 bước lựa chọn trước khi chốt lịch!");
             return;
         }
-        document.getElementById('booking-main-form').submit();
+
+        const form = document.getElementById('booking-main-form');
+        const msg = document.getElementById('booking-msg');
+        const btn = document.getElementById('btn-submit-booking');
+        const formData = new FormData(form);
+
+        btn.disabled = true;
+        btn.innerText = "Đang gửi yêu cầu...";
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                msg.className = "text-emerald-500 italic font-bold text-xs";
+                msg.innerText = data.message;
+                form.reset();
+                setTimeout(() => {
+                    msg.innerText = "";
+                }, 1000);
+            } else {
+                msg.className = "text-red-500 italic font-bold text-xs";
+                msg.innerText = data.message || "Lịch đã bị trùng hoặc dữ liệu không hợp lệ.";
+            }
+        } catch (error) {
+            msg.className = "text-red-500 italic font-bold text-xs";
+            msg.innerText = "Lỗi kết nối máy chủ.";
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Xác nhận chốt lịch ngay";
+        }
     }
 
     /** 

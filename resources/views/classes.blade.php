@@ -45,6 +45,10 @@
         
         <div class="col-span-full text-center py-20 text-gray-500 animate-pulse italic">Đang tải danh sách lớp học...</div>
     </div>
+    {{-- Hiển thị thanh điều hướng phân trang --}}
+        <div class="mt-8 flex justify-center">
+            {{ $classes->links() }}
+        </div>
     
     {{-- Thông báo trống --}}
     <div id="emptySearchMessage" class="hidden text-center py-20 bg-[#1A1A1A] rounded-2xl border border-white/5 mt-6">
@@ -67,18 +71,18 @@
         const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
         return text ? String(text).replace(/[&<>"']/g, m => map[m]) : '';
     }
-    // LOGIC: Tải dữ liệu bằng Fetch API - Tận dụng hàm lọc từ Controller
-    async function fetchClasses() {
+
+    // LOGIC: Tải dữ liệu bằng Fetch API - Tận dụng hàm lọc từ Controller, now accepts page parameter
+    async function fetchClasses(page = 1) {
         try {
-            // Thêm query params để Controller xử lý lọc & tránh lỗi cache dữ liệu thô khi nhấn Back
-            const response = await fetch(`{{ route('classes.index') }}?category=${currentCategory}&search=${encodeURIComponent(currentSearch)}&ajax_call=1`, {
+            const response = await fetch(`{{ route('classes.index') }}?category=${currentCategory}&search=${encodeURIComponent(currentSearch)}&page=${page}&ajax_call=1`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             allData = await response.json();
             renderClasses();
         } catch (error) {
             console.error("Fetch Error:", error);
-            document.getElementById('classes-container').innerHTML = '<p class="col-span-full text-center text-primary text-xs">Lỗi tải dữ liệu hệ thống!</p>';
+            document.getElementById('classes-container').innerHTML = '<p class="col-span-full text-center text-primary text-xs mt-4">Lỗi tải dữ liệu hệ thống!</p>';
         }
     }
 
@@ -88,7 +92,7 @@
         buttons.forEach(b => b.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all");
         btn.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all";
         fetchClasses(); // Gọi server để lọc
-    }
+    } 
 
     function handleSearch() {
         clearTimeout(searchTimer);
@@ -103,8 +107,7 @@
         const container = document.getElementById('classes-container');
         const emptyMsg = document.getElementById('emptySearchMessage');
         container.innerHTML = '';
-        const filtered = allData.classes; // Dữ liệu đã được server lọc sẵn
-
+        const filtered = allData.classes.data; // Correctly access the 'data' array from the paginator object
         if (filtered.length === 0) {
             emptyMsg.classList.remove('hidden');
             return;
@@ -229,6 +232,6 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        fetchClasses();
+        fetchClasses(); // Initial load of classes and pagination
     });
 </script>

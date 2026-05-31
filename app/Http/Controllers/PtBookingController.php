@@ -81,7 +81,10 @@ class PtBookingController extends Controller
             ->exists();
 
         if ($isConflict) {
-            return back()->with('error', 'Khung giờ này vừa có người đặt mất rồi. Vui lòng chọn giờ khác!');
+            return response()->json([
+                'success' => false,
+                'message' => 'Khung giờ này vừa có người đặt mất rồi. Vui lòng chọn giờ khác!'
+            ], 422);
         }
         // Tạo bản ghi mới
         PtBooking::create([
@@ -104,6 +107,9 @@ class PtBookingController extends Controller
             'content' => "Hệ thống KOR: Yêu cầu đặt lịch tập 1-kèm-1 với HLV {$pt->full_name} vào lúc {$startTime->format('H:i d/m/Y')} của bạn đã được gửi đi thành công. Vui lòng đợi HLV xác nhận."
         ]);
 
-        return back()->with('success', 'Đăng ký lịch tập riêng thành công! Vui lòng chờ PT xác nhận.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Đăng ký lịch tập riêng thành công! Vui lòng chờ PT xác nhận.'
+        ]);
     }
 }

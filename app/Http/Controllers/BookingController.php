@@ -36,12 +36,12 @@ class BookingController extends Controller
                       ->orWhere('name', 'like', '%đạp xe%')
                       ->orWhere('name', 'like', '%spinning%');
                 } elseif ($cat === 'boxing') {
-                    $q->where('name', 'like', '%box%')->orWhere('name', 'like', '%kick%')->orWhere('name', 'like', '%combat%');
+                    $q->where('name', 'like', '%box%')->orWhere('name', 'like', '%MMA%')->orWhere('name', 'like', '%combat%');
                 }
             });
         }
 
-        $classes = $query->orderBy('id', 'asc')->get();
+        $classes = $query->orderBy('id', 'asc')->paginate(6); // Phân trang 6 lớp học mỗi trang
 
         $bookedClassIds = [];
         if (Auth::check()) {
@@ -54,7 +54,7 @@ class BookingController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'classes' => $classes,
-                'bookedClassIds' => $bookedClassIds
+                'bookedClassIds' => $bookedClassIds,
             ]);
         }
 

@@ -29,13 +29,13 @@ class HomeController extends Controller
                                       ->first();
         }
 
-        // Lấy 3 bài viết mới nhất để hiển thị ở khối Kiến thức trên trang chủ
+        // Lấy bài viết mới nhất để hiển thị ở khối Kiến thức trên trang chủ
         $posts = Post::whereIn('status', ['Published', 'Sẵn sàng'])
                      ->latest()
                      ->take(10)
                      ->get();
 
-        $goiTaps = GymPackage::all(); // 2. Ở đây chỉ cần gọi tên ngắn gọn
+        $goiTaps = GymPackage::paginate(6); // Sử dụng paginate trực tiếp từ Model
         return view('trangchu', compact('goiTaps', 'latestMetric', 'posts'));
     }  
 }

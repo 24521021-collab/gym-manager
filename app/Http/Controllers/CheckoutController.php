@@ -36,64 +36,9 @@ class CheckoutController extends Controller{
             session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi tạo đơn
             return redirect()->route('checkout.bank_qr', ['order_id' => $order->id]);
         }
-        
-        if ($request->payment_method == 'VNPAY') {
-            // Cấu hình VNPAY (Thông số test)
-            $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-            $vnp_Returnurl = route('vnpay.return');
-            $vnp_TmnCode = env('VNP_TMN_CODE', 'BA7TF3EI'); // Nên dùng env
-            $vnp_HashSecret = env('VNP_HASH_SECRET', 'D1EDEE8F3UDW1SO2IHO8MN2R3Q54T47E'); 
-            $vnp_TxnRef = time(); // Mã đơn hàng
-            $vnp_OrderInfo = "Thanh toan don hang GymPro";
-            $vnp_OrderType = "billpayment";
-            $vnp_Amount = $total * 100;
-            $vnp_Locale = "vn";
-            $vnp_BankCode = "";
-            $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
-            $inputData = array(
-                "vnp_Version" => "2.1.0",
-                "vnp_TmnCode" => $vnp_TmnCode,
-                "vnp_Amount" => $vnp_Amount,
-                "vnp_Command" => "pay",
-                "vnp_CreateDate" => date('YmdHis'),
-                "vnp_CurrCode" => "VND",
-                "vnp_IpAddr" => $vnp_IpAddr,
-                "vnp_Locale" => $vnp_Locale,
-                "vnp_OrderInfo" => $vnp_OrderInfo,
-                "vnp_OrderType" => $vnp_OrderType,
-                "vnp_ReturnUrl" => $vnp_Returnurl,
-                "vnp_TxnRef" => $vnp_TxnRef
-            );
-            ksort($inputData);
-            $query = "";
-            $i = 0;
-            $hashdata = "";
-            foreach ($inputData as $key => $value) {
-                if ($i == 1) { $hashdata .= '&' . urlencode($key) . "=" . urlencode($value); } 
-                else { $hashdata .= urlencode($key) . "=" . urlencode($value); $i = 1; }
-                $query .= urlencode($key) . "=" . urlencode($value) . '&';
-            }
 
-            $vnp_Url = $vnp_Url . "?" . $query;
-            if (isset($vnp_HashSecret)) {
-                $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-                $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
-            }
-            return redirect()->away($vnp_Url);
-        }
+        return redirect()->back()->with('error', 'Phương thức thanh toán không hợp lệ.');
     }
-
-    public function vnpayReturn(Request $request) {
-        if($request->vnp_ResponseCode == '00') {
-            $total = $this->calculateTotal();
-            
-            $this->createOrder($total, 'Paid', 'VNPAY'); // Tạo đơn hàng với trạng thái Paid
-            session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi thanh toán thành công
-            return redirect()->route('products.index')->with('success', 'Thanh toán qua VNPAY thành công!');
-        }
-        return redirect()->route('checkout')->with('error', 'Thanh toán thất bại hoặc đã bị hủy.');
-    }
-
     public function showBankQR($order_id) {
         $order = Order::with('user')->findOrFail($order_id); // Lấy thông tin đơn hàng để hiển thị QR
         return view('bank_qr_payment', compact('order')); // Trả về view hiển thị QR

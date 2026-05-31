@@ -31,8 +31,8 @@ class PtBookingSeeder extends Seeder
             $customer = $customers->random();
             $pt = $pts->random();
             
-            // Ngẫu nhiên ngày từ 10 ngày trước đến 15 ngày tới
-            $date = Carbon::now()->addDays(rand(-10, 15));
+            // Mặc định ngày mùng 1 tháng 6
+            $date = Carbon::create(2026, 6, 1);
             
             // Ngẫu nhiên giờ bắt đầu từ 6h sáng đến 20h tối
             $startHour = rand(6, 20);

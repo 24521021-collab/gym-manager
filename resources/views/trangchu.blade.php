@@ -9,6 +9,24 @@
 </style>
 
 <main class="max-w-7xl mx-auto px-4 md:px-8 pt-8 space-y-8">
+
+    {{-- Hiển thị thông báo đăng ký thành công --}}
+    @if(session('success'))
+        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in">
+            <span class="material-symbols-outlined">check_circle</span> {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Hiển thị các lỗi validation (ví dụ: mật khẩu dưới 8 ký tự) --}}
+    @if($errors->any())
+        <div class="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm font-bold">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     
     <div class="flex justify-between items-end">
         <div>
@@ -46,13 +64,13 @@
                         <p id="bmi-status" class="text-xs text-gray-400 mt-1">Đang phân tích dữ liệu thể trạng...</p>
                     </div>
                     <div class="bg-black/40 px-4 py-3 rounded-lg border border-white/5 max-w-md">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Hệ thống đề xuất KOR-AI:</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Hệ thống đề xuất KOR:</span>
                         <p id="ai-suggestion" class="text-xs text-gray-300 leading-relaxed">Đang xử lý đề xuất giáo án tối ưu...</p>
                     </div>
                 </div>
             </div>
             <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ isset($latestMetric->measured_at) ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span>
+                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ isset($latestMetric->measured_at) ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span></span>
                 <button id="update-metrics-btn" class="bg-primary text-white text-xs font-bold uppercase py-2 px-4 rounded hover:bg-red-700 transition-colors">Cập nhật chỉ số</button>
             </div>
         </div>
@@ -146,28 +164,46 @@
     </div>
 
     <!-- KHỐI GÓI HỘI VIÊN DỮ LIỆU ĐỘNG (SAO CHÉP TỪ INDEX.HTML) -->
-    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 md:p-10 shadow-xl">
         <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2" style="font-family: 'Oswald', sans-serif;">
             <span class="material-symbols-outlined text-primary">workspace_premium</span> Gói hội viên & Đăng ký dịch vụ
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach($goiTaps ?? [] as $package)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 mt-10">
+            @if(isset($goiTaps) && count($goiTaps) > 0)
+            @foreach($goiTaps as $package)
             @php
-                // Một chút logic để giữ giao diện đặc biệt cho gói "Elite" hoặc "Nâng cao" từ bản mẫu
-                $isElite = str_contains(strtolower($package->package_name), 'elite') || str_contains(strtolower($package->package_name), 'nâng cao');
+                // Xác định gói nổi bật
+                $isPopular = str_contains(strtolower($package->package_name), 'khỏe mạnh') || str_contains(strtolower($package->package_name), 'công sở');
             @endphp
-            <div class="{{ $isElite ? 'bg-primary/10 border border-primary relative' : 'bg-black/20 border border-white/5' }} rounded-xl p-5 hover:border-primary transition-colors">
-                @if($isElite)
-                <span class="absolute -top-3 right-4 bg-primary text-[10px] font-bold px-2 py-0.5 rounded text-white">PHỔ BIẾN</span>
+            <div class="{{ $isPopular ? 'bg-primary/10 border-2 border-primary relative' : 'bg-black/20 border border-white/10' }} rounded-2xl p-6 hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 flex flex-col group">
+                @if($isPopular)
+                <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-[10px] font-black px-4 py-1.5 rounded-full text-white shadow-lg uppercase tracking-widest z-10 border border-white/10">BÁN CHẠY NHẤT</span>
                 @endif
-                <h3 class="text-lg font-bold text-white mb-2">{{ $package->package_name }}</h3>
-                <p class="text-xs text-gray-400 mb-4">{{ $package->description }}</p>
-                <div class="text-2xl font-bold text-primary mb-4">{{ number_format($package->price, 0, ',', '.') }}đ<span class="text-xs text-gray-500 font-normal">/{{ $package->duration_days }} ngày</span></div>
-                <button data-id="{{ $package->id }}" class="btn-register w-full py-2 {{ $isElite ? 'bg-primary hover:bg-red-700' : 'bg-white/5 hover:bg-primary' }} text-white text-xs font-bold uppercase rounded transition-colors">Đăng ký ngay</button>
+                
+                <div class="flex-1">
+                    <h3 class="text-xl font-headline font-bold text-white mb-4 uppercase group-hover:text-primary transition-colors">{{ $package->package_name }}</h3>
+                    
+                    {{-- Danh sách quyền lợi --}}
+                    <div class="text-xs text-gray-200 font-bold leading-relaxed mb-6 space-y-3 whitespace-pre-line">
+                        @php
+                            // Thay thế ký tự bullet bằng icon Material Symbols
+                            $desc = str_replace('•', '<span class="material-symbols-outlined text-[14px] text-primary align-middle mr-1.5" style="font-variation-settings: \'FILL\' 1;">check_circle</span>', $package->description);
+                        @endphp
+                        {!! $desc !!}
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 pt-4">
+                    <div class="text-2xl font-black text-primary mb-4 font-mono">{{ number_format($package->price, 0, ',', '.') }}đ <span class="text-[10px] text-gray-500 font-normal lowercase">/ {{ $package->duration_days }} ngày</span></div>
+                    <button data-id="{{ $package->id }}" class="btn-register w-full py-3 {{ $isPopular ? 'bg-primary hover:bg-red-700' : 'bg-white/10 hover:bg-primary' }} text-white text-xs font-bold uppercase rounded-xl transition-all shadow-md">Kích hoạt thẻ ngay</button>
+                </div>
             </div>
             @endforeach
+            @else
+                <div class="col-span-3 text-center py-10 bg-black/20 rounded-xl border border-white/5 text-gray-500 italic text-sm">Hiện chưa có gói hội viên nào được cập nhật trên hệ thống.</div>
+            @endif
         </div>
-    </div>
+
 </main>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -217,17 +253,14 @@
         const bodyFat = document.getElementById('fat-input').value;
         const btn = this;
         const originalText = btn.innerHTML;
-
         if (!height || !weight) {
             showToastNotification("Vui lòng nhập đủ Chiều cao và Cân nặng.");
             return;
         }
-
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang cập nhật...';
-
         try {
-            const response = await fetch("/body_metric/update", { // Tạm thời dùng URL cứng để kiểm tra
+            const response = await fetch("{{ route('metric.update') }}", {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -240,11 +273,14 @@
                     body_fat_percentage: bodyFat || null
                 })
             });
-
             if (response.ok) {
                 const data = await response.json();
                 updateHealthMetricsDisplay(height, weight, bodyFat); // Cập nhật hiển thị ngay lập tức
-                document.getElementById('last-updated-date').innerText = new Date().toLocaleString('vi-VN');
+                
+                // Chỉ cập nhật dòng "lần cuối" nếu dữ liệu thực sự được lưu (không phải guest)
+                if (!data.is_guest) {
+                    document.getElementById('last-updated-date').innerText = new Date().toLocaleString('vi-VN');
+                }
                 showToastNotification(data.success ? data.message : "Cập nhật thành công!");
             } else {
                 showToastNotification(data.message || "Có lỗi xảy ra khi cập nhật.");

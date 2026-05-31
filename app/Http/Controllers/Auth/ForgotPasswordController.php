@@ -35,6 +35,7 @@ class ForgotPasswordController extends Controller
         // 3. Sinh mật khẩu mặc định 8 ký tự và cập nhật DB
         $newPassword = Str::random(8);
         $user->password = Hash::make($newPassword);
+        /** @var \App\Models\User $user **/
         $user->save();
 
         // 4. Gửi Mail (Sử dụng Queue nếu có để tránh lag UI)

@@ -54,7 +54,7 @@
 
                                     <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-2 sm:pt-0 border-white/5">
                                         <div class="hidden sm:block text-right">
-                                            <p class="text-xs text-gray-400 font-headline">{{ number_format($details['price']) }}đ</p>
+                                            <p class="text-xs text-gray-400 font-headline">{{ number_format($details['price']) }}</p>
                                         </div>
                                         
                                         <div class="flex items-center">
@@ -62,7 +62,7 @@
                                         </div>
 
                                         <div class="text-right min-w-[80px]">
-                                            <p class="text-sm font-headline text-white font-bold"><span class="subtotal-price">{{ number_format($details['price'] * $details['quantity']) }}</span>đ</p>
+                                            <p class="text-sm font-headline text-white font-bold"><span class="subtotal-price">{{ number_format($details['price'] * $details['quantity']) }}</span></p>
                                         </div>
 
                                         <button type="button" class="remove-from-cart text-gray-500 hover:text-primary transition-colors">
@@ -103,14 +103,6 @@
                                     <div>
                                         <strong class="text-white block mb-0.5">Chuyển khoản nhanh qua VietQR</strong>
                                         <p class="text-gray-500 text-[10px]">Quét mã QR hiển thị để thanh toán nhanh bằng Mobile Banking.</p>
-                                    </div>
-                                </label>
-
-                                <label class="flex items-start gap-3 p-3 bg-black/20 border border-white/5 rounded-xl cursor-pointer hover:border-primary/40 transition-colors">
-                                    <input type="radio" name="payment_method" value="VNPAY" class="mt-0.5 text-primary focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20">
-                                    <div>
-                                        <strong class="text-white block mb-0.5">Ứng dụng VNPAY / Thẻ ATM</strong>
-                                        <p class="text-gray-500 text-[10px]">Kết nối cổng VNPAY quét mã hoặc dùng thẻ ATM nội địa.</p>
                                     </div>
                                 </label>
                             </div>
@@ -173,7 +165,7 @@ $(document).ready(function() {
             },
             success: function (response) {
                 ele.closest("div[data-id]").find(".subtotal-price").text(response.subtotal);
-                $(".total-cart-price").text(response.total + "đ");
+                $(".total-cart-price").text(response.total);
             },
             error: function(xhr) {
                 alert("Lỗi: Không thể cập nhật số lượng.");
