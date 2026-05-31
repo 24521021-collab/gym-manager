@@ -25,6 +25,9 @@
             <a class="{{ request()->is('booking*') || request()->routeIs('booking.pt.index') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="{{ route('booking.pt.index') }}">
                 Đặt Lịch
             </a>
+            <a class="{{ request()->is('posts*') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="{{ route('posts.index') }}">
+                Kiến thức
+            </a>
         </div>
     </div>
     
@@ -46,6 +49,10 @@
             
             <a href="{{ route('notifications') }}" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
                 <span class="material-symbols-outlined">notifications</span>
+                {{-- Hiển thị chấm đỏ nếu có thông báo chưa đọc --}}
+                @if(App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->exists())
+                    <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-[#1A1A1A] shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pulse"></span>
+                @endif
             </a>
 
             <a href="{{ route('profile') }}" class="flex items-center gap-2 py-1 group">

@@ -68,6 +68,8 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::put('/orders/update-status/{id}',[AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
     // Quản lý lịch đặt PT
     Route::get('pt-bookings', [AdminPt_BookingController::class, 'index'])->name('admin.pt-bookings');
+    //
+    Route::resource('posts', PostController::class)->names('admin.posts');
 });
 
 // Nhóm Route dành riêng cho PT
@@ -166,19 +168,13 @@ Route::post('/classes/book',[BookingController::class, 'store'])->name('classes.
 Route::delete('/classes/cancel',[BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');
 
 // Route công khai (Ai cũng xem được bài viết)
-Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+Route::get('/blog', [PostController::class, 'blog'])->name('posts.index');
 Route::get('/blog/{slug}', [PostController::class, 'show'])->name('posts.show');
 
 // Route Admin (Bảo mật: Chỉ Admin mới được thêm/xóa bài viết)
-Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function () {
-    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
-    Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
-});
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Tạo 7 đường dẫn CRUD (Danh sách, Thêm, Lưu, Sửa, Cập nhật, Xóa) chỉ bằng 1 dòng
-    Route::resource('posts', PostController::class);
-});
+
+
 
 // Cấu hình route ảo để làm sạch lỗi của môi trường phát triển ngầm (IDX/Vite)
 Route::put('/', function () {

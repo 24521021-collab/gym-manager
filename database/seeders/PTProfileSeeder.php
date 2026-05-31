@@ -37,64 +37,64 @@ class PTProfileSeeder extends Seeder
                 'specialization'       => 'Thể hình',
                 'bio'                  => 'Hơn 5 năm kinh nghiệm huấn luyện thi đấu. Chuyên thiết kế lộ trình siết cơ và thay đổi vóc dáng toàn diện nhanh chóng.',
                 'commission' => 150000,
-                'image' => 'trainer1.jpg',
+                'image' => 'pt-1.jpg',
             ],
             'trainer2@gmail.com' => [
                 'specialization'       => 'Yoga/Pilate',
                 'bio'                  => 'Chuyên gia dinh dưỡng và giảm mỡ chuyên sâu cho nữ, đặc biệt là nhân viên văn phòng và mẹ bỉm sữa.',
                 'commission' => 180000,
-                'image' => 'trainer2.jpg',
+                'image' => 'pt-2.jpg',
             ],
             'trainer3@gmail.com' => [
                 'specialization'       => 'Võ Thuật/Boxing',
                 'bio'                  => 'Cựu vận động viên Kickboxing quốc gia. Lối tập năng động, nghiêm túc và luôn truyền năng lượng tích cực.',
                 'commission' => 200000,
-                'image' => 'trainer3.jpg',
+                'image' => 'pt-3.jpg',
             ],
             'trainer4@gmail.com' => [
                 'specialization'       => 'Thể hình',
                 'bio'                  => 'Tốt nghiệp Đại học Thể dục Thể thao. Chuyên khắc phục các lỗi chấn thương và tối ưu lực đẩy/kéo cơ bản.',
                 'commission' => 160000,
-                'image' => 'trainer4.jpg',
+                'image' => 'pt-4.jpg',
         
             ],
             'trainer5@gmail.com' => [
                 'specialization'       => 'Yoga/Pilate',
                 'bio'                  => 'Giúp học viên làm chủ cơ thể, cải thiện sự linh hoạt, dẻo dai và sở hữu vóc dáng thon gọn tự nhiên.',
                 'commission' => 150000,
-                'image' => 'trainer5.jpg',
+                'image' => 'pt-5.jpg',
             ],
             'trainer6@gmail.com' => [
                 'specialization'       => 'Thể hình',
                 'bio'                  => 'Sở hữu chứng chỉ PT Quốc tế ISSA. Đồng hành cùng học viên từ chế độ ăn khắt khe đến giáo án chuẩn mực.',
                 'commission' => 250000,
-                'image' => 'trainer6.jpg',
+                'image' => 'pt-6.jpg',
 
             ],
             'trainer7@gmail.com' => [
                 'specialization'       => 'Yoga/Pilate',
                 'bio'                  => 'Vui vẻ, nhiệt tình và nhiều năng lượng. Cam kết giúp học viên giải tỏa stress và đốt cháy tối đa calo.',
                 'commission' => 170000,
-                'image' => 'trainer7.jpg',
+                'image' => 'pt-7.jpg',
             ],
             'trainer8@gmail.com' => [
                 'specialization'       => 'Yoga/Pilate',
                 'bio'                  => 'Chuyên sâu về giải phẫu học cơ thể. Phù hợp cho người lớn tuổi hoặc người đang trong giai đoạn hồi phục chấn thương.',
                 'commission' => 220000,
-                'image' => 'trainer8.jpg',
+                'image' => 'pt-8.jpg',
             ],
             'trainer9@gmail.com' => [
                 'specialization'       => 'Thể hình',
                 'bio'                  => 'Xây dựng đường cong cơ thể quyến rũ cho phái nữ bằng phương pháp khoa học, không bỏ cuộc.',
                 'commission' => 190000,
-                'image' => 'trainer9.jpg',
+                'image' => 'pt-9.jpg',
 
             ],
             'trainer10@gmail.com' => [
                 'specialization'       => 'Thể hình',
                 'bio'                  => 'Từng là người gầy gò, tôi hiểu rõ lộ trình ăn uống kết hợp tập luyện hiệu quả nhất để bứt phá cân nặng.',
                 'commission' => 160000,
-                'image' => 'trainer10.jpg',
+                'image' => 'pt-10.jpg',
             ],
         ];
         // 2. Duyệt mảng dữ liệu để tìm User tương ứng và cập nhật cấu hình hồ sơ PT

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\GymPackage; 
 use App\Models\BodyMetric;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 //1. Giải thích return view()
@@ -27,7 +28,14 @@ class HomeController extends Controller
                                       ->orderBy('measured_at', 'desc')
                                       ->first();
         }
+
+        // Lấy 3 bài viết mới nhất để hiển thị ở khối Kiến thức trên trang chủ
+        $posts = Post::whereIn('status', ['Published', 'Sẵn sàng'])
+                     ->latest()
+                     ->take(10)
+                     ->get();
+
         $goiTaps = GymPackage::all(); // 2. Ở đây chỉ cần gọi tên ngắn gọn
-        return view('trangchu', compact('goiTaps', 'latestMetric'));
+        return view('trangchu', compact('goiTaps', 'latestMetric', 'posts'));
     }  
 }

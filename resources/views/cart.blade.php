@@ -75,7 +75,7 @@
                     @else
                         <div class="text-center py-12">
                             <p class="text-gray-500 italic text-sm">Giỏ hàng đang trống.</p>
-                            <a href="/shop" class="inline-block mt-4 px-6 py-2.5 bg-white/5 border border-white/10 hover:border-primary text-white text-xs uppercase font-headline rounded-xl transition-all">Quay lại chọn gói</a>
+                            <a href="/" class="inline-block mt-4 px-6 py-2.5 bg-white/5 border border-white/10 hover:border-primary text-white text-xs uppercase font-headline rounded-xl transition-all">Quay lại chọn gói</a>
                         </div>
                     @endif
                 </div>

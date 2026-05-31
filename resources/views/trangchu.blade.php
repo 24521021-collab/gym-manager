@@ -1,5 +1,13 @@
 @extends('layout.frontend') 
 @section('content')
+<style>
+    /* Tùy chỉnh thanh cuộn ngang cho mượt mà */
+    .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(227, 24, 55, 0.3); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(227, 24, 55, 0.6); }
+</style>
+
 <main class="max-w-7xl mx-auto px-4 md:px-8 pt-8 space-y-8">
     
     <div class="flex justify-between items-end">
@@ -66,31 +74,28 @@
         <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2">
             <span class="material-symbols-outlined text-primary">newspaper</span> Chuyên mục kiến thức & Sự kiện phòng tập
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
-                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Dinh dưỡng"></div>
-                <div class="p-4 space-y-2">
-                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Dinh dưỡng đúng cách</span>
-                    <h3 class="text-sm font-bold text-white line-clamp-1">Cách tính toán Calo sợi mì Ý và thực đơn tăng cơ nhịp nhàng</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2">Hướng dẫn chi tiết phương pháp cân đo lượng calo trong mì Ý khô và cách kết hợp với Whey Protein Isolate phục vụ body recomposition.</p>
+        <div class="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory custom-scrollbar">
+            @forelse($posts ?? [] as $post)
+            {{-- Link tới trang posts kèm anchor #post-slug để tự động cuộn xuống --}}
+            <a href="{{ route('posts.index') }}#post-{{ $post->slug }}" class="min-w-[280px] md:min-w-[calc(33.333%-1.25rem)] snap-start bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors block">
+                <div class="h-40 overflow-hidden">
+                    <img src="{{ $post->header_image ? asset('images/posts/' . $post->header_image) : 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=400' }}" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $post->title }}">
                 </div>
-            </div>
-            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
-                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Kỹ thuật"></div>
                 <div class="p-4 space-y-2">
-                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Kỹ thuật tập luyện</span>
-                    <h3 class="text-sm font-bold text-white line-clamp-1">Mẹo tự đo tỷ lệ mỡ (Body Fat) chính xác tại nhà</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2">Không cần máy InBody, bạn hoàn toàn có thể tự kiểm tra lượng mỡ cơ thể bằng thước dây và kẹp Caliper theo chuẩn y khoa.</p>
+                    @php
+                        $categoryColor = str_contains(strtolower($post->category), 'sự kiện') ? 'text-yellow-500' : 'text-primary';
+                    @endphp
+                    <span class="text-[10px] font-bold {{ $categoryColor }} uppercase tracking-widest">{{ $post->category }}</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">{{ $post->title }}</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2 whitespace-pre-line">{{ \Illuminate\Support\Str::limit(strip_tags($post->content), 150) }}</p>
                 </div>
+            </a>
+            @empty
+            <div class="w-full text-center py-12 bg-black/20 rounded-xl border border-white/5">
+                <p class="text-gray-500 italic text-sm">Chưa có bài viết hoặc sự kiện nào được đăng tải.</p>
             </div>
-            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
-                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sự kiện"></div>
-                <div class="p-4 space-y-2">
-                    <span class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Sự kiện độc quyền</span>
-                    <h3 class="text-sm font-bold text-white line-clamp-1">KOR-Race 2026: Giải chạy việt dã bứt phá cự ly 25km</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2">Chào mừng chuỗi sự kiện thường niên, giải chạy việt dã kết hợp sức bền kháng lực chính thức mở cổng đăng ký thẻ tham gia cho toàn bộ hội viên.</p>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 

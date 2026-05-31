@@ -59,6 +59,12 @@
             <span class="material-symbols-outlined" style="{{ request()->is('schedule.html') || request()->is('admin/schedule*') ? "font-variation-settings: 'FILL' 1;" : "" }}">calendar_month</span>
             <span class="text-sm font-bold">Lịch HLV (Booking)</span>
         </a>
+
+        {{-- 8. Quản lý Bài đăng --}}
+        <a class="{{ request()->routeIs('admin.posts.*') ? 'bg-primary/20 text-primary border-l-4 border-primary' : 'text-gray-400 hover:bg-white/5 hover:text-white' }} px-6 py-3.5 flex items-center gap-3 transition-all" href="{{ route('admin.posts.index') }}">
+            <span class="material-symbols-outlined" style="{{ request()->routeIs('admin.posts.*') ? "font-variation-settings: 'FILL' 1;" : "" }}">newspaper</span>
+            <span class="text-sm font-bold">Quản lý Bài đăng</span>
+        </a>
     </div>
     
     <div class="p-6 border-t border-white/10 mt-auto flex flex-col gap-3">
