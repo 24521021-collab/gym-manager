@@ -32,7 +32,7 @@ class RegisterController extends Controller
             'role' => 'guest', // Mặc định là khách vãng lai sau khi đăng ký
         ]);
 
-        // Tự động đăng nhập người dùng ngay sau khi đăng ký thành công
+        // Tự động đăng nhập người dùng ngay sau khi đăng ký thành công, tạo sêssion mới để bảo mật
         Auth::login($user);
         $request->session()->regenerate();
 

@@ -14,13 +14,25 @@ class PostController extends Controller
     /**
      * Hiển thị danh sách bài viết cho admin
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Sửa lỗi: Gọi paginate trực tiếp từ Model. 
-        // Thêm eager loading 'author' để tối ưu hiệu năng và sắp xếp mới nhất lên đầu.
-        $posts = Post::with('author')->latest()->paginate(10);
+        $search = $request->input('search');
+        $query = Post::with('author')->latest();
 
-        // Đảm bảo truyền biến số nhiều 'posts' để view nhận diện được
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        $posts = $query->paginate(10);
+
+        // Trả về JSON nếu là request AJAX (từ Fetch API)
+        if ($request->ajax()) {
+            return response()->json($posts);
+        }
+
         return view('admin.posts', compact('posts'));
     }
 
@@ -70,9 +82,9 @@ class PostController extends Controller
             $data['header_image'] = $imageName;
         }
 
-        Post::create($data);
+        $post = Post::create($data);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Đăng bài viết thành công!');
+        return response()->json(['success' => true, 'message' => 'Đăng bài viết thành công!', 'data' => $post]);
     }
 
     /**
@@ -105,7 +117,7 @@ class PostController extends Controller
 
         $post->update($data);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Cập nhật bài viết thành công!');
+        return response()->json(['success' => true, 'message' => 'Cập nhật bài viết thành công!', 'data' => $post]);
     }
 
     /**
@@ -122,7 +134,7 @@ class PostController extends Controller
 
         $post->delete();
 
-        return redirect()->route('admin.posts.index')->with('success', 'Đã xóa bài viết.');
+        return response()->json(['success' => true, 'message' => 'Đã xóa bài viết thành công!']);
     }
 
     public function create()

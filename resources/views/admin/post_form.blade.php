@@ -22,7 +22,7 @@
     </div>
 
     <div class="bg-[#1a1a1a] rounded-lg border border-white/10 p-8 shadow-xl">
-        <form action="{{ $route }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form id="post_form" onsubmit="saveData(event)" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @if($isEdit)
                 @method('PUT')
@@ -112,5 +112,38 @@
         height: 400,
         removeButtons: 'PasteFromWord', // CKEditor tự động xử lý tốt việc dán từ Word
     });
+</script>
+
+<script>
+async function saveData(e) {
+    e.preventDefault();
+    
+    // Đồng bộ dữ liệu từ CKEditor vào textarea gốc trước khi tạo FormData
+    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances.editor) {
+        CKEDITOR.instances.editor.updateElement();
+    }
+
+    const form = document.getElementById('post_form');
+    const formData = new FormData(form);
+    const url = "{{ $route }}";
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST', // Luôn dùng POST, Laravel sẽ nhận diện PUT qua @method('PUT') trong FormData
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            window.location.href = "{{ route('admin.posts.index') }}";
+        }
+    } catch (error) {
+        alert('Có lỗi xảy ra, vui lòng kiểm tra lại dữ liệu đầu vào!');
+    }
+}
 </script>
 @endsection

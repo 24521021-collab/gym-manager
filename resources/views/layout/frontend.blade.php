@@ -79,7 +79,7 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email</label>
-                    <input type="email" name="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="admin@gmail.com">
+                    <input type="email" name="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="tencuaban@gmail.com">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu</label>
@@ -176,7 +176,6 @@
     });
     async function sendDefaultPassword(event) {
         event.preventDefault(); // Chặn việc reload lại trang của form mặc định
-        
         const email = document.getElementById('forgot_email').value;
         const msg = document.getElementById('forgot-msg');
         const btn = document.getElementById('btnForgot');

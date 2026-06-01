@@ -29,7 +29,7 @@ class CheckoutController extends Controller{
         if ($request->payment_method == 'COD') {
             $order = $this->createOrder($total, 'Pending', 'COD');
             session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi tạo đơn
-            return redirect()->route('products.index')->with('success', 'Đặt hàng thành công! Vui lòng chờ shipper.');
+            return redirect()->route('trang_chu')->with('success', 'Đặt hàng thành công! Vui lòng chờ xác nhận');
         } 
         if ($request->payment_method == 'Bank_QR') {
             $order = $this->createOrder($total, 'Pending', 'Bank_QR');

@@ -41,8 +41,7 @@ Route::get('/dang_nhap',[LoginController::class,'ShowLogin'])->name('login');
 Route::post('/dang_nhap',[LoginController::class,'login'])->name('login.post');
 //dang xuat tai khoan
 Route::post('/logout',[LoginController::class,'logout'])->name('logout');
-
-Route::get('/my_membership',[UserMembershipController::class,'MyMembership'])->name('my.membership');
+// //
 // Gom nhóm tất cả route bắt đầu bằng /admin
 Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function () {
     // Trang chủ Admin gồm biểu đồ doanh thu
@@ -50,8 +49,7 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     // API phục vụ cho hàm fetchProductData() trong file Blade
     Route::get('/dashboard/filter-products', [DashboardController::class, 'filterProducts']);
     // CRUD Hội viên 
-    // 1. Route chính cho admin quản lý hội viên (Index, Store, Update, Destroy)
-    // Tên route sẽ tự động là: memberships.index, memberships.store, v.v...
+    // 1. Route chính cho admin quản lý hội viên 
     Route::get('memberships', [AdminMembershipController::class,'index'])->name('memberships.index');
     Route::post('members/{id}/send-expiration-notification', [AdminMembershipController::class, 'sendExpirationNotification'])->name('admin.members.sendExpirationNotification');
     
@@ -68,8 +66,10 @@ Route::middleware(['auth', 'CheckRole:admin'])->prefix('admin')->group(function 
     Route::put('/orders/update-status/{id}',[AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
     // Quản lý lịch đặt PT
     Route::get('pt-bookings', [AdminPt_BookingController::class, 'index'])->name('admin.pt-bookings');
-    //
+    // Quản lý bài viết blog 
     Route::resource('posts', PostController::class)->names('admin.posts');
+    // route để thực hiện checkins
+    Route::post('/checkin/store', [CheckInController::class,'store'])->name('admin.checkin.store');
 });
 
 // Nhóm Route dành riêng cho PT
@@ -87,8 +87,6 @@ Route::middleware(['auth', 'CheckRole:pt'])->prefix('pt')->group(function () {
     Route::post('/logs/store', [PtDashboardController::class, 'storeLog'])->name('pt.logs.store');
 });
 
-//route CRUD thông tin gói tập khách hàng cho admin
-// Nhóm các Route dành cho Admin (Nên có middleware 'auth' để bảo mật)
 
 //route để xem body metric, chỉ người đăng nhập mới xem được vì có middleware,dùng put để update body metric theo từng giai đoạn 
 Route::middleware('auth')->group(function () {
@@ -145,10 +143,6 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetEmai
 // Route cập nhật body metric
 Route::put('/body_metric/update', [BodyMetricController::class, 'update'])->name('metric.update');
 
-// route để người dùng thực hiện checkins
-Route::get('/admin/checkin', [CheckInController::class, 'index'])->name('admin.checkin');
-Route::post('/admin/checkin/store', [CheckInController::class,'store'])->name('admin.checkin.store');
-
 // route để đăng nhập vào google
 // 1. Đường dẫn để nhấn nút "Đăng nhập bằng Google"
 Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
@@ -162,11 +156,10 @@ Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking
 //
 
 // Trang danh sách sản phẩm (Cho phép mọi người xem nhưng không mua được nếu chưa login)
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-// Nhóm các đường dẫn chỉ dành cho người đã đăng nhập
-// API giỏ hàng 
-// Route lấy API giỏ hàng để tìm kiếm sản phẩm
-Route::get('/search-products', [ProductController::class, 'getProductsApi']);
+Route::controller(ProductController::class)->group(function () {
+    Route::get('/products', 'index')->name('products.index');
+    Route::get('/search-products', 'getProductsApi'); // API tìm kiếm cho trang Shop
+});
 
 // ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
 Route::get('/classes',[BookingController::class, 'index'])->name('classes.index');
@@ -174,11 +167,6 @@ Route::get('/classes',[BookingController::class, 'index'])->name('classes.index'
 // Route công khai (Ai cũng xem được bài viết)
 Route::get('/blog', [PostController::class, 'blog'])->name('posts.index');
 Route::get('/blog/{slug}', [PostController::class, 'show'])->name('posts.show');
-
-// Route Admin (Bảo mật: Chỉ Admin mới được thêm/xóa bài viết)
-
-
-
 
 // Cấu hình route ảo để làm sạch lỗi của môi trường phát triển ngầm (IDX/Vite)
 Route::put('/', function () {
