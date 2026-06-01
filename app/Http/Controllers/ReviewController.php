@@ -25,23 +25,33 @@ class ReviewController extends Controller
         ]);
     }
 
+    /**
+     * Hàm lấy danh sách các đối tượng (Sản phẩm/PT) mà người dùng hiện tại có quyền đánh giá.
+     * Điều này giúp ngăn chặn việc đánh giá "rác" hoặc đánh giá khống.
+     */
     public function getReviewableTargets(Request $request)
     {
+        // Lấy ID của người dùng đang đăng nhập
         $userId = Auth::id();
 
-        // 1. Lấy danh sách sản phẩm đã mua và thanh toán thành công
+        // 1. Lấy danh sách sản phẩm: 
+        // Chỉ lấy những sản phẩm xuất hiện trong các đơn hàng (Order) của người dùng này
+        // và đơn hàng đó phải có trạng thái thanh toán là Chờ xử lý hoặc Đã thanh toán.
         $products = Product::whereHas('orderItems.order', function ($query) use ($userId) {
             $query->where('user_id', $userId)
                   ->where('payment_status',['Pending', 'Paid']);
-        })->distinct()->get(['id', 'name']);
+        })->distinct()->get(['id', 'name']); // distinct() để không bị lặp nếu mua 1 món nhiều lần
 
-        // 2. Lấy danh sách HLV (PT) mà người dùng đã từng đặt lịch
+        // 2. Lấy danh sách PT:
+        // Tìm trong bảng User những người có vai trò là 'pt'
+        // và người dùng hiện tại (customer_id) đã từng có lịch đặt (ptBookingsAsPt) với họ.
         $pts = User::where('role', 'pt')
             ->whereHas('ptBookingsAsPt', function ($query) use ($userId) {
                 $query->where('customer_id', $userId)
-                      ->where('status', ['pending','paid']); // Chỉ cho phép đánh giá khi đã tập xong
+                      ->where('status', ['pending','paid']); 
             })->distinct()->get(['id', 'full_name']);
 
+        // Trả về dữ liệu dạng JSON để JavaScript ở Frontend (trang chủ) có thể nhận và hiển thị lên ô Select
         return response()->json([
             'success' => true,
             'products' => $products,

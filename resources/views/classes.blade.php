@@ -45,10 +45,8 @@
         
         <div class="col-span-full text-center py-20 text-gray-500 animate-pulse italic">Đang tải danh sách lớp học...</div>
     </div>
-    {{-- Hiển thị thanh điều hướng phân trang --}}
-        <div class="mt-8 flex justify-center">
-            {{ $classes->links() }}
-        </div>
+        {{-- Vùng hiển thị phân trang AJAX --}}
+        <div id="pagination-container" class="mt-8 flex justify-center"></div>
     
     {{-- Thông báo trống --}}
     <div id="emptySearchMessage" class="hidden text-center py-20 bg-[#1A1A1A] rounded-2xl border border-white/5 mt-6">
@@ -80,6 +78,7 @@
             });
             allData = await response.json();
             renderClasses();
+            renderPagination(allData.classes); // Gọi hàm vẽ phân trang sau khi có dữ liệu
         } catch (error) {
             console.error("Fetch Error:", error);
             document.getElementById('classes-container').innerHTML = '<p class="col-span-full text-center text-primary text-xs mt-4">Lỗi tải dữ liệu hệ thống!</p>';
@@ -101,6 +100,33 @@
         searchTimer = setTimeout(() => {
             fetchClasses();
         }, 300);
+    }
+
+    // Hàm vẽ thanh phân trang AJAX
+    function renderPagination(paginator) {
+        const container = document.getElementById('pagination-container');
+        if (paginator.last_page <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let html = '<nav class="flex gap-2">';
+        paginator.links.forEach(link => {
+            const isActive = link.active ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10';
+            const isDisabled = !link.url ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+            
+            let label = link.label;
+            if(label.includes('Previous')) label = 'Trước';
+            if(label.includes('Next')) label = 'Sau';
+            
+            html += `<button 
+                ${!link.url || link.active ? 'disabled' : ''} 
+                onclick="fetchClasses(${link.url ? new URL(link.url).searchParams.get('page') : 1})"
+                class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${isActive} ${isDisabled}">
+                ${label}
+            </button>`;
+        });
+        container.innerHTML = html + '</nav>';
     }
 
     function renderClasses() {

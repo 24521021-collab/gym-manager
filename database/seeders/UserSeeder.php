@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
             ['email' => 'adminnew@gmail.com'],
             [
                 'full_name' => 'Quản trị viên',
-                'password' => Hash::make('123456'), // Mật khẩu là 123456
+                'password' => Hash::make('12345678'), // Mật khẩu là 12345678
                 'role' => 'admin',
             ]
         );
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             ['email' => 'khachhang@gmail.com'],
             [
                 'full_name' => 'Nguyễn Văn Khách',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'role' => 'member',
             ]
         );
@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
             ['email' => 'trainer1@gmail.com'],
             [
                 'full_name' => 'PT Nguyễn Văn Cơ Bắp',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'role' => 'pt',
             ]
         );
@@ -57,7 +57,7 @@ class UserSeeder extends Seeder
                 ['email' => $pt['email']],
                 [
                     'full_name' => $pt['full_name'],
-                    'password'  => Hash::make('123456'), // Mật khẩu mẫu đồng bộ theo code cũ của bạn
+                    'password'  => Hash::make('12345678'), // Mật khẩu mẫu đồng bộ theo code cũ của bạn
                     'role'      => 'pt', // Đảm bảo quyền là 'pt'
                 ]
                 );
@@ -71,7 +71,7 @@ class UserSeeder extends Seeder
             ['email' => $admin['email']],
             [
                 'full_name' => $admin['full_name'],
-                'password'  => Hash::make('123456'),
+                'password'  => Hash::make('12345678'),
                 'role'      => 'admin',
             ]
             );
@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
         ['email' => 'khachhang@gmail.com'],
         [
             'full_name' => 'Nguyễn Văn Khách',
-            'password' => Hash::make('123456'),
+            'password' => Hash::make('12345678'),
             'role' => 'member',
         ]
     );
@@ -106,7 +106,7 @@ class UserSeeder extends Seeder
             ['email' => $member['email']],
             [
                 'full_name' => $member['full_name'],
-                'password'  => Hash::make('123456'),
+                'password'  => Hash::make('12345678'),
                 'role'      => 'member',
             ]
         );

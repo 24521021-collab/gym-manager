@@ -294,69 +294,103 @@
         }
     });
 
+    // Biến toàn cục để lưu trữ mức điểm người dùng đang chọn (mặc định là 5 sao)
     let currentRatingScore = 5;
+
+    /**
+     * Hàm cập nhật trạng thái hiển thị của các ngôi sao khi người dùng click chọn
+     * @param {number} score - Số điểm (từ 1 đến 5) tương ứng với ngôi sao được click
+     */
     function setStarRating(score) {
-        currentRatingScore = score;
+        currentRatingScore = score; // Cập nhật biến lưu trữ điểm
+        
+        // Lấy tất cả các phần tử ngôi sao trong container đánh giá
         const stars = document.querySelectorAll('#star-rating-container .star-node');
         stars.forEach((star, index) => {
-            if(index < score) {
+            // Nếu vị trí của ngôi sao hiện tại nhỏ hơn mức điểm được chọn
+            if(index < score) { 
+                // Thiết lập thuộc tính Font đặc biệt: FILL 1 để tô màu vàng đặc cho ngôi sao
                 star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
-            } else {
+            } else { // Những ngôi sao nằm sau mức điểm được chọn
+                // Thiết lập FILL 0 để hiển thị ngôi sao dưới dạng đường viền rỗng
                 star.style.fontVariationSettings = "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24";
             }
         });
     }
 
+    /**
+     * Hàm tải toàn bộ danh sách phản hồi từ máy chủ và hiển thị lên giao diện
+     */
     async function fetchAllReviews() {
         try {
+            // 1. Gửi yêu cầu lấy dữ liệu từ Route đã định nghĩa trong web.php
             const response = await fetch("{{ route('reviews.all') }}");
             const data = await response.json();
             if(data.success) {
+                // 2. Tìm vùng hiển thị danh sách bình luận
                 const list = document.getElementById('comments-display-list');
-                list.innerHTML = '';
+                list.innerHTML = ''; // Xóa sạch nội dung cũ để nạp dữ liệu mới nhất
+
+                // 3. Duyệt qua danh sách reviews trả về từ Database
                 data.reviews.forEach(rev => {
+                    // Tạo chuỗi sao đánh giá (Ví dụ: 4 sao đặc ★ và 1 sao rỗng ☆)
                     const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
                     const name = rev.user ? rev.user.full_name : 'Hội viên';
+                    // Logic đa hình: Lấy tên Sản phẩm hoặc tên PT tùy vào đối tượng được đánh giá
                     const target = rev.reviewable ? (rev.reviewable.name || rev.reviewable.full_name) : 'Dịch vụ';
+                    // Lấy 2 chữ cái đầu của tên khách hàng để làm Avatar mặc định
                     const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-                    
+                    // 4. Xây dựng khối HTML cho từng đánh giá theo chuẩn Tailwind CSS
                     const div = document.createElement('div');
                     div.className = "bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs mb-3 animate-fade-in";
                     div.innerHTML = `
                         <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold font-headline flex items-center justify-center flex-shrink-0">${initials}</div>
                         <div class="space-y-1">
-                            <div class="flex items-center gap-2"><span class="font-bold text-white">${name}</span><span class="text-yellow-500">${stars}</span></div>
-                            <p class="text-gray-300"><strong class="text-gray-500 text-[10px] uppercase">[Đã đánh giá cho ${target}]:</strong><br>${rev.comment}</p>
+                            <div class="flex items-center gap-2">
+                            <span class="font-bold text-white">${name}</span>
+                            <span class="text-yellow-500">${stars}</span></div>
+                            <p class="text-gray-300"><strong class="text-gray-500 text-[10px] uppercase">[Đã đánh giá cho ${target}]:</strong>
+                            <br>${rev.comment}</p>
                         </div>
                     `;
+                    // 5. Đưa khối HTML vừa tạo vào danh sách hiển thị trên màn hình
                     list.appendChild(div);
                 });
             }
         } catch (e) { console.error("Lỗi tải phản hồi:", e); }
     }
 
+    // Bộ nhớ đệm lưu trữ danh sách Sản phẩm và PT có thể đánh giá (giảm tải cho Server)
     let reviewDataCache = { products: [], pts: [] };
-
+    /**
+     * Hàm lấy danh sách các mục mà người dùng hiện tại có quyền đánh giá từ máy chủ
+     */
     async function fetchReviewableTargets() {
         try {
+            // Gửi yêu cầu đến API lấy đối tượng mục tiêu (sản phẩm đã mua/PT đã học)
             const response = await fetch("{{ route('reviews.targets') }}");
             const data = await response.json();
             if(data.success) {
-                reviewDataCache = data;
-                switchReviewTarget(); // Render lần đầu cho PT
+                reviewDataCache = data; // Lưu dữ liệu vào cache
+                switchReviewTarget();    // Cập nhật giao diện hiển thị lần đầu
             }
         } catch (error) {
             console.error("Lỗi tải danh sách đánh giá:", error);
         }
     }
 
+    /**
+     * Hàm thay đổi nội dung ô Select khi người dùng chuyển đổi giữa loại PT hoặc Sản phẩm
+     */
     function switchReviewTarget() {
-        const type = document.getElementById('feedback-type').value;
+        const type = document.getElementById('feedback-type').value; // 'pt' hoặc 'product'
         const targetSelect = document.getElementById('feedback-target');
-        targetSelect.innerHTML = '';
+        targetSelect.innerHTML = ''; // Xóa sạch các lựa chọn cũ trong ô select
 
+        // Lấy danh sách từ cache dựa trên loại người dùng chọn
         const list = type === 'pt' ? reviewDataCache.pts : reviewDataCache.products;
         
+        // Nếu danh sách trống (ví dụ: hội viên chưa mua sản phẩm nào)
         if(list.length === 0) {
             const opt = document.createElement('option');
             opt.value = "";
@@ -365,56 +399,78 @@
             return;
         }
 
+        // Duyệt qua danh sách dữ liệu (PT hoặc Sản phẩm) để tạo các lựa chọn cho người dùng
         list.forEach(item => {
-            const opt = document.createElement('option');
-            // Value format: type_id để đồng bộ với logic ReviewController@store của bạn
+            const opt = document.createElement('option'); // Bước 1: Tạo một thẻ <option> trống bằng JS
+            
+            // Bước 2: Gán giá trị định danh "ngầm" cho thuộc tính value. 
+            // Ví dụ: "pt_5" hoặc "product_12". Đây là cái mà Server sẽ nhận được.
             opt.value = `${type}_${item.id}`; 
-            opt.innerText = item.full_name || item.name;
+
+            // Bước 3: Gán văn bản hiển thị ra bên ngoài cho người dùng đọc (Tên HLV hoặc Tên SP)
+            opt.innerText = item.full_name || item.name; 
+            
+            // Bước 4: Chèn thẻ option vừa tạo vào trong ô Select trên giao diện
             targetSelect.appendChild(opt);
         });
     }
 
+    /**
+     * Hàm xử lý gửi form đánh giá (PT hoặc Sản phẩm) lên Server thông qua Fetch API
+     */
     async function submitFeedbackForm() {
+        // 1. Lấy giá trị thô từ ô Select (Định dạng: "pt_ID" hoặc "product_ID")
         const targetRaw = document.getElementById('feedback-target').value;
+        
+        // Kiểm tra nếu người dùng chưa chọn mục tiêu để đánh giá
         if(!targetRaw) {
             showToastNotification("Vui lòng chọn đối tượng cần đánh giá!");
             return;
         }
+
+        // 2. Tách chuỗi thô thành loại đối tượng (type) và ID tương ứng
         const [type, id] = targetRaw.split('_');
+        
+        // Lấy nội dung bình luận và loại bỏ khoảng trắng dư thừa
         const comment = document.getElementById('feedback-comment').value.trim();
         const targetName = document.getElementById('feedback-target').options[document.getElementById('feedback-target').selectedIndex].text;
         
+        // Kiểm tra nếu bình luận trống
         if(!comment) {
             showToastNotification("Vui lòng viết vài dòng ý kiến nhận xét trước khi gửi!");
             return;
         }
 
         try {
+            // 3. Gửi yêu cầu POST đến Server bằng Fetch API
             const response = await fetch("{{ route('reviews.store') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Mã bảo mật CSRF Token bắt buộc của Laravel
                 },
                 body: JSON.stringify({
-                    rating: currentRatingScore,
-                    comment: comment,
-                    reviewable_type: type,
-                    reviewable_id: id
+                    rating: currentRatingScore, // Lấy mức điểm (sao) từ biến toàn cục đã gán ở hàm setStarRating
+                    comment: comment,           // Nội dung nhận xét
+                    reviewable_type: type,      // 'pt' hoặc 'product'
+                    reviewable_id: id           // ID của HLV hoặc Sản phẩm
                 })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                fetchAllReviews(); // Tải lại danh sách sau khi gửi thành công
-                document.getElementById('feedback-comment').value = '';
+                // 4. Xử lý khi Backend phản hồi THÀNH CÔNG
+                fetchAllReviews(); // Gọi hàm làm mới danh sách bình luận phía dưới
+                document.getElementById('feedback-comment').value = ''; // Làm sạch ô nhập liệu
                 showToastNotification(data.message);
             } else {
+                // Xử lý các thông báo lỗi nghiệp vụ từ server (ví dụ: đã đánh giá rồi)
                 showToastNotification(data.message || "Không thể gửi đánh giá.");
             }
         } catch (error) {
+            // Xử lý lỗi ngoại lệ như mất mạng hoặc lỗi Server hệ thống
             showToastNotification("Lỗi kết nối máy chủ.");
         }
     }
@@ -467,14 +523,11 @@
                 },
                 error: function(xhr) {
                     let errorMessage = "Đã có lỗi xảy ra, vui lòng thử lại.";
-                    
                     // Lấy câu thông báo lỗi từ Controller (json error)
                     if (xhr.responseJSON && xhr.responseJSON.error) {
                         errorMessage = xhr.responseJSON.error;
                     }
-
                     alert(errorMessage);
-
                     // Chỉ chuyển hướng nếu thực sự chưa đăng nhập (mã 401)
                     if (xhr.status === 401) {
                         window.location.href = "{{ route('login') }}";
