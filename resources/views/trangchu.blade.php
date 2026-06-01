@@ -466,8 +466,19 @@
                     }
                 },
                 error: function(xhr) {
-                    alert('Vui lòng đăng nhập để đăng ký gói tập!');
-                    window.location.href = "{{ route('login') }}";
+                    let errorMessage = "Đã có lỗi xảy ra, vui lòng thử lại.";
+                    
+                    // Lấy câu thông báo lỗi từ Controller (json error)
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    }
+
+                    alert(errorMessage);
+
+                    // Chỉ chuyển hướng nếu thực sự chưa đăng nhập (mã 401)
+                    if (xhr.status === 401) {
+                        window.location.href = "{{ route('login') }}";
+                    }
                 }
             });
         });

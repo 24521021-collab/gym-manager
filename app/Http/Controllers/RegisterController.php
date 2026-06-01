@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User; 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash; 
 
 class RegisterController extends Controller
@@ -24,12 +25,16 @@ class RegisterController extends Controller
         ]);
 
         // 2. Lưu vào database
-        user::create([
+        $user = User::create([
             'full_name' =>$request->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'guest', // Mặc định là khách vãng lai sau khi đăng ký
         ]);
+
+        // Tự động đăng nhập người dùng ngay sau khi đăng ký thành công
+        Auth::login($user);
+        $request->session()->regenerate();
 
         // 3. Chuyển hướng về trang chủ kèm thông báo
         return redirect('/')->with('success', 'Đăng ký thành công!');

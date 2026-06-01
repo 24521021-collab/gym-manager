@@ -56,12 +56,35 @@ class CartController extends Controller
                     "stock_quantity" => $product->stock_quantity // Lưu stock để kiểm tra sau này
                 ];
                 break;
-            case 'package':
+                case 'package':
                 $package = GymPackage::findOrFail($id);
-                // Gói tập chỉ cho phép đăng ký 1 lần
-                if (isset($cart[$rowId])) {
-                    return response()->json(['error' => 'Gói tập này đã có trong giỏ hàng!'], 400);
+
+                // 1. Kiểm tra xem trong giỏ hàng đã có gói tập nào chưa (Mỗi lần chỉ được đăng ký 1 gói)
+                foreach ($cart as $item) {
+                    if ($item['item_type'] === 'package') {
+                        return response()->json(['success' => false, 'error' => 'Bạn chỉ có thể đăng ký một gói tập trong mỗi đơn hàng!'], 400);
+                    }
                 }
+
+                // 2. Kiểm tra xem gói tập cụ thể này đã có trong giỏ hàng chưa
+                if (isset($cart[$rowId])) {
+                    return response()->json(['success' => false, 'error' => 'Gói tập này đã có trong giỏ hàng!'], 400);
+                }
+
+
+                // 1. Kiểm tra nếu người dùng có gói tập đang Active (Chỉ cho phép 1 gói hiệu lực tại một thời điểm)
+                $hasActive = false;
+                if (Auth::check()) {
+                    $hasActive = \App\Models\Membership::where('user_id', Auth::id())
+                        ->where('status', 'Active')
+                        ->whereDate('end_date', '>=', now())
+                        ->exists();
+                }
+                
+                if ($hasActive) {
+                    return response()->json(['success' => false, 'error' => 'Bạn đang có một gói tập còn hiệu lực. Chỉ có thể đăng ký gói mới khi gói cũ hết hạn!'], 400);
+                }
+
                 $itemDetails = [
                     "row_id"   => $rowId,
                     "item_id"   => $package->id,

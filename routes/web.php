@@ -87,8 +87,6 @@ Route::middleware(['auth', 'CheckRole:pt'])->prefix('pt')->group(function () {
     Route::post('/logs/store', [PtDashboardController::class, 'storeLog'])->name('pt.logs.store');
 });
 
-// Route lưu gói tập khách hàng 
-Route::post('/register-package', [UserMembershipController::class, 'register'])->name('membership.register');
 //route CRUD thông tin gói tập khách hàng cho admin
 // Nhóm các Route dành cho Admin (Nên có middleware 'auth' để bảo mật)
 
@@ -113,12 +111,26 @@ Route::middleware('auth')->group(function () {
     // Quên & Đổi mật khẩu
     Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('password.change');
 
+    // Route lưu gói tập khách hàng (Yêu cầu đăng nhập)
+    Route::post('/register-package', [UserMembershipController::class, 'register'])->name('membership.register');
+
     // ─── HỆ THỐNG THÔNG BÁO ──────────────────────────────────────────
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications/clear/read', [NotificationController::class, 'clearRead'])->name('notifications.clearRead');
-});
+
+    // ─── GIỎ HÀNG & THANH TOÁN (Chỉ dành cho người đã đăng nhập) ────────
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('cart/add/{id}', [CartController::class, 'add']);
+    Route::patch('cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+
+    // ─── Lớp học (Bookings) ──────────────────────────────────────────
+    Route::post('/classes/book', [BookingController::class, 'store'])->name('classes.store');
+    Route::delete('/classes/cancel', [BookingController::class, 'cancel'])->name('classes.cancel');
+}); // Kết thúc nhóm auth tại đây
 
 // ─── ĐẶT LỊCH RIÊNG PT (CHO PHÉP KHÁCH XEM) ───────
 Route::get('/booking-pt', [PtBookingController::class, 'index'])->name('booking.pt.index');
@@ -153,18 +165,11 @@ Route::post('/booking/{id}', [BookingController::class, 'store'])->name('booking
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 // Nhóm các đường dẫn chỉ dành cho người đã đăng nhập
 // API giỏ hàng 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('cart/add/{id}', [CartController::class, 'add']);
-Route::patch('cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::delete('cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('cart/checkout', [CartController::class, 'checkout'])->middleware('auth')->name('cart.checkout');
 // Route lấy API giỏ hàng để tìm kiếm sản phẩm
 Route::get('/search-products', [ProductController::class, 'getProductsApi']);
 
 // ─── Lớp học (Bookings) ──────────────────────────────────────────────────────
 Route::get('/classes',[BookingController::class, 'index'])->name('classes.index');
-Route::post('/classes/book',[BookingController::class, 'store'])->name('classes.store')->middleware('auth');
-Route::delete('/classes/cancel',[BookingController::class, 'cancel'])->name('classes.cancel')->middleware('auth');
 
 // Route công khai (Ai cũng xem được bài viết)
 Route::get('/blog', [PostController::class, 'blog'])->name('posts.index');

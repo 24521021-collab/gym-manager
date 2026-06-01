@@ -3,14 +3,19 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\GymPackage;
+use App\Models\BodyMetric;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
-    // hàm này giúp người dùng về trang login
-    public function ShowLogin(){
-        return view('trangchu');
+    // Hàm này hiển thị trang chủ nhưng tập trung vào phần đăng nhập
+    public function ShowLogin()
+    {
+        // Thay vì render view, ta chuyển hướng về route 'trang_chu'
+        return redirect()->route('trang_chu')->with('error', 'Vui lòng đăng nhập để tiếp tục!');
     }
     // hàm xử lý dữ liệu đăng nhập
     // dùng validate kiểm tra dữ liệu
@@ -23,8 +28,7 @@ class LoginController extends Controller
     /* auth- authentification: kiểm tra dữ liệu trong dtbase*/
     if (Auth::attempt($credentials)){
         // C. Nếu đúng: Tạo lại Session (phiên làm việc) để bảo mật
-        // Nếu bị lỗi 419 liên tục trên môi trường Dev/IDX, hãy tạm thời comment dòng dưới:
-        // $request->session()->regenerate();
+        $request->session()->regenerate();
 
         $user = Auth::user();
 
