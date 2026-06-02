@@ -20,12 +20,12 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-body text-left">
             <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
-                <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Họ và tên hội viên</span>
-                <span class="text-white font-medium">{{ Auth::user()->full_name }}</span>
-            </div>
-            <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
                 <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Địa chỉ Email</span>
                 <span class="text-white font-medium">{{ Auth::user()->email }}</span>
+            </div>
+            <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
+                <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Số điện thoại liên hệ</span>
+                <span class="text-white font-medium">{{ Auth::user()->phone ?? 'Chưa cập nhật' }}</span>
             </div>
             <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
                 <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Hạng thẻ đăng ký</span>

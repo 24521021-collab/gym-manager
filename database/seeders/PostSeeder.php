@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class PostSeeder extends Seeder
@@ -128,7 +129,7 @@ class PostSeeder extends Seeder
                 'author_id'     => $author->id,
                 'status'        => $p['status'],
                 'header_image'  => $p['header_image'] ?? null,
-                'created_at'    => now()->subDays(rand(1, 10)),
+                'created_at'    => Carbon::create(2026, 6, rand(1, 5), rand(8, 20), rand(0, 59)),
             ]);
         }
     }

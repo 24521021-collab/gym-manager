@@ -45,8 +45,8 @@ class OrderSeeder extends Seeder
                 'total_amount' => 0,
                 'payment_status' => $status,
                 'payment_method' => $method,
-                // Mặc định ngày mùng 1 tháng 6
-                'order_date' => Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59)),
+                // Ngẫu nhiên từ ngày 1 đến ngày 5 tháng 6
+                'order_date' => Carbon::create(2026, 6, rand(1, 5), rand(8, 21), rand(0, 59)),
             ]);
 
             $totalAmount = 0;
@@ -84,19 +84,19 @@ class OrderSeeder extends Seeder
             // Logic tạo 3 trạng thái khác nhau cho Membership
             $type_rand = rand(1, 3);
             if ($type_rand == 1) {
-                // TRƯỜNG HỢP 1: Đang hoạt động (Ngày đặt là 01/06/2026)
-                $orderDate = Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59));
+                // TRƯỜNG HỢP 1: Đang hoạt động (Ngày đặt trong khoảng 01-05/06/2026)
+                $orderDate = Carbon::create(2026, 6, rand(1, 5), rand(8, 21), rand(0, 59));
                 $orderStatus = 'Paid';
                 $membershipStatus = 'Active';
             } elseif ($type_rand == 2) {
                 // TRƯỜNG HỢP 2: Đã hết hạn (Ngày đặt lùi về tháng trước)
                 // Đặt lùi lại 40 ngày để chắc chắn gói 30 ngày đã hết hạn
-                $orderDate = Carbon::create(2026, 6, 1)->subDays(40);
+                $orderDate = Carbon::create(2026, 6, rand(1, 5))->subDays(40);
                 $orderStatus = 'Paid';
                 $membershipStatus = 'Expired';
             } else {
                 // TRƯỜNG HỢP 3: Đã hủy (Gán trạng thái đơn hàng Cancelled)
-                $orderDate = Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59));
+                $orderDate = Carbon::create(2026, 6, rand(1, 5), rand(8, 21), rand(0, 59));
                 $orderStatus = 'Cancelled';
                 $membershipStatus = 'Cancelled';
             }
@@ -145,8 +145,8 @@ class OrderSeeder extends Seeder
                 'total_amount' => $totalAmount,
                 'payment_status' => $status,
                 'payment_method' => $method,
-                // Mặc định ngày mùng 1 tháng 6
-                'order_date' => Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59)),
+                // Ngẫu nhiên từ ngày 1 đến ngày 5 tháng 6
+                'order_date' => Carbon::create(2026, 6, rand(1, 5), rand(8, 21), rand(0, 59)),
             ]);
 
             OrderItem::create([
@@ -180,8 +180,8 @@ class OrderSeeder extends Seeder
                 'total_amount' => 0,
                 'payment_status' => $status,
                 'payment_method' => $method,
-                // Mặc định ngày mùng 1 tháng 6
-                'order_date' => Carbon::create(2026, 6, 1, rand(8, 21), rand(0, 59)),
+                // Ngẫu nhiên từ ngày 1 đến ngày 5 tháng 6
+                'order_date' => Carbon::create(2026, 6, rand(1, 5), rand(8, 21), rand(0, 59)),
             ]);
 
             $totalAmount = 0;

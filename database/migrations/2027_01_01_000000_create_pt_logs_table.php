@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('pt_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pt_id')->constrained('user')->onDelete('cascade');
+            $table->foreignId('pt_profile_id')->constrained('pt_profiles')->onDelete('cascade');
             $table->string('title'); // Tiêu đề: Tên lớp học hoặc tên học viên
             $table->text('content'); // Nội dung nhật ký
             $table->date('log_date'); // Ngày ghi nhận

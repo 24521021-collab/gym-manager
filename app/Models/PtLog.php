@@ -9,10 +9,11 @@ class PtLog extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pt_id', 'title', 'content', 'log_date', 'start_time', 'status'];
+    protected $fillable = ['pt_profile_id', 'title', 'content', 'log_date', 'start_time', 'status'];
 
-    public function trainer()
+    public function ptProfile()
     {
-        return $this->belongsTo(User::class, 'pt_id');
+        return $this->belongsTo(PtProfile::class, 'pt_profile_id');
     }
+    
 }

@@ -20,10 +20,18 @@ class LoginController extends Controller
     // hàm xử lý dữ liệu đăng nhập
     // dùng validate kiểm tra dữ liệu
     public function login(Request $request){
-        $credentials=$request->validate([
-            'email'=>'required|email',
+        $request->validate([
+            'login'=>'required|string',
             'password'=>'required',
         ]);
+
+        // Kiểm tra xem input là email hay số điện thoại
+        $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $credentials = [
+            $loginType => $request->login,
+            'password' => $request->password
+        ];
+
     //ghi nhớ thông tin cho lần sau
     /* auth- authentification: kiểm tra dữ liệu trong dtbase*/
     if (Auth::attempt($credentials)){
@@ -42,7 +50,7 @@ class LoginController extends Controller
         return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
     }
     // Trả về nếu sai thông tin  
-        return back()->withErrors(['email'=>'thông tin sai',])->onlyInput('email');
+        return back()->withErrors(['login'=>'Thông tin đăng nhập không chính xác.',])->onlyInput('login');
     }
     //logout
     public function logout(Request $request){

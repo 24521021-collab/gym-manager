@@ -106,7 +106,7 @@
                     @endphp
                     <span class="text-[10px] font-bold {{ $categoryColor }} uppercase tracking-widest">{{ $post->category }}</span>
                     <h3 class="text-sm font-bold text-white line-clamp-1">{{ $post->title }}</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2 whitespace-pre-line">{{ \Illuminate\Support\Str::limit(strip_tags($post->content), 150) }}</p>
+                    <p class="text-xs text-gray-400 line-clamp-2 whitespace-pre-line">{{ \Illuminate\Support\Str::limit(strip_tags(html_entity_decode($post->content)), 150) }}</p>
                 </div>
             </a>
             @empty
@@ -203,7 +203,7 @@
                 <div class="col-span-3 text-center py-10 bg-black/20 rounded-xl border border-white/5 text-gray-500 italic text-sm">Hiện chưa có gói hội viên nào được cập nhật trên hệ thống.</div>
             @endif
         </div>
-
+    </div>
 </main>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -494,14 +494,28 @@
         }
     }
 
+    /**
+     * Sự kiện DOMContentLoaded: 
+     * Xảy ra khi toàn bộ cấu trúc HTML của trang đã được trình duyệt tải xong và dựng thành cây DOM.
+     * Đây là thời điểm an toàn nhất để thực thi JavaScript tác động lên các phần tử HTML 
+     * mà không cần chờ hình ảnh hay CSS tải hoàn tất.
+     */
     document.addEventListener("DOMContentLoaded", () => {
-        // Khi trang tải xong, cập nhật hiển thị với dữ liệu ban đầu
+        // 1. Cập nhật hiển thị BMI và đề xuất dựa trên dữ liệu chiều cao/cân nặng có sẵn trong các ô input
         updateHealthMetricsDisplay(document.getElementById('height-input').value, document.getElementById('weight-input').value, document.getElementById('fat-input').value);
+        
+        // 2. Thiết lập mặc định cho hệ thống đánh giá là 5 sao
         setStarRating(5); 
+        
+        // 3. Hiển thị ngày tháng hiện tại
         updateCurrentDateString();
-        fetchAllReviews(); // Tải tất cả phản hồi ngay khi mở trang
+
+        // 4. Tải tất cả phản hồi hệ thống
+        fetchAllReviews(); 
+
         @auth
-            fetchReviewableTargets(); // Chỉ gọi API này khi người dùng đã đăng nhập thành công
+            // 5. Tải danh sách các mục (PT/Sản phẩm) mà hội viên có quyền đánh giá
+            fetchReviewableTargets();
         @endauth
     });
 

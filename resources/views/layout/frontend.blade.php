@@ -78,8 +78,8 @@
             <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email</label>
-                    <input type="email" name="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="tencuaban@gmail.com">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email / Số điện thoại</label>
+                    <input type="text" name="login" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="Email hoặc SĐT của bạn">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu</label>
@@ -110,7 +110,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email / Số điện thoại</label>
-                    <input type="email" name="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="name@example.com">
+                    <input type="text" name="login" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="Nhập Email hoặc SĐT để đăng ký">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu</label>

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('header_image')->nullable();
             $table->text('content');
-            // Liên kết khóa ngoại với bảng 'user'
             $table->foreignId('author_id')->constrained('user')->onDelete('cascade');
             $table->string('status')->default('Draft');
             $table->timestamps();

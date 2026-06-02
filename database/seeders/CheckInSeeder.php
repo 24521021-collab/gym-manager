@@ -31,11 +31,11 @@ class CheckInSeeder extends Seeder
         $methods = ['QR Code'];
 
         // 3. Tạo 20 lượt điểm danh mẫu rải rác trong 30 ngày qua
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             CheckIn::create([
                 'user_id'       => $members->random()->id,
-                // Mặc định mùng 1 tháng 6, rải rác từ 6h sáng đến 22h đêm
-                'check_in_time' => Carbon::create(2026, 6, 1, rand(6, 22), rand(0, 59)),
+                // Ngẫu nhiên từ ngày 1 đến ngày 5 tháng 6, rải rác từ 6h sáng đến 22h đêm
+                'check_in_time' => Carbon::create(2026, 6, rand(1, 5), rand(6, 22), rand(0, 59)),
                 'method'        => $methods[array_rand($methods)],
             ]);
         }
