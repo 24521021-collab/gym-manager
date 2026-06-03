@@ -17,7 +17,7 @@
             <button onclick="updateFilter('boxing', this)" class="filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all">Kickboxing & Combat</button>
         </div>
 
-        {{-- Thanh tìm kiếm được tích hợp từ logic classes1 --}}
+        {{-- Thanh tìm kiếm --}}
         <div class="w-full md:w-72">
             <div class="relative">
                 <span class="material-symbols-outlined absolute left-4 top-2.5 text-gray-500 text-sm">search</span>
@@ -25,21 +25,6 @@
             </div>
         </div>
     </div>
-
-    {{-- Khối thông báo Alert hệ thống (nếu có) từ classes1 --}}
-    @if(session('success'))
-        <div class="simple-alert bg-green-500/10 border border-green-500/20 text-green-400 text-xs p-4 rounded-xl mt-4 flex items-center justify-between">
-            <span>{{ session('success') }}</span>
-            <button type="button" class="btn-close text-white opacity-50 hover:opacity-100" onclick="this.parentElement.remove()">✕</button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="simple-alert bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-4 rounded-xl mt-4 flex items-center justify-between">
-            <span>{{ session('error') }}</span>
-            <button type="button" class="btn-close text-white opacity-50 hover:opacity-100" onclick="this.parentElement.remove()">✕</button>
-        </div>
-    @endif
-
     {{-- Vùng hiển thị danh sách lớp học nhóm --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 max-w-7xl mx-auto px-4 md:px-8" id="classes-container">
         
@@ -57,8 +42,6 @@
 
 {{-- NHÚNG CÁC THƯ VIỆN HỖ TRỢ XỬ LÝ LOGIC TỪ CLASSES1 --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
     let allData = { classes: [], bookedClassIds: [] };
     let currentCategory = 'all';
@@ -69,36 +52,61 @@
         const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
         return text ? String(text).replace(/[&<>"']/g, m => map[m]) : '';
     }
-
-    // LOGIC: Tải dữ liệu bằng Fetch API - Tận dụng hàm lọc từ Controller, now accepts page parameter
+    /**
+     * LOGIC CHÍNH: Tải dữ liệu lớp học từ Server bằng Fetch API (AJAX)
+     * Giúp cập nhật danh sách lớp và phân trang mà không cần tải lại toàn bộ trang web.
+     */
     async function fetchClasses(page = 1) {
         try {
+            // 1. Gửi yêu cầu HTTP GET đến route 'classes.index' kèm các tham số lọc:
+            // - category: Loại lớp (Yoga, Cardio...)
+            // - search: Từ khóa người dùng gõ (đã được mã hóa an toàn qua encodeURIComponent)
+            // - page: Số trang hiện tại
+            // - ajax_call=1: Cờ báo hiệu cho Controller ưu tiên trả về JSON
             const response = await fetch(`{{ route('classes.index') }}?category=${currentCategory}&search=${encodeURIComponent(currentSearch)}&page=${page}&ajax_call=1`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                headers: { 
+                    // Header chuẩn để Laravel nhận diện đây là yêu cầu AJAX
+                    'X-Requested-With': 'XMLHttpRequest' 
+                }
             });
-            allData = await response.json();
-            renderClasses();
-            renderPagination(allData.classes); // Gọi hàm vẽ phân trang sau khi có dữ liệu
+            allData = await response.json(); // Chuyển đổi phản hồi từ server thành đối tượng JS
+            renderClasses(); // Gọi hàm xóa danh sách cũ và vẽ danh sách lớp học mới
+            renderPagination(allData.classes); // Cập nhật lại các nút phân trang (Trang 1, 2, 3...)
+
         } catch (error) {
+            // Xử lý trường hợp mất mạng hoặc server gặp lỗi 500
             console.error("Fetch Error:", error);
             document.getElementById('classes-container').innerHTML = '<p class="col-span-full text-center text-primary text-xs mt-4">Lỗi tải dữ liệu hệ thống!</p>';
         }
     }
-
+    /**
+     * LOGIC: Cập nhật bộ lọc danh mục (Yoga, Cardio, Boxing...)
+     * @param {string} category - Loại lớp học cần lọc (được gửi từ thuộc tính onclick)
+     * @param {HTMLElement} btn - Nút bấm (button) thực hiện hành động để thay đổi CSS
+     */
     function updateFilter(category, btn) {
-        currentCategory = category;
+        currentCategory = category; // Ghi nhận danh mục người dùng vừa chọn vào biến toàn cục
+        // 1. Reset giao diện: Tìm tất cả các nút lọc và đưa về màu xám mặc định
         const buttons = document.querySelectorAll('.filter-btn');
         buttons.forEach(b => b.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium bg-white/5 text-gray-400 border border-white/5 hover:text-white transition-all");
+        // 2. Kích hoạt nút hiện tại: Gán class màu đỏ (primary) và chữ đậm cho nút vừa click
         btn.className = "filter-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md transition-all";
-        fetchClasses(); // Gọi server để lọc
-    } 
+        // 3. Gọi AJAX: Tải lại danh sách lớp học từ Server dựa trên danh mục mới
+        fetchClasses();
+    }
 
+    /**
+     * LOGIC: Tìm kiếm lớp học thời gian thực (Live Search)
+     * Kỹ thuật "Debounce" (300ms) giúp giảm tải cho Server khi người dùng gõ phím liên tục.
+     */
     function handleSearch() {
+        // 1. Hủy bộ đếm thời gian của phím nhấn trước đó (nếu có)
         clearTimeout(searchTimer);
+        // 2. Cập nhật từ khóa tìm kiếm hiện tại từ ô nhập liệu (loại bỏ khoảng trắng thừa)
         currentSearch = document.getElementById('classSearchInput').value.trim();
-        // Đợi 300ms sau khi ngừng gõ mới gửi request để tối ưu hiệu năng
+        // 3. Thiết lập bộ đếm mới: Chỉ sau khi người dùng ngừng gõ 300ms thì mới gửi request lên Server.
         searchTimer = setTimeout(() => {
-            fetchClasses();
+            fetchClasses(); // Thực hiện gọi API tìm kiếm
         }, 300);
     }
 
@@ -109,31 +117,27 @@
             container.innerHTML = '';
             return;
         }
-
         let html = '<nav class="flex gap-2">';
         paginator.links.forEach(link => {
             const isActive = link.active ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10';
             const isDisabled = !link.url ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
-            
             let label = link.label;
             if(label.includes('Previous')) label = 'Trước';
             if(label.includes('Next')) label = 'Sau';
-            
             html += `<button 
                 ${!link.url || link.active ? 'disabled' : ''} 
                 onclick="fetchClasses(${link.url ? new URL(link.url).searchParams.get('page') : 1})"
-                class="px-4 py-2 rounded-lg text-xs font-bold transition-all ${isActive} ${isDisabled}">
-                ${label}
+                class="px-4 py-2 rounded-lg textxs font-bold transition-all ${isActive} ${isDisabled}">
+                ${label}-
             </button>`;
         });
         container.innerHTML = html + '</nav>';
     }
-
     function renderClasses() {
         const container = document.getElementById('classes-container');
         const emptyMsg = document.getElementById('emptySearchMessage');
         container.innerHTML = '';
-        const filtered = allData.classes.data; // Correctly access the 'data' array from the paginator object
+        const filtered = allData.classes.data; 
         if (filtered.length === 0) {
             emptyMsg.classList.remove('hidden');
             return;
@@ -146,7 +150,6 @@
             const isBooked = allData.bookedClassIds.includes(c.id);
             const percent = c.max_capacity > 0 ? Math.round((c.booked_count / c.max_capacity) * 100) : 0;
             const barColor = isFull ? 'bg-primary' : (percent >= 80 ? 'bg-yellow-500' : 'bg-emerald-500');
-            
             const html = `
                 <div class="class-item bg-gradient-to-b from-[#1E1E1E] to-[#141414] border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:border-primary/40 transition-all duration-300 flex flex-col group">
                     <div class="h-44 w-full overflow-hidden relative">
@@ -164,9 +167,7 @@
                                 <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm text-primary">calendar_month</span> Thời lượng: <strong class="text-white font-normal">${c.total_sessions} buổi</strong></span>
                             </div>
                         </div>
-                        
                         <p class="text-gray-400 text-xs line-clamp-4 italic">${escapeHtml(c.description || 'Chưa có mô tả chi tiết cho lớp học này.')}</p>
-
                         <div class="space-y-1.5 pt-4">
                             <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider">
                                 <span class="text-gray-500">Sức chứa</span>
@@ -196,7 +197,6 @@
             container.insertAdjacentHTML('beforeend', html);
         });
     }
-
     /**
      * LOGIC 3: AJAX ĐĂNG KÝ & THÔNG BÁO ĐƠN GIẢN
      */
@@ -210,18 +210,13 @@
             setTimeout(() => toast.remove(), 500);
         }, 3000);
     }
-
     $(document).ready(function() {
         fetchClasses();
-
         $(document).on('submit', '.form-book-class', function(e) {
             e.preventDefault();
-            
             let form = $(this);
             let submitBtn = form.find('button[type="submit"]');
-            
             submitBtn.prop('disabled', true).addClass('opacity-50');
-
             $.ajax({
                 url: form.attr('action'),
                 method: 'POST',
@@ -241,6 +236,7 @@
                     submitBtn.prop('disabled', false).removeClass('opacity-50');
                     if (xhr.status === 401) {
                         window.location.href = "{{ route('login') }}";
+                        alert("Vui lòng đăng nhập");
                     } else {
                         let error = xhr.responseJSON?.error || 'Không thể đăng ký!';
                         showSimpleToast(error, true);
@@ -248,7 +244,6 @@
                 }
             });
         });
-
         // Tự động đóng thông báo sau 4 giây 
         setTimeout(() => {
             $('.alert').fadeOut('slow', function() {
@@ -257,7 +252,4 @@
         }, 4000);
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchClasses(); // Initial load of classes and pagination
-    });
 </script>

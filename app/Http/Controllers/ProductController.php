@@ -9,8 +9,8 @@ class ProductController extends Controller
     /**
      * Tác dụng: Lấy tất cả dụng cụ tập gym từ Database và hiện ra trang danh sách */
     public function index(){
-        // Chỉ trả về view, Fetch API trong JS sẽ lo phần lấy dữ liệu sản phẩm
-        return view('shop');
+        $products = Product::paginate(8);
+        return view('shop', compact('products'));
     }
       // tìm kiếm sản phẩm 
     public function getProductsApi(Request $request){

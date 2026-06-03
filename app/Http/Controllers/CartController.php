@@ -178,6 +178,7 @@ class CartController extends Controller
         foreach ($cart as $item) {
             $total += $item['price'] * $item['quantity'];
         }
+        
         return response()->json([
             'success'  => true,
             'subtotal' => number_format($cart[$rowId]['price'] * $cart[$rowId]['quantity']) . 'đ',
@@ -200,6 +201,7 @@ class CartController extends Controller
         // Nếu session 'cart' chưa tồn tại, nó sẽ trả về một mảng rỗng.
         $cart = session()->get('cart');
 
+        
         // 3. Lấy 'row_id' của mặt hàng cần xóa từ request.
         $rowId = $request->row_id;
 
@@ -226,3 +228,22 @@ class CartController extends Controller
         ]);
     }
 }
+
+
+
+//exp
+$cart = [
+    "class_15" => [
+        "row_id" => "class_15",
+        "item_id" => 15,
+        "item_type" => "class",
+        "price" => 500000,
+        "quantity" => 1
+    ],
+    "product_5" => [
+        "row_id" => "product_5",
+        "item_id" => 5,
+        "item_type" => "product",
+        "price" => 100000,
+        "quantity" => 1  
+    ]];//

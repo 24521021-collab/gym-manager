@@ -101,10 +101,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/reviewable-targets', [ReviewController::class, 'getReviewableTargets'])->name('reviews.targets');
 
     // ─── Thanh toán (Checkout) ──────────────────────────────────────────
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
     Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
     Route::get('/checkout/bank-qr/{order_id}', [CheckoutController::class, 'showBankQR'])->name('checkout.bank_qr');
-    Route::get('/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
 
     // Quên & Đổi mật khẩu
     Route::put('/change-password', [ProfileController::class, 'changePassword'])->name('password.change');

@@ -17,14 +17,10 @@ use Carbon\Carbon;
 use App\Models\Notification;
 
 class CheckoutController extends Controller{
-    public function index(){
-        // Giỏ hàng phải có ít nhất 1 item để tiến hành thanh toán
-        if(!session('cart') || count(session('cart')) == 0) {
-            return redirect()->route('products.index')->with('error', 'Giỏ hàng trống! Vui lòng thêm sản phẩm vào giỏ.');
-        }
-        return view('checkout');
-    }
     public function processCheckout(Request $request) {
+        // Debug: Kiểm tra trạng thái giỏ hàng trước khi tính tổng
+       
+
         $total = $this->calculateTotal();
         if ($request->payment_method == 'COD') {
             $order = $this->createOrder($total, 'Pending', 'COD');
@@ -32,6 +28,8 @@ class CheckoutController extends Controller{
             return redirect()->route('trang_chu')->with('success', 'Đặt hàng thành công! Vui lòng chờ xác nhận');
         } 
         if ($request->payment_method == 'Bank_QR') {
+            // Debug: Kiểm tra tổng tiền được tính
+
             $order = $this->createOrder($total, 'Pending', 'Bank_QR');
             session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi tạo đơn
             return redirect()->route('checkout.bank_qr', ['order_id' => $order->id]);
@@ -39,6 +37,7 @@ class CheckoutController extends Controller{
 
         return redirect()->back()->with('error', 'Phương thức thanh toán không hợp lệ.');
     }
+    
     public function showBankQR($order_id) {
         $order = Order::with('user')->findOrFail($order_id); // Lấy thông tin đơn hàng để hiển thị QR
         return view('bank_qr_payment', compact('order')); // Trả về view hiển thị QR
@@ -55,8 +54,8 @@ class CheckoutController extends Controller{
                 'order_date' => now()
             ]);
 
+            $hasProducts = false; // Khởi tạo biến ở đây
             foreach(session('cart', []) as $rowId => $details) {
-                $hasProducts = false; // Khởi tạo cờ
                 // Lưu vết vào bảng order_items (cho tất cả các loại mặt hàng)
                 // Mục đích: để có thể xem lại đơn hàng đã mua những gì, và tính tổng tiền
                 // product_id sẽ là null nếu không phải sản phẩm vật lý

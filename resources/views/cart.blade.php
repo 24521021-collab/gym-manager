@@ -18,7 +18,6 @@
 
     <form action="{{ route('checkout.process') }}" method="POST">
         @csrf
-
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             <div class="col-span-12 lg:col-span-8">
@@ -26,7 +25,6 @@
                     <h3 class="font-headline text-lg uppercase tracking-wider text-white border-b border-white/10 pb-3 mb-4">
                         Chi tiết giỏ hàng
                     </h3>
-
                     @if(session('cart') && count(session('cart')) > 0)
                         <div class="space-y-4 max-h-[450px] overflow-y-auto pr-2">
                             @php $total = 0; @endphp
@@ -152,9 +150,7 @@ $(document).ready(function() {
         var ele = $(this);
         var id = ele.closest("div[data-id]").attr("data-id");
         var quantity = ele.val();
-
         if (quantity === "" || quantity < 1) return;
-
         $.ajax({
             url: '{{ route("cart.update") }}',
             method: "patch",

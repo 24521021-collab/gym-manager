@@ -131,7 +131,7 @@ class OrderSeeder extends Seeder
         }
 
         // --- 3. Tạo các đơn hàng chỉ chứa LỚP HỌC ---
-        for ($i = 0; $i < 15; $i++) { 
+        for ($i = 0; $i < 10; $i++) { 
             if ($classes->isEmpty()) break;
             $user = $users->random();
             $method = $paymentMethods[array_rand($paymentMethods)];
