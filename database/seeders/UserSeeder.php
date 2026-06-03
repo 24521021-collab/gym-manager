@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
             ['email' => 'adminnew@gmail.com'],
             [
                 'full_name' => 'Quản trị viên',
-                'password' => Hash::make('123456'), // Mật khẩu là 123456
+                'password' => Hash::make('12345678'), // Mật khẩu là 12345678
                 'role' => 'admin',
             ]
         );
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             ['email' => 'khachhang@gmail.com'],
             [
                 'full_name' => 'Nguyễn Văn Khách',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'role' => 'member',
             ]
         );
@@ -35,29 +35,29 @@ class UserSeeder extends Seeder
             ['email' => 'trainer1@gmail.com'],
             [
                 'full_name' => 'PT Nguyễn Văn Cơ Bắp',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'role' => 'pt',
             ]
         );
         // Danh sách 10 Huấn luyện viên cá nhân (PT) chuyên nghiệp
         $ptsData = [
-            ['full_name' => 'PT Nguyễn Văn Cơ Bắp', 'email' => 'trainer1@gmail.com'],
+            ['full_name' => 'PT Nguyễn Văn Lực', 'email' => 'trainer1@gmail.com'],
             ['full_name' => 'PT Trần Minh Quân', 'email' => 'trainer2@gmail.com'],
-            ['full_name' => 'PT Lê Thu Thảo', 'email' => 'trainer3@gmail.com'],
+            ['full_name' => 'PT Đặng Hùng Sơn', 'email' => 'trainer3@gmail.com'],
             ['full_name' => 'PT Phạm Hoàng Nam', 'email' => 'trainer4@gmail.com'],
             ['full_name' => 'PT Vũ Mai Anh', 'email' => 'trainer5@gmail.com'],
-            ['full_name' => 'PT Đặng Hùng Sơn', 'email' => 'trainer6@gmail.com'],
-            ['full_name' => 'PT Hoàng Ngọc Bích', 'email' => 'trainer7@gmail.com'],
-            ['full_name' => 'PT Bùi Tiến Dũng', 'email' => 'trainer8@gmail.com'],
+            ['full_name' => 'PT Lê Thu Thảo', 'email' => 'trainer6@gmail.com'],
+            ['full_name' => 'PT Bùi Tiến Dũng', 'email' => 'trainer7@gmail.com'],
+            ['full_name' => 'PT Hoàng Ngọc Bích', 'email' => 'trainer8@gmail.com'],
             ['full_name' => 'PT Đỗ Thúy Quỳnh', 'email' => 'trainer9@gmail.com'],
-            ['full_name' => 'PT Nguyễn Hải Đăng', 'email' => 'trainer10@gmail.com'],
+            ['full_name' => 'PT Hà Ngọc Bích', 'email' => 'trainer10@gmail.com'],
         ];
         foreach ($ptsData as $pt) {
             User::updateOrCreate(
                 ['email' => $pt['email']],
                 [
                     'full_name' => $pt['full_name'],
-                    'password'  => Hash::make('123456'), // Mật khẩu mẫu đồng bộ theo code cũ của bạn
+                    'password'  => Hash::make('12345678'), // Mật khẩu mẫu đồng bộ theo code cũ của bạn
                     'role'      => 'pt', // Đảm bảo quyền là 'pt'
                 ]
                 );
@@ -71,7 +71,7 @@ class UserSeeder extends Seeder
             ['email' => $admin['email']],
             [
                 'full_name' => $admin['full_name'],
-                'password'  => Hash::make('123456'),
+                'password'  => Hash::make('12345678'),
                 'role'      => 'admin',
             ]
             );
@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
         ['email' => 'khachhang@gmail.com'],
         [
             'full_name' => 'Nguyễn Văn Khách',
-            'password' => Hash::make('123456'),
+            'password' => Hash::make('12345678'),
             'role' => 'member',
         ]
     );
@@ -106,7 +106,7 @@ class UserSeeder extends Seeder
             ['email' => $member['email']],
             [
                 'full_name' => $member['full_name'],
-                'password'  => Hash::make('123456'),
+                'password'  => Hash::make('12345678'),
                 'role'      => 'member',
             ]
         );

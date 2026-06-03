@@ -23,6 +23,7 @@ class User extends Authenticatable
         'google_id',// id đăng nhập của google dành cho người đăng nhập bằng google
         'full_name',
         'email',
+        'phone',
         'role',
         'password',
     ];
@@ -60,8 +61,18 @@ public function bodyMetrics() { return $this->hasMany(BodyMetric::class); }
         return $this->hasMany(PtBooking::class, 'pt_id');
     }
 
+
     public function latestBodyMetric() {
         return $this->hasOne(BodyMetric::class)->latestOfMany('measured_at');
+    }
+
+    /**
+     * Lấy tất cả nhật ký (logs) thông qua hồ sơ PT.
+     * Giúp pt.dashboard vẫn truy cập được logs từ đối tượng Auth::user()
+     */
+    public function ptLogs()
+    {
+        return $this->hasManyThrough(PtLog::class, PtProfile::class, 'user_id', 'pt_profile_id');
     }
 
 public function enrolledClasses()
@@ -71,5 +82,4 @@ public function enrolledClasses()
     return $this->belongsToMany(GymClass::class, 'bookings', 'user_id', 'class_id')
                 ->withPivot('status', 'booking_date');
 }
-
 }

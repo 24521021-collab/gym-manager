@@ -24,7 +24,6 @@ return new class extends Migration
         $table->decimal('price', 12, 2)->default(0); // Giá cho một buổi tập
         // Trạng thái lịch hẹn riêng
         $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
-       
         $table->text('note')->nullable(); // Ghi chú yêu cầu riêng của khách
         $table->timestamps();
     });

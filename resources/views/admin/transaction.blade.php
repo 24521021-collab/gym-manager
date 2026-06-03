@@ -78,7 +78,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pb-3 border-b border-white/5 text-xs uppercase font-bold tracking-wider">
                 <div class="text-gray-400">Khách hàng: <span id="det_user_name" class="text-white ms-1"></span></div>
                 <div class="text-gray-400">Hình thức: <span id="det_payment_method" class="text-white ms-1"></span></div>
-                <div class="sm:text-right text-gray-400">Trạng thái hiện tại: <span id="det_status_badge" class="ms-1"></span></div>
+                <div class="text-gray-400">Trạng thái hiện tại: <span id="det_status_badge" class="ms-1"></span></div>
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-white/5 bg-black/20">
@@ -166,9 +166,7 @@ function renderOrderTable(orders) {
         }
 
         let methodBadge = '';
-        if(order.payment_method === 'VNPAY') {
-            methodBadge = '<span class="text-[10px] font-bold text-blue-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">account_balance_wallet</span> VNPAY</span>';
-        } else if(order.payment_method === 'Bank_QR') {
+        if(order.payment_method === 'Bank_QR') {
             methodBadge = '<span class="text-[10px] font-bold text-cyan-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">qr_code_2</span> VietQR</span>';
         } else {
             methodBadge = '<span class="text-[10px] font-bold text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">payments</span> Tiền mặt</span>';

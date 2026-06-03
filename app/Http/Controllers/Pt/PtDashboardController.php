@@ -68,7 +68,7 @@ class PtDashboardController extends Controller
         $totalCommission = $privateCommission + $classCommission;
 
         // 2. Lấy danh sách Nhật ký huấn luyện (Sắp xếp theo ngày mới nhất)
-        $logs = PtLog::where('pt_id', $ptId)
+        $logs = PtLog::where('pt_profile_id', $ptId)
             ->orderBy('log_date', 'desc')
             ->orderBy('start_time', 'desc')
             ->get();
@@ -177,7 +177,7 @@ class PtDashboardController extends Controller
         ]);
 
         $log = PtLog::create([
-            'pt_id' => Auth::id(),
+            'pt_profile_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->content,
             'log_date' => $request->log_date,

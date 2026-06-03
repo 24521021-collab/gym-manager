@@ -4,26 +4,57 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\PTProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class PostController extends Controller
 {
     /**
-     * Hiển thị danh sách bài viết (Công khai)
+     * Hiển thị danh sách bài viết cho admin
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Lấy bài viết mới nhất và phân trang
-        $posts = Post::latest()->paginate(10);
-        return view('posts.index', compact('posts'));
+        $search = $request->input('search');
+        $query = Post::with('author')->latest();
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        $posts = $query->paginate(10);
+
+        // Trả về JSON nếu là request AJAX (từ Fetch API)
+        if ($request->ajax()) {
+            return response()->json($posts);
+        }
+
+        return view('admin.posts', compact('posts'));
+    }
+
+    /**
+     * Hiển thị danh sách bài viết cho khách (Blog công khai)
+     */
+    public function blog()
+    {
+        $posts = Post::with('author')
+                    ->whereIn('status', ['Published', 'Sẵn sàng'])
+                    ->latest()
+                    ->paginate(10); // Đổi từ 9 thành 10 theo yêu cầu
+        return view('posts', compact('posts'));
     }
 
     public function show($slug)
     {
-        $post = Post::where('slug', $slug)->firstOrFail();
-        return view('posts.show', compact('post'));
+        // Chuyển bài viết đơn lẻ thành Collection để View posts.blade.php (vốn dùng @foreach) 
+        // có thể hiển thị bài viết đó mà không bị lỗi crash trang.
+        $post = Post::with('author')->where('slug', $slug)->firstOrFail();
+        $posts = collect([$post]);
+        return view('posts', compact('posts')); 
     }
 
     /**
@@ -35,21 +66,25 @@ class PostController extends Controller
             'title' => 'required|max:255',
             'content' => 'required',
             'category' => 'required',
+            'author_id' => 'required|exists:user,id',
             'header_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required|in:Draft,Sẵn sàng',
         ]);
 
         // Tạo slug tự động từ tiêu đề
         $data['slug'] = Str::slug($request->title);
-        $data['author_id'] = auth()->id();
 
         // Xử lý upload ảnh bìa (nếu có)
         if ($request->hasFile('header_image')) {
-            $data['header_image'] = $request->file('header_image')->store('posts', 'public');
+            $file = $request->file('header_image');
+            $imageName = time() . '.' . $file->extension();
+            $file->move(public_path('images/posts'), $imageName);
+            $data['header_image'] = $imageName;
         }
 
-        Post::create($data);
+        $post = Post::create($data);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Đăng bài viết thành công!');
+        return response()->json(['success' => true, 'message' => 'Đăng bài viết thành công!', 'data' => $post]);
     }
 
     /**
@@ -63,21 +98,26 @@ class PostController extends Controller
             'title' => 'required|max:255',
             'content' => 'required',
             'category' => 'required',
+            'author_id' => 'required|exists:user,id',
+            'status' => 'required|in:Draft,Sẵn sàng',
         ]);
 
         $data['slug'] = Str::slug($request->title);
 
         if ($request->hasFile('header_image')) {
             // Xóa ảnh cũ nếu có
-            if ($post->header_image) {
-                Storage::disk('public')->delete($post->header_image);
+            if ($post->header_image && File::exists(public_path('images/posts/' . $post->header_image))) {
+                File::delete(public_path('images/posts/' . $post->header_image));
             }
-            $data['header_image'] = $request->file('header_image')->store('posts', 'public');
+            $file = $request->file('header_image');
+            $imageName = time() . '.' . $file->extension();
+            $file->move(public_path('images/posts'), $imageName);
+            $data['header_image'] = $imageName;
         }
 
         $post->update($data);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Cập nhật bài viết thành công!');
+        return response()->json(['success' => true, 'message' => 'Cập nhật bài viết thành công!', 'data' => $post]);
     }
 
     /**
@@ -87,24 +127,34 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        // Xóa ảnh trong storage trước khi xóa bài viết trong database
-        if ($post->header_image) {
-            Storage::disk('public')->delete($post->header_image);
+        // Xóa ảnh trong thư mục public/images/posts
+        if ($post->header_image && File::exists(public_path('images/posts/' . $post->header_image))) {
+            File::delete(public_path('images/posts/' . $post->header_image));
         }
 
         $post->delete();
 
-        return redirect()->route('admin.posts.index')->with('success', 'Đã xóa bài viết.');
+        return response()->json(['success' => true, 'message' => 'Đã xóa bài viết thành công!']);
     }
 
     public function create()
     {
-        return view('admin.posts.create');
+        // Khởi tạo một đối tượng Post rỗng để truyền sang view
+        $post = new Post(); 
+        $authors = PTProfile::with('user')
+            ->get()
+            ->sortBy(fn($pt) => $pt->user->full_name);
+
+        return view('admin.post_form', compact('post', 'authors'));
     }
 
     public function edit($id)
     {
         $post = Post::findOrFail($id);
-        return view('admin.edit', compact('post'));
+        $authors = PTProfile::with('user')
+            ->get()
+            ->sortBy(fn($pt) => $pt->user->full_name);
+
+        return view('admin.post_form', compact('post', 'authors'));
     }
 }

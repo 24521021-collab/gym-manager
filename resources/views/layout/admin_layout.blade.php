@@ -20,7 +20,7 @@
     <div class="flex-1 flex flex-col gap-1 py-4">
         {{-- 1. Tổng quan & Phân tích --}}
         <a class="{{ request()->is('admin/dashboard*') ? 'bg-primary/20 text-primary border-l-4 border-primary' : 'text-gray-400 hover:bg-white/5 hover:text-white' }} px-6 py-3.5 flex items-center gap-3 transition-all" href="/admin/dashboard">
-            <span class="material-symbols-outlined" style=" request()->is('admin/dashboard*') ? "font-variation-settings: 'FILL' 1;" : "" }}">analytics</span>
+            <span class="material-symbols-outlined" style="{{ request()->is('admin/dashboard*') ? "font-variation-settings: 'FILL' 1;" : "" }}">analytics</span>
             <span class="text-sm font-bold">Tổng quan & Phân tích</span>
         </a>
 
@@ -56,8 +56,14 @@
 
         {{-- 7. Lịch HLV (Booking) --}}
         <a class="{{ request()->is('schedule.html') || request()->is('admin/pt-bookings*') ? 'bg-primary/20 text-primary border-l-4 border-primary' : 'text-gray-400 hover:bg-white/5 hover:text-white' }} px-6 py-3.5 flex items-center gap-3 transition-all" href="/admin/pt-bookings">
-            <span class="material-symbols-outlined" style="{{ request()->is('schedule.html') || request()->is('admin/schedule*') ? "font-variation-settings: 'FILL' 1;" : "" }}">calendar_month</span>
+            <span class="material-symbols-outlined" style="{{ request()->is('admin/pt-bookings*') ? "font-variation-settings: 'FILL' 1;" : "" }}">calendar_month</span>
             <span class="text-sm font-bold">Lịch HLV (Booking)</span>
+        </a>
+
+        {{-- 8. Quản lý Bài đăng --}}
+        <a class="{{ request()->routeIs('admin.posts.*') ? 'bg-primary/20 text-primary border-l-4 border-primary' : 'text-gray-400 hover:bg-white/5 hover:text-white' }} px-6 py-3.5 flex items-center gap-3 transition-all" href="{{ route('admin.posts.index') }}">
+            <span class="material-symbols-outlined" style="{{ request()->routeIs('admin.posts.*') ? "font-variation-settings: 'FILL' 1;" : "" }}">newspaper</span>
+            <span class="text-sm font-bold">Quản lý Bài đăng</span>
         </a>
     </div>
     

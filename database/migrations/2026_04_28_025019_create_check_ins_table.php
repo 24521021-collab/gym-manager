@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
         $table->timestamp('check_in_time');
-        $table->string('method'); // QR, Fingerprint, RFID
+        $table->string('method'); // QR,
         $table->timestamps();
         });
     }

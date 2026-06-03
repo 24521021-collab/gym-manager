@@ -7,11 +7,14 @@
         <p class="text-gray-400 text-sm mt-1">Thiết lập danh sách các lớp học Gym nhóm, huấn luyện viên và sức chứa phòng tập.</p>
     </header>
 
-     <div class="max-w-md">
-            <form id="searchForm" onsubmit="event.preventDefault(); loadClasses();" class="flex gap-2 text-xs">
-                <input type="text" id="searchInput" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Tìm tên lớp hoặc PT..." value="{{ request('search') }}">
-                <button type="submit" class="bg-white/10 text-white font-bold uppercase px-4 py-2.5 rounded-lg hover:bg-white/20 transition-colors whitespace-nowrap">Tìm kiếm</button>
-            </form>
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-xl p-4 mb-6 shadow-md mt-4">
+        <form id="searchForm" onsubmit="event.preventDefault(); loadClasses();" class="grid grid-cols-1 md:grid-cols-7 gap-3">
+            <div class="relative md:col-span-6">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+                <input type="text" id="searchInput" class="w-full bg-black border border-white/10 text-white rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" placeholder="Tìm tên lớp hoặc PT..." value="{{ request('search') }}">
+            </div>
+            <button type="submit" class="md:col-span-1 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase py-2.5 rounded-lg transition-all border border-white/10">Tìm kiếm</button>
+        </form>
     </div>
     
     <!-- Form Cấu hình Lớp học (Inline - Giống Admin Products) -->
@@ -35,7 +38,7 @@
                     <select name="pt_id" id="pt_id" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary [color-scheme:dark]" required>
                         <option value="">-- Chọn PT --</option>
                         @foreach($pts as $pt)
-                            <option value="{{ $pt->id }}">{{ $pt->user->full_name }}</option>
+                            <option value="{{ $pt->id }}">{{ $pt->selection_name }}</option>
                         @endforeach
                     </select>
                     <span class="text-danger error-text pt_id_error"></span>
@@ -59,16 +62,16 @@
                     <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Hình ảnh lớp</label>
                     <input type="file" name="image" id="image" class="w-full bg-black/40 border border-white/10 rounded-lg text-gray-400 px-3 py-2 focus:ring-1 focus:ring-primary focus:border-primary">
                 </div>
-                <div class="md:col-span-1">
+                <div id="imagePreviewContainer" class="mt-3 flex items-center gap-3" style="display:none;">
+                    <img id="imagePreview" src="" width="80" class="rounded border border-white/10 bg-black/20 p-0.5">
+                </div>
+        </div>
+                <div class="md:col-span-5">
                     <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Mô tả ngắn</label>
-                    <textarea name="description" id="description" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" rows="1"></textarea>
+                    <textarea name="description" id="description" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" rows="10"></textarea>
                     <span class="text-danger error-text description_error"></span>
                 </div>
-            </div>
-
-            <div id="imagePreviewContainer" class="mt-3 flex items-center gap-3" style="display:none;">
-                <img id="imagePreview" src="" width="80" class="rounded border border-white/10 bg-black/20 p-0.5">
-            </div>
+        
 
             <div class="flex gap-2 justify-end mt-4 text-xs">
                 <button type="submit" class="bg-primary text-white font-bold uppercase px-6 py-2.5 rounded-lg hover:bg-red-700 transition-colors">Lưu lớp học</button>

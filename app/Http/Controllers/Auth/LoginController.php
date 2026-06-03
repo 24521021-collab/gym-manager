@@ -3,39 +3,54 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\GymPackage;
+use App\Models\BodyMetric;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
-    // hàm này giúp người dùng về trang login
-    public function ShowLogin(){
-        return view('trangchu');
+    // Hàm này hiển thị trang chủ nhưng tập trung vào phần đăng nhập
+    public function ShowLogin()
+    {
+        // Thay vì render view, ta chuyển hướng về route 'trang_chu'
+        return redirect()->route('trang_chu')->with('error', 'Vui lòng đăng nhập để tiếp tục!');
     }
     // hàm xử lý dữ liệu đăng nhập
     // dùng validate kiểm tra dữ liệu
     public function login(Request $request){
-        $credentials=$request->validate([
-            'email'=>'required|email',
+        $request->validate([
+            'login'=>'required|string',
             'password'=>'required',
         ]);
+
+        // Kiểm tra xem input là email hay số điện thoại
+        $loginType = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $credentials = [
+            $loginType => $request->login,
+            'password' => $request->password
+        ];
+
     //ghi nhớ thông tin cho lần sau
     /* auth- authentification: kiểm tra dữ liệu trong dtbase*/
     if (Auth::attempt($credentials)){
         // C. Nếu đúng: Tạo lại Session (phiên làm việc) để bảo mật
         $request->session()->regenerate();
-        $user= Auth::user();
-        if($user->role =='admin'){
-            return redirect()->route('admin.dashboard');
+
+        $user = Auth::user();
+
+        // Điều hướng thông minh: Nếu admin cố truy cập trang dashboard trước khi login, intended sẽ đưa họ về đó.
+        if ($user->role == 'admin') {
+            return redirect()->intended(route('admin.dashboard'))->with('success', 'Chào mừng Quản trị viên!');
+        } elseif ($user->role == 'pt') {
+            return redirect()->intended(route('pt.dashboard'))->with('success', 'Chào mừng Huấn luyện viên!');
         }
-        if($user->role =='pt'){
-            return redirect()->route('pt.dashboard');
-        }
-        // D. Chuyển hướng người dùng về trang chủ
+
         return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
     }
     // Trả về nếu sai thông tin  
-        return back()->withErrors(['email'=>'thông tin sai',])->onlyInput('email');
+        return back()->withErrors(['login'=>'Thông tin đăng nhập không chính xác.',])->onlyInput('login');
     }
     //logout
     public function logout(Request $request){

@@ -14,8 +14,8 @@
         <p>Đây là mật khẩu mặc định của bạn:</p>
         <div class="password-box">{{ $password }}</div>
         <p>Vui lòng đăng nhập và <strong>thay đổi mật khẩu ngay lập tức</strong> tại Trang cá nhân để bảo mật tài khoản.</p>
-        <p>Trân trọng,<br>Đội ngũ quản trị hệ thống Gym.</p>
-        <div class="footer">Nếu bạn không yêu cầu cấp mật khẩu, vui lòng bỏ qua email này.</div>
+        <p>Trân trọng,<br>Ban quản trị KOR.</p>
+        <div class="footer">Nếu bạn không yêu cầu cấp mật khẩu, vui lòng bỏ qua email này. © KOR Team.</div>
     </div>
 </body>
 </html>

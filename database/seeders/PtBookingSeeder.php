@@ -31,20 +31,17 @@ class PtBookingSeeder extends Seeder
             $customer = $customers->random();
             $pt = $pts->random();
             
-            // Ngẫu nhiên ngày từ 10 ngày trước đến 15 ngày tới
-            $date = Carbon::now()->addDays(rand(-10, 15));
+            // Phân bổ ngày từ mùng 1 đến mùng 5 tháng 6 để có cả lịch cũ và lịch mới
+            $date = Carbon::create(2026, 6, rand(1, 5));
             
             // Ngẫu nhiên giờ bắt đầu từ 6h sáng đến 20h tối
             $startHour = rand(6, 20);
             $startTime = Carbon::createFromTime($startHour, 0, 0);
             $endTime = (clone $startTime)->addHour(); // Mỗi ca tập 1 tiếng
 
-            // Tự động quyết định trạng thái dựa trên ngày
-            if ($date->isPast()) {
-                $status = (rand(1, 10) > 2) ? 'completed' : 'cancelled';
-            } else {
-                $status = (rand(1, 10) > 4) ? 'confirmed' : 'pending';
-            }
+            // Đảm bảo có đủ 4 trạng thái: pending, confirmed, completed, cancelled
+            $allStatuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+            $status = $allStatuses[($i - 1) % 4]; // Chia đều 4 trạng thái cho 16 bản ghi
 
             PtBooking::create([
                 'customer_id'  => $customer->id,

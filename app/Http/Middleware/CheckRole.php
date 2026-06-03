@@ -12,18 +12,31 @@ class CheckRole{
      * Handle an incoming request.
      *
      * @param  Closure(Request): (Response)  $next
-     * @param  string  $role
+     * @param  string  ...$roles
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // 1. Kiểm tra người dùng đã đăng nhập chưa
         if (!Auth::check()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Vui lòng đăng nhập để tiếp tục.'], 401);
+            }
             return redirect()->route('login')->with('error', 'Bạn cần đăng nhập trước.');
         }
-        // 2. Kiểm tra vai trò của người dùng có khớp với vai trò yêu cầu từ Route không
-        if (Auth::user()->role === $role) {
+
+        $user = Auth::user();
+        
+        // 2. Kiểm tra vai trò (Hỗ trợ nhiều vai trò cùng lúc)
+        // in_array giúp kiểm tra xem role của user có nằm trong danh sách được phép không
+        if (in_array($user->role, $roles)) {
             return $next($request);
         }
+
+        // Trả về lỗi 403 phù hợp với loại request
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['error' => 'Bạn không có quyền truy cập chức năng này.'], 403);
+        }
+
         abort(403, 'Bạn không có quyền truy cập chức năng này.');
     }
 }

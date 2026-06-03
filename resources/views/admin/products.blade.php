@@ -7,15 +7,16 @@
     </header>
 
     {{-- Bộ lọc & Tìm kiếm --}}
-    <div class="row mb-3 mt-4 max-w-md">
-        <div class="col-md-4">
-            <form id="searchForm" onsubmit="event.preventDefault(); loadProducts();" class="flex gap-2 text-xs">
-                <input type="text" id="searchInput" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Tìm tên hoặc SKU..." value="{{ request('search') }}">
-                <button type="submit" class="bg-white/10 text-white font-bold uppercase px-4 py-2.5 rounded-lg hover:bg-white/20 transition-colors whitespace-nowrap">
-                    Tìm kiếm
-                </button>
-            </form>
-        </div>
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-xl p-4 mb-6 shadow-md mt-4">
+        <form id="searchForm" onsubmit="event.preventDefault(); loadProducts();" class="grid grid-cols-1 md:grid-cols-7 gap-4">
+            <div class="relative md:col-span-6">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
+                <input type="text" id="searchInput" class="w-full bg-black border border-white/10 text-white rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" placeholder="Tìm tên hoặc SKU..." value="{{ request('search') }}">
+            </div>
+            <button type="submit" class="md:col-span-1 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase py-2.5 rounded-lg transition-all border border-white/10">
+                Tìm kiếm
+            </button>
+        </form>
     </div>
 
     <div class="bg-[#1A1A1A] rounded-xl border border-white/10 p-6 shadow-md">

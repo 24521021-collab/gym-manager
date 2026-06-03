@@ -10,14 +10,14 @@
 
      <!-- SEARCH & FILTER -->
     <div class="bg-[#1A1A1A] border border-white/10 rounded-xl p-4 mb-6 shadow-md">
-        <form id="searchForm" onsubmit="event.preventDefault(); loadPackages();" class="flex flex-col md:flex-row gap-3">
-            <div class="relative flex-1">
+        <form id="searchForm" onsubmit="event.preventDefault(); loadPackages();" class="grid grid-cols-1 md:grid-cols-7 gap-3">
+            <div class="relative md:col-span-6">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
                 <input type="text" id="searchInput" 
                        class="w-full bg-black border border-white/10 text-white rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" 
                        placeholder="Tìm tên gói tập..." value="{{ request('search') }}">
             </div>
-            <button type="submit" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase px-8 py-2.5 rounded-lg transition-all border border-white/10">
+            <button type="submit" class="md:col-span-1 bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase py-2.5 rounded-lg transition-all border border-white/10">
                 Tìm kiếm
             </button>
         </form>
@@ -50,9 +50,9 @@
                     <input type="number" name="price" id="price" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" required min="0">
                     <span class="text-primary text-[10px] error-text price_error"></span>
                 </div>
-                <div class="md:col-span-4">
+                <div class="md:col-span-5">
                     <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Mô tả</label>
-                    <textarea name="description" id="description" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-2.5 focus:ring-1 focus:ring-primary focus:border-primary" rows="2"></textarea>
+                    <textarea name="description" id="description" class="w-full bg-black/40 border border-white/10 rounded-lg text-white px-3 py-3 focus:ring-1 focus:ring-primary focus:border-primary" rows="10"></textarea>
                 </div>
             </div>
             <div class="flex gap-2 justify-end mt-4 text-xs">

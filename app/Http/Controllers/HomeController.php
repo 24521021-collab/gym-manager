@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\GymPackage; 
 use App\Models\BodyMetric;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 //1. Giải thích return view()
@@ -19,15 +20,34 @@ use Illuminate\Support\Facades\Auth;
 //Nó tương đương với việc bạn nói: "Hãy mở file giao diện index.blade.php lên, và mang theo cái túi dữ liệu chứa biến $packages này sang đó cho tôi."
 class HomeController extends Controller
 {
-    // phần này chỉ hiện thị gói tập trên trang chủ 
+    // Phương thức `index` sẽ xử lý logic để hiển thị trang chủ.
     public function index() {
+        // Khởi tạo biến `$latestMetric` là null. Biến này sẽ lưu trữ chỉ số cơ thể mới nhất của người dùng.
         $latestMetric = null;
+        // Kiểm tra xem người dùng đã đăng nhập hay chưa.
         if (Auth::check()) {
+            // Nếu đã đăng nhập, tìm chỉ số cơ thể mới nhất của người dùng hiện tại.
+            // `BodyMetric::where('user_id', Auth::id())`: Tìm tất cả các bản ghi BodyMetric có `user_id` trùng với ID của người dùng đang đăng nhập.
+            // `orderBy('measured_at', 'desc')`: Sắp xếp các bản ghi theo thời gian đo giảm dần (mới nhất lên đầu).
+            // `first()`: Lấy bản ghi đầu tiên (chính là bản ghi mới nhất).
             $latestMetric = BodyMetric::where('user_id', Auth::id())
                                       ->orderBy('measured_at', 'desc')
                                       ->first();
         }
-        $goiTaps = GymPackage::all(); // 2. Ở đây chỉ cần gọi tên ngắn gọn
-        return view('trangchu', compact('goiTaps', 'latestMetric'));
+
+        // Lấy 10 bài viết mới nhất để hiển thị ở khối Kiến thức trên trang chủ.
+        // `Post::whereIn('status', ['Published', 'Sẵn sàng'])`: Lấy các bài viết có trạng thái là 'Published' hoặc 'Sẵn sàng'.
+        // `latest()`: Sắp xếp các bài viết theo thời gian tạo giảm dần (mới nhất).
+        // `take(10)`: Chỉ lấy 10 bài viết đầu tiên.
+        // `get()`: Thực thi truy vấn và lấy về một tập hợp các đối tượng Post.
+        $posts = Post::whereIn('status', ['Published', 'Sẵn sàng'])
+                     ->latest()
+                     ->take(10)
+                     ->get();
+
+        // Lấy tất cả các gói tập Gym và phân trang với 6 gói mỗi trang.
+        $goiTaps = GymPackage::paginate(6);
+        // Trả về view 'trangchu' và truyền các biến `$goiTaps`, `$latestMetric`, `$posts` sang view để hiển thị.
+        return view('trangchu', compact('goiTaps', 'latestMetric', 'posts'));
     }  
 }

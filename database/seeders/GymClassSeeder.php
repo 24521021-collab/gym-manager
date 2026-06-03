@@ -52,7 +52,7 @@ class GymClassSeeder extends Seeder
                 'image' => 'boxing-class.jpg',
             ],
             [
-                'name' => 'HIIT - Thử Thách Sức Bền',
+                'name' => 'Cardio Thử Thách Sức Bền',
                 'pt_id' => $pts->get(3)->id ?? $pts[0]->id,
                 'max_capacity' => 4,
                 'description' => 'Tăng cường sức mạnh tim mạch và sự dẻo dai thông qua các bài tập cường độ cao ngắt quãng.',

@@ -111,6 +111,13 @@ class DashboardController extends Controller
             ->orderByDesc('total_revenue')
             ->get();
 
+        // 4. Lấy chi tiết toàn bộ lượt điểm danh trong tháng để xuất báo cáo
+        $monthCheckinsDetail = CheckIn::with('user')
+            ->whereMonth('check_in_time', $currentMonth)
+            ->whereYear('check_in_time', $currentYear)
+            ->orderBy('check_in_time', 'desc')
+            ->get();
+
         // Truyền dữ liệu sang view
         return view('admin.dashboard', compact(
             'packageRevenue',
@@ -122,7 +129,8 @@ class DashboardController extends Controller
             'classPerformances',
             'productPerformances',
             'packagePerformances',
-            'ptPerformances'
+            'ptPerformances',
+            'monthCheckinsDetail'
         ));
     }
 }

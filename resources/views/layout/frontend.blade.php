@@ -25,6 +25,9 @@
             <a class="{{ request()->is('booking*') || request()->routeIs('booking.pt.index') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="{{ route('booking.pt.index') }}">
                 Đặt Lịch
             </a>
+            <a class="{{ request()->is('posts*') ? 'text-primary' : 'text-gray-400' }} hover:text-primary transition-colors font-headline text-lg uppercase tracking-tight" href="{{ route('posts.index') }}">
+                Kiến thức
+            </a>
         </div>
     </div>
     
@@ -46,6 +49,10 @@
             
             <a href="{{ route('notifications') }}" class="text-primary hover:bg-white/5 p-2 rounded-full transition-colors flex items-center justify-center relative">
                 <span class="material-symbols-outlined">notifications</span>
+                {{-- Hiển thị chấm đỏ nếu có thông báo chưa đọc --}}
+                @if(App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->exists())
+                    <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-[#1A1A1A] shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pulse"></span>
+                @endif
             </a>
 
             <a href="{{ route('profile') }}" class="flex items-center gap-2 py-1 group">
@@ -71,8 +78,8 @@
             <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email</label>
-                    <input type="email" name="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="admin@gmail.com">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email / Số điện thoại</label>
+                    <input type="text" name="login" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="Email hoặc SĐT của bạn">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu</label>
@@ -103,7 +110,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Email / Số điện thoại</label>
-                    <input type="email" name="email" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="name@example.com">
+                    <input type="text" name="login" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary placeholder:text-gray-600" required placeholder="Nhập Email hoặc SĐT để đăng ký">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Mật khẩu</label>
@@ -169,7 +176,6 @@
     });
     async function sendDefaultPassword(event) {
         event.preventDefault(); // Chặn việc reload lại trang của form mặc định
-        
         const email = document.getElementById('forgot_email').value;
         const msg = document.getElementById('forgot-msg');
         const btn = document.getElementById('btnForgot');

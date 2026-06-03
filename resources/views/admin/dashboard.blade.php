@@ -108,7 +108,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <section class="col-span-12 lg:col-span-7 space-y-6">
             <div class="bg-[#1A1A1A] border border-white/10 rounded-xl p-6 shadow-md space-y-6">
-                <h3 class="font-headline text-base uppercase tracking-wider text-white font-bold border-b border-white/5 pb-3">Phân tích chỉ tiêu doanh số tháng 5</h3>
+                <h3 class="font-headline text-base uppercase tracking-wider text-white font-bold border-b border-white/5 pb-3">Phân tích chỉ tiêu doanh số tháng {{ now()->month }}</h3>
                 
                 <div class="space-y-4">
                     <div class="space-y-2">
@@ -157,7 +157,7 @@
             <div class="bg-[#1A1A1A] border border-white/10 rounded-xl p-6 shadow-md space-y-4">
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
                     <h3 class="font-headline text-base uppercase tracking-wider text-white font-bold">Hiệu suất Doanh thu Lớp Nhóm (Group X)</h3>
-                    <span class="text-[10px] text-gray-500 font-mono">Tháng 5/2026</span>
+                    <span class="text-[10px] text-gray-500 font-mono">Tháng {{ now()->format('m/Y') }}</span>
                 </div>
                 
                 <div class="space-y-3">
@@ -375,6 +375,15 @@ function exportToExcel() {
             "Tên Huấn Luyện Viên": i.full_name, "Tổng Doanh Thu": i.total_revenue, "Hoa Hồng Admin (20%)": i.admin_commission
         })));
         XLSX.utils.book_append_sheet(wb, ws_pt, "Hoa Hồng PT 1-1");
+
+        // Bảng 5: Chi tiết điểm danh trong tháng (Yêu cầu mới)
+        const checkinData = @json($monthCheckinsDetail);
+        const ws_checkin = XLSX.utils.json_to_sheet(checkinData.map(i => ({
+            "Tên Người Dùng": i.user?.full_name || 'N/A',
+            "Ngày Check-in": new Date(i.check_in_time).toLocaleDateString('vi-VN'),
+            "Giờ Check-in": new Date(i.check_in_time).toLocaleTimeString('vi-VN'),
+        })));
+        XLSX.utils.book_append_sheet(wb, ws_checkin, "Chi tiết điểm danh tháng");
 
         // Xuất file
         XLSX.writeFile(wb, `Bao-cao-Doanh-thu-GymPro-${new Date().toISOString().slice(0,10)}.xlsx`);

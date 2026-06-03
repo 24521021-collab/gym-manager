@@ -1,11 +1,47 @@
 @extends('layout.frontend') 
 @section('content')
+<!-- Tích hợp Font chữ Montserrat cho sự thanh lịch và hiện đại -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+    /* Áp dụng Font mới cho toàn bộ khối main *
+    
+    /* Font cho các Tiêu đề lớn (Headline) vẫn giữ nguyên nét cứng cáp nếu muốn, hoặc dùng Montserrat Black */
+
+    /* Tùy chỉnh thanh cuộn ngang cho mượt mà */
+    .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(227, 24, 55, 0.3); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(227, 24, 55, 0.6); }
+    
+    /* Hiệu ứng mượt khi chuyển tab */
+    .fade-transition { transition: opacity 0.4s ease-in-out; }
+</style>
+
 <main class="max-w-7xl mx-auto px-4 md:px-8 pt-8 space-y-8">
+
+    {{-- Hiển thị thông báo đăng ký thành công --}}
+    @if(session('success'))
+        <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in">
+            <span class="material-symbols-outlined">check_circle</span> {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Hiển thị các lỗi validation --}}
+    @if($errors->any())
+        <div class="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm font-bold">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     
     <div class="flex justify-between items-end">
         <div>
             <h1 class="font-headline text-3xl md:text-4xl text-white uppercase tracking-tight">Cổng Hội Viên</h1>
-            <p class="text-sm text-gray-400 mt-1">Chào {{ Auth::check() ? Auth::user()->full_name : 'Hội viên' }}. Bạn đã sẵn sàng bứt phá giới hạn chưa?</p>
+            <p class="text-sm text-gray-400 mt-1 font-medium">Chào {{ Auth::check() ? Auth::user()->full_name : 'Hội viên' }}. Bạn đã sẵn sàng bứt phá giới hạn chưa?</p>
         </div>
         <div class="hidden md:flex items-center gap-2 text-gray-400">
             <span class="material-symbols-outlined text-lg">calendar_today</span>
@@ -35,29 +71,27 @@
                 <div id="bmi-panel" class="p-4 rounded-xl border transition-all duration-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <div class="text-sm font-bold text-white">Chỉ số BMI của bạn: <span id="bmi-score" class="text-xl font-headline ml-1">--</span></div>
-                        <p id="bmi-status" class="text-xs text-gray-400 mt-1">Đang phân tích dữ liệu thể trạng...</p>
+                        <p id="bmi-status" class="text-xs text-gray-400 mt-1 font-medium">Đang phân tích dữ liệu thể trạng...</p>
                     </div>
                     <div class="bg-black/40 px-4 py-3 rounded-lg border border-white/5 max-w-md">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Hệ thống đề xuất KOR-AI:</span>
-                        <p id="ai-suggestion" class="text-xs text-gray-300 leading-relaxed">Đang xử lý đề xuất giáo án tối ưu...</p>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-primary block mb-1">Hệ thống đề xuất KOR:</span>
+                        <p id="ai-suggestion" class="text-xs text-gray-300 leading-relaxed font-medium">Đang xử lý đề xuất giáo án tối ưu...</p>
                     </div>
                 </div>
             </div>
             <div class="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-                <span class="text-xs text-gray-500">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ isset($latestMetric->measured_at) ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span>
-                <button id="update-metrics-btn" class="bg-primary text-white text-xs font-bold uppercase py-2 px-4 rounded hover:bg-red-700 transition-colors">Cập nhật chỉ số</button>
+                <span class="text-xs text-gray-500 font-medium">Dữ liệu kết nối tự động từ máy đo InBody KOR. Cập nhật lần cuối: <span id="last-updated-date">{{ isset($latestMetric->measured_at) ? \Carbon\Carbon::parse($latestMetric->measured_at)->format('d/m/Y H:i') : 'Chưa có' }}</span></span>
+                <button id="update-metrics-btn" class="bg-primary text-white text-xs font-bold uppercase py-2 px-4 rounded hover:bg-red-700 transition-colors shadow-md">Cập nhật chỉ số</button>
             </div>
         </div>
 
         @auth
-        {{-- Mã QR của khách hàng --}}
-        {{-- Chỉ hiển thị nếu người dùng đã đăng nhập --}}
         <div class="md:col-span-4 bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl">
             <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-5 w-full tracking-wide">Mã Check-in Thẻ</h2>
-            <div class="bg-white p-4 rounded-xl inline-block shadow-lg">
+            <div class="bg-white p-4 rounded-xl inline-block shadow-lg hover:scale-105 transition-transform duration-300">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ Auth::id() }}" alt="QR Code" class="w-36 h-36">
             </div>
-            <p class="text-xs text-gray-400 mt-5 leading-relaxed">Xuất trình mã này cho bộ phận lễ tân khi đến trung tâm để thực hiện check-in vào phòng tập.</p>
+            <p class="text-xs text-gray-400 mt-5 leading-relaxed font-medium">Xuất trình mã này cho bộ phận lễ tân khi đến trung tâm để thực hiện check-in vào phòng tập.</p>
         </div>
         @endauth
     </div>
@@ -66,31 +100,27 @@
         <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2">
             <span class="material-symbols-outlined text-primary">newspaper</span> Chuyên mục kiến thức & Sự kiện phòng tập
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
-                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Dinh dưỡng"></div>
-                <div class="p-4 space-y-2">
-                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Dinh dưỡng đúng cách</span>
-                    <h3 class="text-sm font-bold text-white line-clamp-1">Cách tính toán Calo sợi mì Ý và thực đơn tăng cơ nhịp nhàng</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2">Hướng dẫn chi tiết phương pháp cân đo lượng calo trong mì Ý khô và cách kết hợp với Whey Protein Isolate phục vụ body recomposition.</p>
+        <div class="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory custom-scrollbar">
+            @forelse($posts ?? [] as $post)
+            <a href="{{ route('posts.index') }}#post-{{ $post->slug }}" class="min-w-[280px] md:min-w-[calc(33.333%-1.25rem)] snap-start bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 block">
+                <div class="h-40 overflow-hidden">
+                    <img src="{{ $post->header_image ? asset('images/posts/' . $post->header_image) : 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=400' }}" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $post->title }}">
                 </div>
-            </div>
-            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
-                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Kỹ thuật"></div>
                 <div class="p-4 space-y-2">
-                    <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Kỹ thuật tập luyện</span>
-                    <h3 class="text-sm font-bold text-white line-clamp-1">Mẹo tự đo tỷ lệ mỡ (Body Fat) chính xác tại nhà</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2">Không cần máy InBody, bạn hoàn toàn có thể tự kiểm tra lượng mỡ cơ thể bằng thước dây và kẹp Caliper theo chuẩn y khoa.</p>
+                    @php
+                        $categoryColor = str_contains(strtolower($post->category), 'sự kiện') ? 'text-yellow-500' : 'text-primary';
+                    @endphp
+                    <span class="text-[10px] font-bold {{ $categoryColor }} uppercase tracking-widest">{{ $post->category }}</span>
+                    <h3 class="text-sm font-bold text-white line-clamp-1">{{ $post->title }}</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2 whitespace-pre-line font-medium">{{ \Illuminate\Support\Str::limit(strip_tags($post->content), 150) }}</p>
                 </div>
+            </a>
+            @empty
+            <div class="w-full text-center py-12 bg-black/20 rounded-xl border border-white/5">
+                <p class="text-gray-500 italic text-sm font-medium">Chưa có bài viết hoặc sự kiện nào được đăng tải.</p>
             </div>
-            <div class="bg-black/20 rounded-xl overflow-hidden border border-white/5 group hover:border-primary/50 transition-colors">
-                <div class="h-40 overflow-hidden"><img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sự kiện"></div>
-                <div class="p-4 space-y-2">
-                    <span class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Sự kiện độc quyền</span>
-                    <h3 class="text-sm font-bold text-white line-clamp-1">KOR-Race 2026: Giải chạy việt dã bứt phá cự ly 25km</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2">Chào mừng chuỗi sự kiện thường niên, giải chạy việt dã kết hợp sức bền kháng lực chính thức mở cổng đăng ký thẻ tham gia cho toàn bộ hội viên.</p>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 
@@ -104,13 +134,13 @@
                 
                 <div>
                     <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Loại đánh giá</label>
-                    <select id="feedback-type" onchange="switchReviewTarget()" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary mb-3">
+                    <select id="feedback-type" onchange="switchReviewTarget()" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs font-medium text-white p-2.5 outline-none focus:border-primary mb-3 transition-colors">
                         <option value="pt">Huấn luyện viên (PT)</option>
                         <option value="product">Sản phẩm đã mua</option>
                     </select>
 
                     <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chọn Huấn luyện viên / Sản phẩm</label>
-                    <select id="feedback-target" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary">
+                    <select id="feedback-target" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs font-medium text-white p-2.5 outline-none focus:border-primary transition-colors">
                         <option value="">Đang tải dữ liệu...</option>
                     </select>
                 </div>
@@ -118,51 +148,150 @@
                 <div>
                     <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Chấm điểm chất lượng (Rating)</label>
                     <div class="flex gap-1 text-yellow-500" id="star-rating-container">
-                        <span onclick="setStarRating(1)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
-                        <span onclick="setStarRating(2)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
-                        <span onclick="setStarRating(3)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
-                        <span onclick="setStarRating(4)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
-                        <span onclick="setStarRating(5)" class="star-node cursor-pointer material-symbols-outlined text-xl">star</span>
+                        <span onclick="setStarRating(1)" class="star-node cursor-pointer material-symbols-outlined text-xl transition-transform hover:scale-110">star</span>
+                        <span onclick="setStarRating(2)" class="star-node cursor-pointer material-symbols-outlined text-xl transition-transform hover:scale-110">star</span>
+                        <span onclick="setStarRating(3)" class="star-node cursor-pointer material-symbols-outlined text-xl transition-transform hover:scale-110">star</span>
+                        <span onclick="setStarRating(4)" class="star-node cursor-pointer material-symbols-outlined text-xl transition-transform hover:scale-110">star</span>
+                        <span onclick="setStarRating(5)" class="star-node cursor-pointer material-symbols-outlined text-xl transition-transform hover:scale-110">star</span>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] text-gray-400 font-bold uppercase mb-1">Ý kiến bình luận nhận xét</label>
-                    <textarea id="feedback-comment" rows="2" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs text-white p-2.5 outline-none focus:border-primary placeholder:text-gray-600" placeholder="PT hướng dẫn nhiệt tình, cơ sở sạch sẽ..."></textarea>
+                    <textarea id="feedback-comment" rows="2" class="w-full bg-surface-variant/40 border border-white/10 rounded-lg text-xs font-medium text-white p-2.5 outline-none focus:border-primary placeholder:text-gray-600 transition-colors" placeholder="PT hướng dẫn nhiệt tình, cơ sở sạch sẽ..."></textarea>
                 </div>
 
-                <button onclick="submitFeedbackForm()" class="w-full py-2.5 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-lg shadow-md transition-all">Gửi phản hồi hệ thống</button>
+                <button onclick="submitFeedbackForm()" class="w-full py-2.5 bg-primary hover:bg-red-700 text-white font-bold text-sm uppercase rounded-lg shadow-md transition-all">Gửi phản hồi hệ thống</button>
             </div>
 
-            <div class="md:col-span-7 space-y-3 max-h-[340px] overflow-y-auto pr-1" id="comments-display-list">
+            <div class="md:col-span-7 space-y-3 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar" id="comments-display-list">
                 {{-- Dữ liệu phản hồi sẽ được load qua JavaScript fetchAllReviews() --}}
             </div>
         </div>
     </div>
 
-    <!-- KHỐI GÓI HỘI VIÊN DỮ LIỆU ĐỘNG (SAO CHÉP TỪ INDEX.HTML) -->
-    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 shadow-xl">
-        <h2 class="font-headline text-xl uppercase text-white border-b border-white/10 pb-4 mb-6 tracking-wide flex items-center gap-2" style="font-family: 'Oswald', sans-serif;">
-            <span class="material-symbols-outlined text-primary">workspace_premium</span> Gói hội viên & Đăng ký dịch vụ
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach($goiTaps ?? [] as $package)
-            @php
-                // Một chút logic để giữ giao diện đặc biệt cho gói "Elite" hoặc "Nâng cao" từ bản mẫu
-                $isElite = str_contains(strtolower($package->package_name), 'elite') || str_contains(strtolower($package->package_name), 'nâng cao');
-            @endphp
-            <div class="{{ $isElite ? 'bg-primary/10 border border-primary relative' : 'bg-black/20 border border-white/5' }} rounded-xl p-5 hover:border-primary transition-colors">
-                @if($isElite)
-                <span class="absolute -top-3 right-4 bg-primary text-[10px] font-bold px-2 py-0.5 rounded text-white">PHỔ BIẾN</span>
-                @endif
-                <h3 class="text-lg font-bold text-white mb-2">{{ $package->package_name }}</h3>
-                <p class="text-xs text-gray-400 mb-4">{{ $package->description }}</p>
-                <div class="text-2xl font-bold text-primary mb-4">{{ number_format($package->price, 0, ',', '.') }}đ<span class="text-xs text-gray-500 font-normal">/{{ $package->duration_days }} ngày</span></div>
-                <button data-id="{{ $package->id }}" class="btn-register w-full py-2 {{ $isElite ? 'bg-primary hover:bg-red-700' : 'bg-white/5 hover:bg-primary' }} text-white text-xs font-bold uppercase rounded transition-colors">Đăng ký ngay</button>
+    <!-- KHỐI GÓI HỘI VIÊN DỮ LIỆU ĐỘNG (ĐÃ TỐI ƯU GRID 2x2 CÂN XỨNG) -->
+    <div class="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 md:p-10 shadow-xl" id="membership-packages">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-white/10 pb-6 mb-8 gap-4">
+            <h2 class="font-headline text-xl uppercase text-white tracking-wide flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">workspace_premium</span> Gói hội viên & Đăng ký dịch vụ
+            </h2>
+            
+            {{-- Tabs chuyển đổi phân khúc khách hàng --}}
+            <div class="bg-black/40 p-1 rounded-xl border border-white/10 inline-flex shadow-inner">
+                <button onclick="filterPackages('student')" id="tab-student" class="tab-btn px-6 py-2 text-xs font-bold uppercase rounded-lg transition-all duration-300 bg-primary text-white shadow-md">
+                    Học sinh / Sinh viên
+                </button>
+                <button onclick="filterPackages('worker')" id="tab-worker" class="tab-btn px-6 py-2 text-xs font-bold uppercase rounded-lg transition-all duration-300 text-gray-400 hover:text-white bg-transparent">
+                    Người đi làm
+                </button>
             </div>
-            @endforeach
+        </div>
+
+        {{-- BƯỚC 1: XỬ LÝ PHÂN LOẠI DATA --}}
+        @php
+            $studentPackages = [];
+            $workerPackages = [];
+            if(isset($goiTaps) && count($goiTaps) > 0) {
+                foreach($goiTaps as $package) {
+                    if (str_contains(strtolower($package->package_name), 'kỳ học') || str_contains(strtolower($package->package_name), 'học kỳ')) {
+                        $studentPackages[] = $package;
+                    } else {
+                        $workerPackages[] = $package;
+                    }
+                }
+            }
+        @endphp
+
+        {{-- BƯỚC 2: RENDER GRID HỌC SINH (2 Cột cố định) --}}
+        <div id="grid-student" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto fade-transition opacity-100">
+            @forelse($studentPackages as $package)
+                @php
+                    $isPopular = str_contains(strtolower($package->package_name), 'khỏe mạnh') || str_contains(strtolower($package->package_name), 'công sở');
+                    $displayDuration = $package->duration_days . ' ngày';
+                    if ($package->duration_days == 365) $displayDuration = '1 năm';
+                    elseif ($package->duration_days >= 30 && $package->duration_days % 30 == 0) $displayDuration = ($package->duration_days / 30) . ' tháng';
+                    $months = max(1, round($package->duration_days / 30));
+                    $pricePerMonth = round($package->price / $months, -3);
+                @endphp
+                <div class="w-full h-full {{ $isPopular ? 'bg-[#1c1414] border border-primary/40 shadow-[0_0_30px_-5px_rgba(227,24,55,0.4)] relative' : 'bg-black/20 border border-white/10' }} rounded-2xl p-6 hover:-translate-y-2 hover:shadow-[0_0_40px_-5px_rgba(227,24,55,0.6)] transition-all duration-500 flex flex-col group">
+                    @if($isPopular)
+                    <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-red-600 to-primary text-[10px] font-black px-5 py-1.5 rounded-full text-white shadow-[0_0_15px_rgba(227,24,55,0.6)] uppercase tracking-widest z-10 border border-white/20">BÁN CHẠY NHẤT</span>
+                    @endif
+                    <div class="flex-1">
+                        <h3 class="text-xl font-headline font-black text-white mb-4 uppercase group-hover:text-primary transition-colors tracking-wide">{{ $package->package_name }}</h3>
+                        <div class="text-xs text-gray-300 font-medium leading-relaxed mb-6 space-y-3 whitespace-pre-line">
+                            @php
+                                $desc = str_replace('•', '<span class="material-symbols-outlined text-[14px] text-primary align-middle mr-2" style="font-variation-settings: \'FILL\' 1;">check_circle</span>', $package->description);
+                            @endphp
+                            {!! $desc !!}
+                        </div>
+                    </div>
+                    <div class="border-t {{ $isPopular ? 'border-primary/20' : 'border-white/5' }} pt-5 mt-auto">
+                        <div class="mb-5">
+                            <div class="text-3xl font-black text-primary tracking-tight">
+                                {{ number_format($package->price, 0, ',', '.') }}đ 
+                                <span class="text-[11px] text-gray-400 font-medium lowercase">/ {{ $displayDuration }}</span>
+                            </div>
+                            @if($months > 1)
+                            <div class="text-xs font-bold text-gray-500 mt-1.5">
+                                (Chỉ <span class="text-gray-200">~ {{ number_format($pricePerMonth, 0, ',', '.') }}đ</span> / tháng)
+                            </div>
+                            @endif
+                        </div>
+                        <button data-id="{{ $package->id }}" class="btn-register w-full py-3.5 {{ $isPopular ? 'bg-primary hover:bg-red-700 shadow-[0_5px_15px_rgba(227,24,55,0.4)]' : 'bg-white/10 hover:bg-white/20' }} text-white text-xs font-bold uppercase rounded-xl transition-all">Kích hoạt thẻ ngay</button>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-1 md:col-span-2 text-center py-10 bg-black/20 rounded-xl border border-white/5 text-gray-500 italic text-sm font-medium">Không tìm thấy gói tập nào.</div>
+            @endforelse
+        </div>
+
+        {{-- BƯỚC 3: RENDER GRID NGƯỜI ĐI LÀM (Vẫn là 2 Cột cố định => Ra hình vuông 2x2 cân xứng) --}}
+        <div id="grid-worker" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto hidden fade-transition opacity-0">
+            @forelse($workerPackages as $package)
+                @php
+                    $isPopular = str_contains(strtolower($package->package_name), 'khỏe mạnh') || str_contains(strtolower($package->package_name), 'công sở');
+                    $displayDuration = $package->duration_days . ' ngày';
+                    if ($package->duration_days == 365) $displayDuration = '1 năm';
+                    elseif ($package->duration_days >= 30 && $package->duration_days % 30 == 0) $displayDuration = ($package->duration_days / 30) . ' tháng';
+                    $months = max(1, round($package->duration_days / 30));
+                    $pricePerMonth = round($package->price / $months, -3);
+                @endphp
+                <div class="w-full h-full {{ $isPopular ? 'bg-[#1c1414] border border-primary/40 shadow-[0_0_30px_-5px_rgba(227,24,55,0.4)] relative' : 'bg-black/20 border border-white/10' }} rounded-2xl p-6 hover:-translate-y-2 hover:shadow-[0_0_40px_-5px_rgba(227,24,55,0.6)] transition-all duration-500 flex flex-col group">
+                    @if($isPopular)
+                    <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-red-600 to-primary text-[10px] font-black px-5 py-1.5 rounded-full text-white shadow-[0_0_15px_rgba(227,24,55,0.6)] uppercase tracking-widest z-10 border border-white/20">BÁN CHẠY NHẤT</span>
+                    @endif
+                    <div class="flex-1">
+                        <h3 class="text-xl font-headline font-black text-white mb-4 uppercase group-hover:text-primary transition-colors tracking-wide">{{ $package->package_name }}</h3>
+                        <div class="text-xs text-gray-300 font-medium leading-relaxed mb-6 space-y-3 whitespace-pre-line">
+                            @php
+                                $desc = str_replace('•', '<span class="material-symbols-outlined text-[14px] text-primary align-middle mr-2" style="font-variation-settings: \'FILL\' 1;">check_circle</span>', $package->description);
+                            @endphp
+                            {!! $desc !!}
+                        </div>
+                    </div>
+                    <div class="border-t {{ $isPopular ? 'border-primary/20' : 'border-white/5' }} pt-5 mt-auto">
+                        <div class="mb-5">
+                            <div class="text-3xl font-black text-primary tracking-tight">
+                                {{ number_format($package->price, 0, ',', '.') }}đ 
+                                <span class="text-[11px] text-gray-400 font-medium lowercase">/ {{ $displayDuration }}</span>
+                            </div>
+                            @if($months > 1)
+                            <div class="text-xs font-bold text-gray-500 mt-1.5">
+                                (Chỉ <span class="text-gray-200">~ {{ number_format($pricePerMonth, 0, ',', '.') }}đ</span> / tháng)
+                            </div>
+                            @endif
+                        </div>
+                        <button data-id="{{ $package->id }}" class="btn-register w-full py-3.5 {{ $isPopular ? 'bg-primary hover:bg-red-700 shadow-[0_5px_15px_rgba(227,24,55,0.4)]' : 'bg-white/10 hover:bg-white/20' }} text-white text-xs font-bold uppercase rounded-xl transition-all">Kích hoạt thẻ ngay</button>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-1 md:col-span-2 text-center py-10 bg-black/20 rounded-xl border border-white/5 text-gray-500 italic text-sm font-medium">Không tìm thấy gói tập nào.</div>
+            @endforelse
         </div>
     </div>
+
 </main>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -212,21 +341,18 @@
         const bodyFat = document.getElementById('fat-input').value;
         const btn = this;
         const originalText = btn.innerHTML;
-
         if (!height || !weight) {
             showToastNotification("Vui lòng nhập đủ Chiều cao và Cân nặng.");
             return;
         }
-
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang cập nhật...';
-
         try {
-            const response = await fetch("/body_metric/update", { // Tạm thời dùng URL cứng để kiểm tra
+            const response = await fetch("{{ route('metric.update') }}", {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json', // Quan trọng: Yêu cầu server trả về JSON
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({
@@ -235,11 +361,13 @@
                     body_fat_percentage: bodyFat || null
                 })
             });
-
             if (response.ok) {
                 const data = await response.json();
-                updateHealthMetricsDisplay(height, weight, bodyFat); // Cập nhật hiển thị ngay lập tức
-                document.getElementById('last-updated-date').innerText = new Date().toLocaleString('vi-VN');
+                updateHealthMetricsDisplay(height, weight, bodyFat);
+                
+                if (!data.is_guest) {
+                    document.getElementById('last-updated-date').innerText = new Date().toLocaleString('vi-VN');
+                }
                 showToastNotification(data.success ? data.message : "Cập nhật thành công!");
             } else {
                 showToastNotification(data.message || "Có lỗi xảy ra khi cập nhật.");
@@ -254,13 +382,14 @@
     });
 
     let currentRatingScore = 5;
+
     function setStarRating(score) {
         currentRatingScore = score;
         const stars = document.querySelectorAll('#star-rating-container .star-node');
         stars.forEach((star, index) => {
-            if(index < score) {
+            if(index < score) { 
                 star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
-            } else {
+            } else { 
                 star.style.fontVariationSettings = "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24";
             }
         });
@@ -272,7 +401,8 @@
             const data = await response.json();
             if(data.success) {
                 const list = document.getElementById('comments-display-list');
-                list.innerHTML = '';
+                list.innerHTML = ''; 
+
                 data.reviews.forEach(rev => {
                     const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
                     const name = rev.user ? rev.user.full_name : 'Hội viên';
@@ -280,12 +410,15 @@
                     const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
                     
                     const div = document.createElement('div');
-                    div.className = "bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs mb-3 animate-fade-in";
+                    div.className = "bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs mb-3 animate-fade-in transition-colors hover:bg-white/10";
                     div.innerHTML = `
                         <div class="w-8 h-8 rounded-full bg-primary/20 text-primary font-bold font-headline flex items-center justify-center flex-shrink-0">${initials}</div>
                         <div class="space-y-1">
-                            <div class="flex items-center gap-2"><span class="font-bold text-white">${name}</span><span class="text-yellow-500">${stars}</span></div>
-                            <p class="text-gray-300"><strong class="text-gray-500 text-[10px] uppercase">[Đã đánh giá cho ${target}]:</strong><br>${rev.comment}</p>
+                            <div class="flex items-center gap-2">
+                            <span class="font-bold text-white">${name}</span>
+                            <span class="text-yellow-500 tracking-widest">${stars}</span></div>
+                            <p class="text-gray-300 font-medium"><strong class="text-gray-500 text-[10px] uppercase">[Đã đánh giá cho ${target}]:</strong>
+                            <br>${rev.comment}</p>
                         </div>
                     `;
                     list.appendChild(div);
@@ -295,14 +428,14 @@
     }
 
     let reviewDataCache = { products: [], pts: [] };
-
+    
     async function fetchReviewableTargets() {
         try {
             const response = await fetch("{{ route('reviews.targets') }}");
             const data = await response.json();
             if(data.success) {
                 reviewDataCache = data;
-                switchReviewTarget(); // Render lần đầu cho PT
+                switchReviewTarget();
             }
         } catch (error) {
             console.error("Lỗi tải danh sách đánh giá:", error);
@@ -310,9 +443,9 @@
     }
 
     function switchReviewTarget() {
-        const type = document.getElementById('feedback-type').value;
+        const type = document.getElementById('feedback-type').value; 
         const targetSelect = document.getElementById('feedback-target');
-        targetSelect.innerHTML = '';
+        targetSelect.innerHTML = ''; 
 
         const list = type === 'pt' ? reviewDataCache.pts : reviewDataCache.products;
         
@@ -325,23 +458,23 @@
         }
 
         list.forEach(item => {
-            const opt = document.createElement('option');
-            // Value format: type_id để đồng bộ với logic ReviewController@store của bạn
+            const opt = document.createElement('option'); 
             opt.value = `${type}_${item.id}`; 
-            opt.innerText = item.full_name || item.name;
+            opt.innerText = item.full_name || item.name; 
             targetSelect.appendChild(opt);
         });
     }
 
     async function submitFeedbackForm() {
         const targetRaw = document.getElementById('feedback-target').value;
+        
         if(!targetRaw) {
             showToastNotification("Vui lòng chọn đối tượng cần đánh giá!");
             return;
         }
+
         const [type, id] = targetRaw.split('_');
         const comment = document.getElementById('feedback-comment').value.trim();
-        const targetName = document.getElementById('feedback-target').options[document.getElementById('feedback-target').selectedIndex].text;
         
         if(!comment) {
             showToastNotification("Vui lòng viết vài dòng ý kiến nhận xét trước khi gửi!");
@@ -354,21 +487,21 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' 
                 },
                 body: JSON.stringify({
                     rating: currentRatingScore,
                     comment: comment,
                     reviewable_type: type,
-                    reviewable_id: id
+                    reviewable_id: id 
                 })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                fetchAllReviews(); // Tải lại danh sách sau khi gửi thành công
-                document.getElementById('feedback-comment').value = '';
+                fetchAllReviews(); 
+                document.getElementById('feedback-comment').value = ''; 
                 showToastNotification(data.message);
             } else {
                 showToastNotification(data.message || "Không thể gửi đánh giá.");
@@ -380,7 +513,7 @@
 
     function showToastNotification(msg) {
         const t = document.createElement('div');
-        t.style.cssText = "position: fixed; bottom: 30px; left: 30px; background: #222; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index:9999; border: 1px solid rgba(255,255,255,0.1);";
+        t.style.cssText = "position: fixed; bottom: 30px; left: 30px; background: #222; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 30px rgba(227,24,55,0.3); z-index:9999; border: 1px solid rgba(227,24,55,0.2); font-family: 'Montserrat', sans-serif;";
         t.innerText = msg;
         document.body.appendChild(t);
         setTimeout(() => t.remove(), 2500);
@@ -398,17 +531,15 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Khi trang tải xong, cập nhật hiển thị với dữ liệu ban đầu
         updateHealthMetricsDisplay(document.getElementById('height-input').value, document.getElementById('weight-input').value, document.getElementById('fat-input').value);
         setStarRating(5); 
         updateCurrentDateString();
-        fetchAllReviews(); // Tải tất cả phản hồi ngay khi mở trang
+        fetchAllReviews(); 
         @auth
-            fetchReviewableTargets(); // Chỉ gọi API này khi người dùng đã đăng nhập thành công
+            fetchReviewableTargets(); 
         @endauth
     });
 
-    // SCRIPT ĐĂNG KÝ HỘI VIÊN (TẬN DỤNG TỪ YÊU CẦU CỦA BẠN)
     $(document).ready(function() {
         $('.btn-register').on('click', function() {
             let packageId = $(this).data('id');
@@ -425,11 +556,55 @@
                     }
                 },
                 error: function(xhr) {
-                    alert('Vui lòng đăng nhập để đăng ký gói tập!');
-                    window.location.href = "{{ route('login') }}";
+                    let errorMessage = "Đã có lỗi xảy ra, vui lòng thử lại.";
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    }
+                    alert(errorMessage);
+                    if (xhr.status === 401) {
+                        window.location.href = "{{ route('login') }}";
+                    }
                 }
             });
         });
     });
+
+    // HÀM XỬ LÝ LỌC GÓI TẬP BẰNG CÁCH CHUYỂN ĐỔI GRID
+    function filterPackages(category) {
+        const selectedTab = document.getElementById('tab-' + category);
+        
+        // Tránh chạy lại code nếu đang bấm vào tab đã được chọn
+        if (selectedTab.classList.contains('bg-primary')) return;
+
+        // Cập nhật diện mạo của 2 nút Tab
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => {
+            if (tab.id === 'tab-' + category) {
+                tab.classList.remove('text-gray-400', 'bg-transparent');
+                tab.classList.add('bg-primary', 'text-white', 'shadow-md');
+            } else {
+                tab.classList.remove('bg-primary', 'text-white', 'shadow-md');
+                tab.classList.add('text-gray-400', 'bg-transparent');
+            }
+        });
+
+        const studentGrid = document.getElementById('grid-student');
+        const workerGrid = document.getElementById('grid-worker');
+
+        // Bật tắt toàn bộ lưới thay vì từng thẻ
+        if (category === 'student') {
+            workerGrid.classList.add('hidden');
+            workerGrid.classList.replace('opacity-100', 'opacity-0');
+
+            studentGrid.classList.remove('hidden');
+            setTimeout(() => { studentGrid.classList.replace('opacity-0', 'opacity-100'); }, 50);
+        } else {
+            studentGrid.classList.add('hidden');
+            studentGrid.classList.replace('opacity-100', 'opacity-0');
+
+            workerGrid.classList.remove('hidden');
+            setTimeout(() => { workerGrid.classList.replace('opacity-0', 'opacity-100'); }, 50);
+        }
+    }
 </script>
 @endsection

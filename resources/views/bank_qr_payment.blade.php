@@ -82,7 +82,7 @@
                     <span class="text-xs text-gray-500 font-mono order-2 sm:order-1">
                         Đơn hàng: #{{ $order->id }}
                     </span>
-                    <a href="{{ route('products.index') }}" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-red-900/10 text-xs md:text-sm tracking-wide transition-all uppercase text-center order-1 sm:order-2">
+                    <a href="{{ route('trang_chu') }}" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-red-900/10 text-xs md:text-sm tracking-wide transition-all uppercase text-center order-1 sm:order-2">
                         Quay lại trang chủ
                     </a>
                 </div>

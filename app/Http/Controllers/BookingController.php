@@ -36,12 +36,12 @@ class BookingController extends Controller
                       ->orWhere('name', 'like', '%đạp xe%')
                       ->orWhere('name', 'like', '%spinning%');
                 } elseif ($cat === 'boxing') {
-                    $q->where('name', 'like', '%box%')->orWhere('name', 'like', '%kick%')->orWhere('name', 'like', '%combat%');
+                    $q->where('name', 'like', '%box%')->orWhere('name', 'like', '%MMA%')->orWhere('name', 'like', '%combat%');
                 }
             });
         }
 
-        $classes = $query->orderBy('id', 'asc')->get();
+        $classes = $query->orderBy('id', 'asc')->paginate(6); // Phân trang 6 lớp học mỗi trang
 
         $bookedClassIds = [];
         if (Auth::check()) {
@@ -54,7 +54,7 @@ class BookingController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'classes' => $classes,
-                'bookedClassIds' => $bookedClassIds
+                'bookedClassIds' => $bookedClassIds,
             ]);
         }
 
@@ -73,8 +73,7 @@ class BookingController extends Controller
         // Kiểm tra vai trò: Chỉ member mới được đăng ký
         if (Auth::user()->role !== 'member') {
             $msg = 'Chỉ có hội viên mới đăng ký lớp học';
-            if ($request->ajax()) return response()->json(['error' => $msg], 403);
-            return redirect()->route('classes.index')->with('error', $msg);
+             return response()->json(['error' => $msg], 403);
         }
 
         $classId = $request->class_id;
@@ -88,8 +87,7 @@ class BookingController extends Controller
 
         if ($existing) {
             $msg = 'Bạn đã đăng ký lớp học này rồi!';
-            if ($request->ajax()) return response()->json(['error' => $msg], 400);
-            return redirect()->route('classes.index')->with('error', $msg);
+             return response()->json(['error' => $msg], 400);
         }
 
         // Kiểm tra còn chỗ không
@@ -99,8 +97,7 @@ class BookingController extends Controller
 
         if ($gymClass->booked_count >= $gymClass->max_capacity) {
             $msg = 'Lớp học này đã đầy chỗ. Vui lòng chọn lớp khác.';
-            if ($request->ajax()) return response()->json(['error' => $msg], 400);
-            return redirect()->route('classes.index')->with('error', $msg);
+            return response()->json(['error' => $msg], 400);
         }
 
         // Đẩy thông tin lớp học vào giỏ hàng chuẩn
@@ -138,8 +135,6 @@ class BookingController extends Controller
                 'redirect_url' => route('cart.index')
             ]);
         }
-
-        return redirect()->route('cart.index')->with('success', 'Đã thêm lớp học vào giỏ hàng!');
     }
 
     /**

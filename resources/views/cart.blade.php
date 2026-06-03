@@ -18,7 +18,6 @@
 
     <form action="{{ route('checkout.process') }}" method="POST">
         @csrf
-
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             <div class="col-span-12 lg:col-span-8">
@@ -26,7 +25,6 @@
                     <h3 class="font-headline text-lg uppercase tracking-wider text-white border-b border-white/10 pb-3 mb-4">
                         Chi tiết giỏ hàng
                     </h3>
-
                     @if(session('cart') && count(session('cart')) > 0)
                         <div class="space-y-4 max-h-[450px] overflow-y-auto pr-2">
                             @php $total = 0; @endphp
@@ -54,7 +52,7 @@
 
                                     <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-2 sm:pt-0 border-white/5">
                                         <div class="hidden sm:block text-right">
-                                            <p class="text-xs text-gray-400 font-headline">{{ number_format($details['price']) }}đ</p>
+                                            <p class="text-xs text-gray-400 font-headline">{{ number_format($details['price']) }}</p>
                                         </div>
                                         
                                         <div class="flex items-center">
@@ -62,7 +60,7 @@
                                         </div>
 
                                         <div class="text-right min-w-[80px]">
-                                            <p class="text-sm font-headline text-white font-bold"><span class="subtotal-price">{{ number_format($details['price'] * $details['quantity']) }}</span>đ</p>
+                                            <p class="text-sm font-headline text-white font-bold"><span class="subtotal-price">{{ number_format($details['price'] * $details['quantity']) }}</span></p>
                                         </div>
 
                                         <button type="button" class="remove-from-cart text-gray-500 hover:text-primary transition-colors">
@@ -75,7 +73,7 @@
                     @else
                         <div class="text-center py-12">
                             <p class="text-gray-500 italic text-sm">Giỏ hàng đang trống.</p>
-                            <a href="/shop" class="inline-block mt-4 px-6 py-2.5 bg-white/5 border border-white/10 hover:border-primary text-white text-xs uppercase font-headline rounded-xl transition-all">Quay lại chọn gói</a>
+                            <a href="/" class="inline-block mt-4 px-6 py-2.5 bg-white/5 border border-white/10 hover:border-primary text-white text-xs uppercase font-headline rounded-xl transition-all">Quay lại chọn gói</a>
                         </div>
                     @endif
                 </div>
@@ -103,14 +101,6 @@
                                     <div>
                                         <strong class="text-white block mb-0.5">Chuyển khoản nhanh qua VietQR</strong>
                                         <p class="text-gray-500 text-[10px]">Quét mã QR hiển thị để thanh toán nhanh bằng Mobile Banking.</p>
-                                    </div>
-                                </label>
-
-                                <label class="flex items-start gap-3 p-3 bg-black/20 border border-white/5 rounded-xl cursor-pointer hover:border-primary/40 transition-colors">
-                                    <input type="radio" name="payment_method" value="VNPAY" class="mt-0.5 text-primary focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20">
-                                    <div>
-                                        <strong class="text-white block mb-0.5">Ứng dụng VNPAY / Thẻ ATM</strong>
-                                        <p class="text-gray-500 text-[10px]">Kết nối cổng VNPAY quét mã hoặc dùng thẻ ATM nội địa.</p>
                                     </div>
                                 </label>
                             </div>
@@ -160,9 +150,7 @@ $(document).ready(function() {
         var ele = $(this);
         var id = ele.closest("div[data-id]").attr("data-id");
         var quantity = ele.val();
-
         if (quantity === "" || quantity < 1) return;
-
         $.ajax({
             url: '{{ route("cart.update") }}',
             method: "patch",
@@ -173,7 +161,7 @@ $(document).ready(function() {
             },
             success: function (response) {
                 ele.closest("div[data-id]").find(".subtotal-price").text(response.subtotal);
-                $(".total-cart-price").text(response.total + "đ");
+                $(".total-cart-price").text(response.total);
             },
             error: function(xhr) {
                 alert("Lỗi: Không thể cập nhật số lượng.");

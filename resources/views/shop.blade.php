@@ -25,49 +25,12 @@
         {{-- Grid sản phẩm --}}
         <section class="col-span-12 lg:col-span-5">
             <div class="grid grid-cols-2 gap-4" id="product-list">
-                @foreach($products as $product)
-                <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 shadow-md hover:border-primary transition-colors p-3 flex flex-col justify-between relative" data-cat="{{ $product->product_category }}">
-                    <div>
-                        {{-- Wrapper cho ảnh và hộp zoom --}}
-                        <div class="relative mb-2">
-                            <div class="w-full h-36 rounded-xl overflow-hidden bg-black/20 relative cursor-zoom-in js-zoom-container">
-                                <img src="{{ asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" 
-                                class="w-full h-full object-cover opacity-90 js-main-img" 
-                                alt="{{ $product->name }}"/>
-                                <span class="absolute top-2 right-2 text-[9px] font-bold bg-black/60 text-primary border border-primary/20 px-2 py-0.5 rounded uppercase backdrop-blur-md z-10">
-                                    {{ $product->product_category == 'sups' ? 'Supplements' : 'Gear' }}
-                                </span>
-                                <div class="absolute bg-white/20 border border-white/40 pointer-events-none hidden js-zoom-lens" style="width: 60px; height: 60px; border-radius: 8px;"></div>
-                            </div>
-                        <div class="absolute left-full top-0 ml-3 w-64 h-64 border border-white/10 rounded-xl overflow-hidden bg-[#141414] shadow-2xl hidden z-50 js-zoom-result">
-                            <img src="{{ asset('images/products/'.($product->image ?? 'default-product.jpg')) }}" 
-                            class="absolute max-w-none js-high-res-img" 
-                            style="width: 400%; height: 400%;" />
-                        </div>
-                    </div>
-                        <div class="p-1">
-                            <h3 class="text-xs font-bold text-white line-clamp-2 min-h-[2rem]">{{ $product->name }}</h3>
-                            <p class="text-[10px] text-gray-500 mt-0.5">Mã SKU: <strong>{{ $product->sku }}</strong></p>
-                            <p class="text-[10px] text-gray-500 mt-0.5">Kho còn: <strong class="{{ $product->stock_quantity > 0 ? 'text-emerald-400' : 'text-primary' }}">{{ $product->stock_quantity }}</strong></p>
-                            
-                            @if($product->description)
-                                <p class="text-[10px] text-gray-400 mt-2 line-clamp-3 italic leading-relaxed">{{ $product->description }}</p>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="p-1 mt-3 flex justify-between items-center">
-                        <span class="font-headline text-base text-white">{{ number_format($product->price / 1000, 0) }}kđ</span>
-                        <button onclick="addItemToCart('{{ addslashes($product->name) }}', {{ $product->price }}, {{ $product->id }})" {{ $product->stock_quantity <= 0 ? 'disabled' : '' }} class="w-8 h-8 rounded-lg bg-white/5 text-primary {{ $product->stock_quantity > 0 ? 'hover:bg-primary hover:text-white btn-glow' : 'opacity-50 cursor-not-allowed' }} transition-all flex items-center justify-center">
-                            <span class="material-symbols-outlined text-sm block">add_shopping_cart</span>
-                        </button>
-                    </div>
-                </div> 
-                @endforeach
+                {{-- Nội dung sẽ được load tự động qua Fetch API trong JavaScript --}}
+                <div class="col-span-2 text-center py-20 text-gray-500 animate-pulse italic">Đang tải danh sách sản phẩm...</div>
             </div>
             
             <div id="pagination-container" class="flex justify-center mt-12 mb-8">
-                {{ $products->links() }}
+                {{-- Pagination sẽ được render qua renderPagination() --}}
             </div>
         </section>
 
@@ -110,15 +73,22 @@
         return text ? String(text).replace(/[&<>"']/g, m => map[m]) : '';
     }
 
-    // 1. Khởi tạo dữ liệu đồng bộ từ Session của Laravel
-    // Thêm cấu hình này ngay đầu khối <script>
+    /**
+     * 1. Khởi tạo dữ liệu đồng bộ từ Session của Laravel.
+     * Khi trang web được tải, Blade (Server-side) sẽ duyệt qua Session 'cart' 
+     * và in trực tiếp dữ liệu đó vào mảng JavaScript 'selectedItems'.
+     */
     let selectedItems = [
         @if(session('cart'))
             @foreach(session('cart') as $cart_id => $details)
                 { 
+                    // Sử dụng row_id từ dữ liệu hoặc dùng key của mảng session làm ID
                     id: "{{ $details['row_id'] ?? $cart_id }}", 
+                    // json_encode giúp xử lý an toàn các ký tự đặc biệt (như dấu ngoặc) trong tên sản phẩm
                     name: {!! json_encode($details['name']) !!}, 
+                    // In trực tiếp giá trị số
                     price: {{ $details['price'] }}, 
+                    // In trực tiếp số lượng
                     qty: {{ $details['quantity'] }} 
                 },
             @endforeach
@@ -128,78 +98,99 @@
     // Biến trạng thái toàn cục
     let currentSearchQuery = '';
     let currentCategory = 'all';
-    
     // ĐÃ SỬA: Biến theo dõi tiến trình AJAX để chặn chuyển trang khi chưa lưu xong Session thành công
     let isProcessing = 0;
-
+    /**
+     * Sự kiện DOMContentLoaded: Đảm bảo toàn bộ HTML đã được tải xong 
+     * trước khi JavaScript bắt đầu can thiệp vào các phần tử.
+     */
     document.addEventListener('DOMContentLoaded', function() {
+        // 1. ĐỒNG BỘ GIỎ HÀNG BAN ĐẦU
+        // Nếu mảng selectedItems (lấy từ Session Laravel) có dữ liệu
         if(selectedItems.length > 0) {
+            // Ẩn dòng chữ "Giỏ hàng trống"
             document.getElementById('empty-text').style.display = 'none';
+            // Vẽ lại danh sách món hàng lên sidebar bên phải
             renderCart();
         }
 
-        // Chuyển hướng phân trang mặc định sang AJAX
-        const initialPagination = document.getElementById('pagination-container');
-        if (initialPagination) {
-            initialPagination.addEventListener('click', function(e) {
-                const link = e.target.closest('a');
-                if (link && link.href) {
-                    e.preventDefault();
-                    const page = new URL(link.href).searchParams.get('page');
-                    fetchProducts(currentSearchQuery, currentCategory, page);
-                }
-            });
-        }
-        
-        // Sự kiện gõ ô tìm kiếm sản phẩm
+        // 2. TỰ ĐỘNG TẢI DANH SÁCH SẢN PHẨM QUA API KHI MỞ TRANG
+        fetchProducts(currentSearchQuery, currentCategory, 1);
+
+        // 3. TÌM KIẾM SẢN PHẨM THỜI GIAN THỰC
         document.getElementById('search-input').addEventListener('input', function(e) {
-            currentSearchQuery = e.target.value;
+            currentSearchQuery = e.target.value; // Cập nhật từ khóa tìm kiếm
+            // Nếu gõ từ 2 ký tự trở lên HOẶC xóa sạch ô tìm kiếm (để reset danh sách)
             if (currentSearchQuery.length >= 2 || currentSearchQuery.length === 0) {
+                // Tải lại danh sách sản phẩm khớp với từ khóa (về trang 1)
                 fetchProducts(currentSearchQuery, currentCategory, 1);
             }
         });
     });
 
-    // Lọc sản phẩm theo danh mục khoa học
+    /**
+     * Hàm filterCategory: Xử lý khi người dùng chọn một danh mục (Category)
+     * @param {string} cat - Mã danh mục (ví dụ: 'all', 'sups', 'gear')
+     * @param {HTMLElement} element - Chính là cái nút (button) vừa được nhấn
+     */
     async function filterCategory(cat, element) {
-        currentCategory = cat;
+        // 1. Cập nhật biến toàn cục currentCategory để các hàm khác (như phân trang) biết đang lọc mục nào
+        currentCategory = cat; 
 
+        // 2. CẬP NHẬT GIAO DIỆN NÚT BẤM
+        // Tìm tất cả các nút có class 'category-btn' và đưa chúng về trạng thái bình thường (chưa chọn)
         const buttons = document.querySelectorAll('.category-btn');
         buttons.forEach(btn => {
             btn.className = "category-btn w-full text-left px-3 py-2.5 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-all";
         });
+        // Sau đó, chỉ thêm các class CSS làm nổi bật (màu đỏ primary, font bold) cho nút vừa click
         element.className = "category-btn w-full text-left px-3 py-2.5 rounded-lg text-primary bg-primary/10 font-bold border-l-4 border-primary transition-all";
 
+        // 3. GỌI API: Tải lại danh sách sản phẩm. 
+        // currentSearchQuery được lấy từ biến toàn cục (đã được cập nhật nếu người dùng có gõ ô tìm kiếm trước đó)
+        // Luôn Reset về trang 1 khi thay đổi danh mục.
         fetchProducts(currentSearchQuery, currentCategory, 1);
     }
 
-    // Gửi Request tải dữ liệu sản phẩm mới qua API
+    /**
+     * Hàm fetchProducts: Gửi yêu cầu lấy dữ liệu sản phẩm từ Server qua API
+     * @param {string} query - Từ khóa tìm kiếm (mặc định trống)
+     * @param {string} category - Danh mục sản phẩm (mặc định là 'all')
+     * @param {number} page - Số trang hiện tại cần lấy (mặc định là 1)
+     */
     async function fetchProducts(query = '', category = 'all', page = 1) {
+        // Lấy tham chiếu đến các vùng hiển thị trên giao diện
         const productList = document.getElementById('product-list');
         const paginationContainer = document.getElementById('pagination-container');
         
-        paginationContainer.innerHTML = '';
+        // Tạm thời xóa thanh phân trang và hiển thị trạng thái "Đang tải" (Loading)
+        paginationContainer.innerHTML = ''; 
         productList.innerHTML = '<div class="col-span-2 text-center py-12"><p class="text-sm text-gray-500 animate-pulse">Đang tải sản phẩm...</p></div>';
         
         try {
+            // Gửi yêu cầu HTTP GET đến route 'search-products' của Laravel kèm các tham số
+            // encodeURIComponent giúp mã hóa các ký tự đặc biệt trong từ khóa tìm kiếm để URL hợp lệ
             const response = await fetch(`/search-products?search=${encodeURIComponent(query)}&category=${category}&page=${page}`);
-            const data = await response.json();
-            productList.innerHTML = '';
+            const data = await response.json(); // Chuyển đổi phản hồi từ Server sang dạng đối tượng JSON
+            productList.innerHTML = ''; // Xóa thông báo "Đang tải" để chuẩn bị vẽ danh sách mới
             
+            // Kiểm tra nếu không có sản phẩm nào trả về
             if (!data.products.data || data.products.data.length === 0) {
                 productList.innerHTML = '<div class="col-span-2 text-center py-12"><p class="text-primary text-xs font-bold">Không tìm thấy sản phẩm nào phù hợp!</p></div>';
                 return;
             }
             
+            // Duyệt qua mảng sản phẩm nhận được từ Server
             data.products.data.forEach(product => {
+                // Xử lý logic hiển thị ảnh (dùng ảnh mặc định nếu sản phẩm không có ảnh)
                 const img = product.image ? `/images/products/${product.image}` : '/images/products/default-product.jpg';
                 const catText = product.product_category === 'sups' ? 'Thực phẩm bổ sung' : 'Phụ kiện tập luyện';
                 const catBadge = product.product_category === 'sups' ? 'Supplements' : 'Gear';
-                
-                // Chuẩn hóa tên chống lỗi vỡ HTML/JS
+                // Bảo mật: Chuẩn hóa tên sản phẩm để tránh lỗi khi truyền vào hàm JavaScript (Xử lý dấu nháy đơn/kép)
                 const safeName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                // Tạo HTML mô tả nếu có dữ liệu
                 const descriptionHtml = product.description ? `<p class="text-[10px] text-gray-400 mt-2 line-clamp-3 italic leading-relaxed">${escapeHtml(product.description)}</p>` : '';
-                
+                // Xây dựng cấu trúc HTML cho một thẻ sản phẩm (Card)
                 const html = `
                     <div class="product-card-item bg-[#1A1A1A] rounded-2xl border border-white/10 shadow-md p-3 flex flex-col justify-between relative" data-cat="${product.product_category}">
                         <div>
@@ -222,14 +213,18 @@
                         </div>
                         <div class="p-1 mt-3 flex justify-between items-center">
                             <span class="font-headline text-base text-white">${new Intl.NumberFormat('vi-VN').format(product.price / 1000)}kđ</span>
+
                             <button onclick="addItemToCart('${safeName}', ${product.price}, ${product.id})" ${product.stock_quantity <= 0 ? 'disabled' : ''} class="w-8 h-8 rounded-lg bg-white/5 text-primary ${product.stock_quantity > 0 ? 'hover:bg-primary hover:text-white' : 'opacity-50 cursor-not-allowed'} flex items-center justify-center"><span class="material-symbols-outlined text-sm">add_shopping_cart</span></button>
                         </div>
                     </div>`;
+                // Chèn HTML vừa tạo vào cuối danh sách sản phẩm hiện có trên trang
                 productList.insertAdjacentHTML('beforeend', html);
             });
             
+            // Sau khi vẽ xong sản phẩm, gọi hàm cập nhật lại các nút bấm phân trang
             renderPagination(data.products);
         } catch (err) {
+            // Xử lý lỗi nếu việc kết nối tới Server bị gián đoạn
             productList.innerHTML = '<p class="col-span-2 text-center text-primary text-xs">Lỗi hệ thống tải dữ liệu!</p>';
         }
     }
@@ -269,7 +264,6 @@
     // Thêm sản phẩm vào giỏ hàng và đồng bộ hóa Session
     function addItemToCart(name, price, id) {
         isProcessing++; // ĐÃ SỬA: Tăng cờ báo hiệu hệ thống bận gửi dữ liệu lên Server
-
         $.ajax({
             url: '/cart/add/' + id, 
             method: 'POST',
@@ -282,13 +276,11 @@
                 // ĐÃ SỬA: Lấy chính xác row_id phản hồi từ Server để đồng bộ khóa mảng
                 const rowId = response.row_id || ('product_' + id);
                 const existingItem = selectedItems.find(i => i.id == rowId);
-                
                 if(existingItem) {
                     existingItem.qty++;
                 } else {
                     selectedItems.push({ id: rowId, name: name, price: price, qty: 1 });
                 }
-                
                 renderCart();
                 showToastNotification(`Đã thêm: ${name}`);
             },
@@ -312,7 +304,6 @@
         const deleted = selectedItems[index];
         selectedItems.splice(index, 1);
         renderCart();
-
         if (deleted && deleted.id) {
             $.ajax({
                 url: '{{ route("cart.remove") }}',
@@ -335,7 +326,6 @@
         }
         let subtotal = 0;
         let totalQty = 0;
-
         selectedItems.forEach((item, idx) => {
             subtotal += item.price * item.qty;
             totalQty += item.qty;
@@ -373,45 +363,67 @@
     }
 
     /** 
-     * LOGIC ZOOM SẢN PHẨM (ĐÃ SỬA LỖI ID VÀ OVERFLOW)
+     * LOGIC ZOOM SẢN PHẨM 
      * Sử dụng Event Delegation để hoạt động với cả sản phẩm load qua AJAX
      */
     $(document).ready(function() {
+        // 1. Khi chuột đi vào vùng chứa ảnh (mouseenter)
         $(document).on('mouseenter', '.js-zoom-container', function() {
+            // Hiển thị "ống kính" zoom (hình vuông mờ trên ảnh gốc)
             $(this).find('.js-zoom-lens').removeClass('hidden');
+            // Hiển thị khung kết quả zoom (ô chứa ảnh lớn ở bên cạnh)
             $(this).parent().find('.js-zoom-result').removeClass('hidden');
         });
 
+        // 2. Khi chuột rời khỏi vùng chứa ảnh (mouseleave)
         $(document).on('mouseleave', '.js-zoom-container', function() {
+            // Ẩn ống kính và khung kết quả
             $(this).find('.js-zoom-lens').addClass('hidden');
             $(this).parent().find('.js-zoom-result').addClass('hidden');
         });
 
+        // 3. Khi di chuyển chuột bên trong vùng chứa ảnh (mousemove)
         $(document).on('mousemove', '.js-zoom-container', function(e) {
             const $container = $(this);
             const $lens = $container.find('.js-zoom-lens');
             const $resultBox = $container.parent().find('.js-zoom-result');
             const $highResImg = $resultBox.find('.js-high-res-img');
 
+            // Lấy tọa độ của khung chứa ảnh so với toàn bộ trang web
             const offset = $container.offset();
+            // Tính toán vị trí chuột (x, y) tương đối bên trong khung chứa
             let x = e.pageX - offset.left;
             let y = e.pageY - offset.top;
 
+            // Tính toán vị trí của ống kính sao cho tâm ống kính nằm đúng vị trí đầu con trỏ chuột
             let lensX = x - ($lens.width() / 2);
             let lensY = y - ($lens.height() / 2);
 
-            // Giới hạn lens trong khung ảnh
+            // GIỚI HẠN (BOUNDARIES): Ngăn không cho ống kính chạy ra ngoài rìa ảnh gốc
+            // Chặn trên và trái
             if (lensX < 0) lensX = 0;
             if (lensY < 0) lensY = 0;
+            // Chặn phải và dưới (chiều rộng khung - chiều rộng ống kính)
             if (lensX > $container.width() - $lens.width()) lensX = $container.width() - $lens.width();
             if (lensY > $container.height() - $lens.height()) lensY = $container.height() - $lens.height();
 
+            // Cập nhật vị trí CSS cho ống kính
             $lens.css({ left: lensX + 'px', top: lensY + 'px' });
 
-            // Tính toán tỷ lệ dịch chuyển ảnh lớn (400% zoom)
+            /**
+             * TÍNH TOÁN TỶ LỆ DỊCH CHUYỂN (Zoom Ratio):
+             * Chúng ta cần tính xem khi ống kính di chuyển 1px trên ảnh nhỏ, 
+             * thì ảnh lớn phải dịch chuyển bao nhiêu px để khớp vị trí.
+             * Công thức: (Độ rộng ảnh lớn - Khung hiển thị) / (Độ rộng khung chứa - Ống kính)
+             */
             const ratioX = ($highResImg.width() - $resultBox.width()) / ($container.width() - $lens.width());
             const ratioY = ($highResImg.height() - $resultBox.height()) / ($container.height() - $lens.height());
 
+            /**
+             * CẬP NHẬT ẢNH LỚN:
+             * Ta dịch chuyển ảnh lớn theo chiều ngược lại (dấu '-') với vị trí ống kính.
+             * Ví dụ: Khi ống kính sang phải, ảnh lớn phải trượt sang trái để lộ phần ảnh tương ứng.
+             */
             $highResImg.css({
                 left: '-' + (lensX * ratioX) + 'px',
                 top: '-' + (lensY * ratioY) + 'px'
