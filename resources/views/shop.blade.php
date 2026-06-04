@@ -111,12 +111,10 @@
             // Ẩn dòng chữ "Giỏ hàng trống"
             document.getElementById('empty-text').style.display = 'none';
             // Vẽ lại danh sách món hàng lên sidebar bên phải
-            renderCart();
+            renderCart();;
         }
-
         // 2. TỰ ĐỘNG TẢI DANH SÁCH SẢN PHẨM QUA API KHI MỞ TRANG
         fetchProducts(currentSearchQuery, currentCategory, 1);
-
         // 3. TÌM KIẾM SẢN PHẨM THỜI GIAN THỰC
         document.getElementById('search-input').addEventListener('input', function(e) {
             currentSearchQuery = e.target.value; // Cập nhật từ khóa tìm kiếm
@@ -171,7 +169,9 @@
             // Gửi yêu cầu HTTP GET đến route 'search-products' của Laravel kèm các tham số
             // encodeURIComponent giúp mã hóa các ký tự đặc biệt trong từ khóa tìm kiếm để URL hợp lệ
             const response = await fetch(`/search-products?search=${encodeURIComponent(query)}&category=${category}&page=${page}`);
-            const data = await response.json(); // Chuyển đổi phản hồi từ Server sang dạng đối tượng JSON
+            
+            // data ở đây là toàn bộ JSON trả về từ Controller
+            const data = await response.json(); 
             productList.innerHTML = ''; // Xóa thông báo "Đang tải" để chuẩn bị vẽ danh sách mới
             
             // Kiểm tra nếu không có sản phẩm nào trả về
@@ -179,7 +179,7 @@
                 productList.innerHTML = '<div class="col-span-2 text-center py-12"><p class="text-primary text-xs font-bold">Không tìm thấy sản phẩm nào phù hợp!</p></div>';
                 return;
             }
-            
+              
             // Duyệt qua mảng sản phẩm nhận được từ Server
             data.products.data.forEach(product => {
                 // Xử lý logic hiển thị ảnh (dùng ảnh mặc định nếu sản phẩm không có ảnh)
@@ -228,7 +228,15 @@
             productList.innerHTML = '<p class="col-span-2 text-center text-primary text-xs">Lỗi hệ thống tải dữ liệu!</p>';
         }
     }
-
+    
+    //paginator link 
+    //[
+  //{ "url": "http://korgym.test/search-products?page=1", "label": "&laquo; Previous", "active": false },
+  //{ "url": "http://korgym.test/search-products?page=1", "label": "1", "active": false },
+  //{ "url": "http://korgym.test/search-products?page=2", "label": "2", "active": true },
+  //{ "url": "http://korgym.test/search-products?page=3", "label": "3", "active": false },
+  //{ "url": "http://korgym.test/search-products?page=3", "label": "Next &raquo;", "active": false }
+//]
     // Vẽ lại hệ thống thanh phân trang
     function renderPagination(paginator) {
         if (paginator.last_page <= 1) return;
@@ -432,3 +440,170 @@
     });
 </script>
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

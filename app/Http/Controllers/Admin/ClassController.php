@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GymClass;
-use App\Models\PTProfile; // Giả sử bảng PT của bạn tên này
+use App\Models\PtProfile; // Giả sử bảng PT của bạn tên này
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
@@ -30,7 +30,7 @@ class ClassController extends Controller
             return response()->json($classes)->header('Vary', 'X-Requested-With');
         }
 
-        $pts = PTProfile::with('user')->get(); 
+        $pts = PtProfile::with('user')->get(); 
         return view('admin.classes', compact('classes', 'pts'));
     }
 

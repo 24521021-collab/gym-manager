@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Membership extends Model
-{
+class Membership extends Model{
 protected $primaryKey='id';
 
 protected $fillable = ['user_id', 'package_id', 'start_date', 'end_date', 'status'];

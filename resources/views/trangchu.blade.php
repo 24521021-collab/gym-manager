@@ -113,7 +113,7 @@
                     @endphp
                     <span class="text-[10px] font-bold {{ $categoryColor }} uppercase tracking-widest">{{ $post->category }}</span>
                     <h3 class="text-sm font-bold text-white line-clamp-1">{{ $post->title }}</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2 whitespace-pre-line font-medium">{{ \Illuminate\Support\Str::limit(strip_tags($post->content), 150) }}</p>
+                    <p class="text-xs text-gray-400 line-clamp-2 whitespace-pre-line font-medium">{!! \Illuminate\Support\Str::limit(strip_tags($post->content), 150) !!}</p>
                 </div>
             </a>
             @empty
@@ -296,7 +296,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // Hàm tính toán và hiển thị BMI, gợi ý AI
+    // Hàm tính toán và hiển thị BMI
     function updateHealthMetricsDisplay(height, weight, bodyFat) {
         const h = parseFloat(height) / 100;
         const w = parseFloat(weight);
@@ -348,7 +348,7 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang cập nhật...';
         try {
-            const response = await fetch("{{ route('metric.update') }}", {
+            const response = await fetch("{{ route('metric.update') }}",{
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -402,13 +402,11 @@
             if(data.success) {
                 const list = document.getElementById('comments-display-list');
                 list.innerHTML = ''; 
-
                 data.reviews.forEach(rev => {
                     const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
                     const name = rev.user ? rev.user.full_name : 'Hội viên';
                     const target = rev.reviewable ? (rev.reviewable.name || rev.reviewable.full_name) : 'Dịch vụ';
                     const initials = name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-                    
                     const div = document.createElement('div');
                     div.className = "bg-white/5 border border-white/5 p-3 rounded-xl flex gap-3 items-start text-xs mb-3 animate-fade-in transition-colors hover:bg-white/10";
                     div.innerHTML = `
@@ -531,7 +529,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        updateHealthMetricsDisplay(document.getElementById('height-input').value, document.getElementById('weight-input').value, document.getElementById('fat-input').value);
+        updateHealthMetricsDisplay("{{ $latestMetric->height ?? '' }}", "{{ $latestMetric->weight ?? '' }}", "{{ $latestMetric->body_fat_percentage ?? '' }}");
         setStarRating(5); 
         updateCurrentDateString();
         fetchAllReviews(); 

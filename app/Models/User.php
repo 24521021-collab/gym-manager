@@ -50,7 +50,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-public function ptProfile() { return $this->hasOne(PtProfile::class); }
+public function PtProfile() { return $this->hasOne(PtProfile::class); }
 public function memberships() { return $this->hasMany(Membership::class); }
 public function bookings() { return $this->hasMany(Booking::class); }
 public function orders() { return $this->hasMany(Order::class); }
@@ -60,6 +60,7 @@ public function bodyMetrics() { return $this->hasMany(BodyMetric::class); }
     public function ptBookingsAsPt() {
         return $this->hasMany(PtBooking::class, 'pt_id');
     }
+
 
 
     public function latestBodyMetric() {

@@ -93,9 +93,9 @@ Route::middleware('auth')->group(function () {
     // profile người dùng 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     // route để xem đơn hàng người dùng 
-    Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
-    Route::patch('/orders/{id}/cancel', [UserOrderController::class, 'cancel'])->name('orders.cancel');
+    //Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
+    //Route::get('/orders/{id}', [UserOrderController::class, 'show'])->name('orders.show');
+    //Route::patch('/orders/{id}/cancel', [UserOrderController::class, 'cancel'])->name('orders.cancel');
 // route để người dùng đánh giá
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/api/reviewable-targets', [ReviewController::class, 'getReviewableTargets'])->name('reviews.targets');

@@ -29,7 +29,6 @@ class CheckoutController extends Controller{
         } 
         if ($request->payment_method == 'Bank_QR') {
             // Debug: Kiểm tra tổng tiền được tính
-
             $order = $this->createOrder($total, 'Pending', 'Bank_QR');
             session()->forget('cart'); // Xóa toàn bộ giỏ hàng sau khi tạo đơn
             return redirect()->route('checkout.bank_qr', ['order_id' => $order->id]);
@@ -45,7 +44,9 @@ class CheckoutController extends Controller{
 
     private function createOrder($total, $status, $method) {
         return DB::transaction(function () use ($total, $status, $method) {
-            $type = session('checkout_type', 'cart');
+
+            $type = session('checkout_type', 'cart'); 
+            
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'total_amount' => $total,

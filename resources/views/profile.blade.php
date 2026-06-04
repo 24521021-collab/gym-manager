@@ -29,7 +29,7 @@
             </div>
             <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
                 <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Hạng thẻ đăng ký</span>
-                <span class="text-primary-container font-bold uppercase">{{ Auth::user()->membership->package->package_name ?? 'Chưa có' }} ({{ Auth::user()->membership->package->duration_days ?? 'N/A' }} Ngày)</span>
+                <span class="text-primary-container font-bold uppercase">{{ Auth::user()->memberships()->latest()->first()->package->package_name ?? 'Chưa có' }} ({{ Auth::user()->memberships()->latest()->first()->package->duration_days ?? 'N/A' }} Ngày)</span>
             </div>
             <div class="bg-black/20 p-3.5 rounded-xl border border-white/5 space-y-1">
                 <span class="text-gray-500 font-bold uppercase tracking-wider block text-[10px]">Cơ sở tập luyện</span>

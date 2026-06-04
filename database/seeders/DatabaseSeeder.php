@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProductSeeder::class,
             GymPackageSeeder::class,
-            PTProfileSeeder::class,
+            PtProfileSeeder::class,
             GymClassSeeder::class,
             OrderSeeder::class,
             PtBookingSeeder::class,

@@ -46,9 +46,9 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="pt-cards-grid">
                             @foreach($pts as $pt)
                             @php
-                                $ptSpec = $pt->ptProfile->specialization ?? 'Thể hình';
-                                $ptImg = $pt->ptProfile->image ?? 'pt.jpg';
-                                $ptBio = $pt->ptProfile->bio ?? 'Chưa có thông tin giới thiệu.';
+                                $ptSpec = $pt->PtProfile->specialization ?? 'Thể hình';
+                                $ptImg = $pt->PtProfile->image ?? 'pt.jpg';
+                                $ptBio = $pt->PtProfile->bio ?? 'Chưa có thông tin giới thiệu.';
                             @endphp
                             
                             <div onclick="selectPersonalTrainer(this, {{ $pt->id }}, '{{ addslashes($pt->full_name) }}')" 
@@ -157,19 +157,16 @@
         grid.innerHTML = '<div class="col-span-full py-10 text-center text-primary animate-pulse italic">Đang lọc danh sách HLV chuyên nghiệp...</div>';
         // 2. Gửi yêu cầu lấy dữ liệu đã lọc về server
         const url = `{{ route('booking.pt.index') }}?specialization=${encodeURIComponent(spec)}`;
-        
         fetch(url, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => response.json())
         .then(data => {
             grid.innerHTML = ''; // Xóa danh sách cũ
-            
             if (data.pts.length === 0) {
                 grid.innerHTML = '<div class="col-span-full py-10 text-center text-gray-500 italic">Không tìm thấy huấn luyện viên nào phù hợp với chuyên môn này.</div>';
                 return;
             }
-
             // 3. Vẽ lại danh sách PT mới từ dữ liệu JSON nhận được
             data.pts.forEach(pt => {
                 const ptSpec = pt.pt_profile ? pt.pt_profile.specialization : 'Thể hình';
@@ -177,7 +174,6 @@
                 const ptBio = pt.pt_profile ? pt.pt_profile.bio : 'Chưa có thông tin giới thiệu.';
                 const ptNameSafe = pt.full_name.replace(/'/g, "\\'"); // Chống lỗi JS khi tên có dấu nháy
                 const assetBase = "{{ asset('images/pt') }}";
-
                 grid.innerHTML += `
                     <div onclick="selectPersonalTrainer(this, ${pt.id}, '${ptNameSafe}')" 
                          class="pt-card-item bg-[#1A1A1A] border border-white/10 rounded-2xl p-4 flex gap-4 cursor-pointer hover:border-primary/5 transition-all">
@@ -204,72 +200,78 @@
             grid.innerHTML = '<div class="col-span-full py-10 text-center text-red-500 italic">Lỗi hệ thống: Không thể đồng bộ dữ liệu vào lúc này.</div>';
         });
     }
-
     const defaultSlots = [
         "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
         "13:00", "14:00", "15:00", "16:00", "17:00", "18:00",
         "19:00"
     ];
-
     // 2. CHỨC NĂNG LỰA CHỌN HUẤN LUYỆN VIÊN 
     function selectPersonalTrainer(element, ptId, ptName) {
         document.querySelectorAll('.pt-card-item').forEach(card => {
             card.className = "pt-card-item bg-[#1A1A1A] border border-white/10 rounded-2xl p-4 flex gap-4 cursor-pointer hover:border-primary/5 transition-all";
         });
-        
         element.className = "pt-card-item bg-[#1A1A1A] border border-primary bg-primary/5 rounded-2xl p-4 flex gap-4 cursor-pointer transition-all";
-        
         currentSelectedPT = ptName;
         currentSelectedPTId = ptId;
         document.getElementById('hidden_pt_id').value = ptId;
         document.getElementById('summary-pt').innerText = ptName;
-
         checkAvailableTimeSlotsFromServer();
     }
-
     // 3. CHỨC NĂNG LỰA CHỌN NGÀY TẬP LUYỆN
     function selectBookingDate(dateStr) {
         currentSelectedDate = dateStr;
         document.getElementById('hidden_booking_date').value = dateStr;
-        
         if(dateStr) {
             const parts = dateStr.split('-');
             document.getElementById('summary-date').innerText = `${parts[2]}/${parts[1]}/${parts[0]}`;
         } else {
             document.getElementById('summary-date').innerText = "Chưa chọn";
         }
-
         checkAvailableTimeSlotsFromServer();
     }
-
     // 4. BIÊN DỊCH VÀ TÍCH HỢP LOGIC KIỂM TRA LỊCH TRÙNG QUA AJAX
     function checkAvailableTimeSlotsFromServer() {
         const wrapper = document.getElementById('time-slots-wrapper');
+        
+        // Bước 1: Reset trạng thái mỗi khi dữ liệu đầu vào (PT/Ngày) thay đổi
         currentSelectedTime = '';
         document.getElementById('hidden_start_time').value = '';
         document.getElementById('summary-time').innerText = 'Chưa chọn';
+        
+        // Vô hiệu hóa nút gửi đơn cho đến khi chọn được giờ mới
         const submitBtn = document.getElementById('btn-submit-booking');
         submitBtn.disabled = true;
         submitBtn.className = "w-full py-4 bg-primary hover:bg-red-700 text-white font-headline text-sm uppercase rounded-xl font-bold tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 opacity-50 cursor-not-allowed";
+
+        // Bước 2: Kiểm tra nếu chưa chọn đủ PT hoặc Ngày thì không gọi API
         if (!currentSelectedPTId || !currentSelectedDate) {
             wrapper.innerHTML = '<p class="text-gray-500 text-xs italic col-span-full py-2" id="slot-notice">Vui lòng chọn Huấn luyện viên và Ngày tập để hệ thống quét ca trống...</p>';
             return;
         }
+
+        // Hiển thị trạng thái đang tải dữ liệu
         wrapper.innerHTML = '<p class="text-primary text-xs col-span-full py-2 animate-pulse">Đang rà soát dữ liệu ca trực trống của HLV...</p>';
+
+        // Bước 3: Gọi API lấy danh sách các giờ đã bị đặt (Booked)
         fetch(`/api/pt-booked-slots?pt_id=${currentSelectedPTId}&date=${currentSelectedDate}`)
             .then(response => response.json())
             .then(bookedSlots => {
-                wrapper.innerHTML = ''; 
+                wrapper.innerHTML = ''; // Xóa thông báo loading
+                // Chuyển đổi định dạng giờ từ DB (06:00:00) sang (06:00) để so sánh
                 const formattedLockedHours = bookedSlots.map(slot => slot.start_time.substring(0, 5));
+                
+                // Bước 4: Duyệt qua danh sách giờ mặc định và tạo các nút bấm
                 defaultSlots.forEach(slot => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.innerText = slot;
                     if (formattedLockedHours.includes(slot)) {
+                        // Nếu giờ này đã có người đặt: Khóa nút
                         btn.className = "time-btn py-2 text-xs font-bold border border-white/5 bg-black/40 text-gray-600 rounded-lg opacity-30 cursor-not-allowed";
                         btn.disabled = true;
                         btn.title = "Ca tập này HLV đã kín lịch!";
                     } else {
+                        // Nếu giờ này còn trống: Cho phép chọn
                         btn.className = "time-btn py-2 text-xs font-bold border border-white/5 bg-black/20 text-white rounded-lg hover:border-primary/40 hover:text-primary transition-all";
                         btn.addEventListener('click', function() {
                             selectTimeSlot(this, slot);
@@ -307,15 +309,12 @@
             alert("Lỗi tác vụ: Vui lòng hoàn thành đầy đủ 3 bước lựa chọn trước khi chốt lịch!");
             return;
         }
-
         const form = document.getElementById('booking-main-form');
         const msg = document.getElementById('booking-msg');
         const btn = document.getElementById('btn-submit-booking');
         const formData = new FormData(form);
-
         btn.disabled = true;
         btn.innerText = "Đang gửi yêu cầu...";
-
         try {
             const response = await fetch(form.action, {
                 method: 'POST',

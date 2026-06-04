@@ -13,7 +13,7 @@ use App\Models\User;
 use App\Models\GymClass;
 use App\Models\OrderItem;
 use App\Models\PtBooking;
-use App\Models\PTProfile;
+use App\Models\PtProfile;
 
 class DashboardController extends Controller
 {
