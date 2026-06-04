@@ -169,9 +169,22 @@ Hệ thống được phát triển theo mô hình MVC (Model - View - Controlle
 * Route: Điều hướng yêu cầu người dùng.
 * Middleware: Kiểm tra xác thực và phân quyền.
 
----
 
+---
 # Cài đặt hệ thống
+
+---
+## Yêu cầu hệ thống
+
+Trước khi cài đặt, cần đảm bảo môi trường phát triển đáp ứng các yêu cầu sau:
+
+- PHP >= 8.2
+- Composer >= 2.x
+- Node.js >= 20.x
+- NPM >= 10.x
+- MySQL >= 8.0
+- Git
+---
 
 ## Clone source code
 
