@@ -185,8 +185,8 @@ Trước khi cài đặt, cần đảm bảo môi trường phát triển đáp 
 - MySQL >= 8.0
 - Git
 ---
-
-## Clone source code
+## Các bước cài đặt chi tiết
+### Bước 1: Clone source code
 
 ```bash
 git clone <repository-url>
@@ -240,36 +240,6 @@ php artisan serve
 Truy cập:
 
 http://127.0.0.1:8000
-
----
-
-# Cấu trúc dự án
-
-```text
-app/
-├── Http/
-│   ├── Controllers/
-│   │   ├── Admin/
-│   │   ├── Auth/
-│   │   ├── Pt/
-│   │   └── ...
-│   └── Middleware/
-
-app/Models/
-
-resources/views/
-├── admin/
-├── customer/
-├── pt/
-├── layout/
-
-database/
-├── migrations/
-└── seeders/
-
-routes/
-└── web.php
-```
 
 ---
 
