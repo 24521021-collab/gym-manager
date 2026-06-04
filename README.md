@@ -1,7 +1,6 @@
 Markdown
 # TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN
 ---
-# KOR GYM MANAGEMENT SYSTEM
 
 ## BẢNG MỤC LỤC
 * [Giới thiệu môn học](#gioithieumonhoc)
