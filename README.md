@@ -1,4 +1,3 @@
-Markdown
 # TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN
 ---
 
