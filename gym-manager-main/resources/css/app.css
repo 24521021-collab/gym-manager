@@ -1,0 +1,77 @@
+/* Import Google Fonts trực tiếp vào CSS */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Oswald:wght@600;700;900&display=swap');
+
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    /* Ghi đè font mặc định của Tailwind (font-sans) để code mẫu hoạt động ngay */
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    
+    /* Giữ lại font-body nếu bạn muốn dùng class riêng */
+    --font-body: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    
+    --font-headline: 'Oswald', sans-serif;
+
+    /* Cấu hình Bảng màu (KOR GYM Branding) */
+    --color-primary: #e31837;
+    --color-primary-container: #ffb3b1;
+    --color-on-primary: #ffffff;
+    --color-surface-container-high: #2a2a2a;
+    --color-surface-variant: #353535;
+    --color-background: #131313;
+    --color-on-background: #e2e2e2;
+}
+
+/* Hỗ trợ Dark Mode theo Class (phải đặt ngoài @theme) */
+@variant dark (&:where(.dark, .dark *));
+
+/* Thiết lập Font mặc định cho các thẻ HTML */
+body { 
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    /* Đảm bảo nền tối bao phủ toàn bộ màn hình */
+    min-height: 100vh;
+    margin: 0;
+}
+h1, h2, h3, h4, h5, h6, .font-headline { 
+    font-family: var(--font-headline);
+}
+
+/* Tùy chỉnh thanh cuộn (Scrollbar) cho giao diện Dark Mode */
+::-webkit-scrollbar { 
+    width: 6px; 
+    height: 6px;
+}
+::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb { 
+    background: #353535; 
+    border-radius: 4px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: #4a4a4a; 
+}
+
+/* Ẩn thanh cuộn nhưng vẫn cuộn được */
+.hide-scrollbar::-webkit-scrollbar { 
+    display: none; 
+}
+
+/* Các hiệu ứng đặc biệt dùng chung */
+.glass-panel {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-glow { 
+    box-shadow: 0px 0px 20px rgba(227, 24, 55, 0.3); 
+}
