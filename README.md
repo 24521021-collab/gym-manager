@@ -1,159 +1,265 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# KOR GYM MANAGEMENT SYSTEM
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Giới thiệu
 
-## About Laravel
+KOR GYM MANAGEMENT SYSTEM là hệ thống quản lý phòng tập Gym được phát triển trong khuôn khổ môn học **IS207 - Phát triển ứng dụng Web** tại Trường Đại học Công nghệ Thông tin - ĐHQG TP.HCM.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Hệ thống hỗ trợ quản lý hội viên, gói tập, lớp học, huấn luyện viên cá nhân (PT), bán sản phẩm thể thao và theo dõi sức khỏe người dùng trên cùng một nền tảng web.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Thông tin môn học
 
-## Learning Laravel
+| Thông tin  | Nội dung                                  |
+| ---------- | ----------------------------------------- |
+| Môn học    | IS207 - Phát triển ứng dụng Web           |
+| Giảng viên | ThS. Trình Trọng Tín                      |
+| Năm học    | 2025 - 2026                               |
+| Trường     | Đại học Công nghệ Thông tin - ĐHQG TP.HCM |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Thành viên nhóm
 
-## Laravel Sponsors
+| MSSV     | Họ và tên           | Vai trò                             |
+| -------- | ------------------- | ----------------------------------- |
+| 24520942 | Xa Văn Lâm          | Nhóm trưởng, Dashboard, Integration |
+| 24521021 | Trịnh Duy Long      | Shop, Cart, Checkout                |
+| 24521838 | Nguyễn Thanh Trí    | UI/UX, Booking, Notification        |
+| 24520275 | Ngô Trọng Đạt       | PT Dashboard, Check-in, BMI         |
+| 24521027 | Lê Lưu Luân         | Membership, Class Management        |
+| 24520606 | Nguyễn Hữu Phú Hưng | Authentication, Profile             |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+# Mô tả đề tài
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Dự án xây dựng hệ thống quản lý phòng Gym theo mô hình B2C, cho phép khách hàng đăng ký gói tập, tham gia lớp học, đặt lịch huấn luyện viên cá nhân, mua sản phẩm thể thao và theo dõi quá trình luyện tập.
 
-## Contributing
+Ngoài các chức năng dành cho hội viên, hệ thống còn cung cấp khu vực quản trị dành cho Admin và PT nhằm hỗ trợ vận hành phòng gym một cách hiệu quả.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+# Công nghệ sử dụng
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Backend
 
-## Security Vulnerabilities
+* PHP 8.x
+* Laravel 12
+* Eloquent ORM
+* Laravel Socialite
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Frontend
 
-## License
+* HTML5
+* CSS3
+* JavaScript
+* Blade Template
+* TailwindCSS
+* Bootstrap
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN
-# IS207 - PHÁT TRIỂN ỨNG DỤNG WEB
+## Database
 
-## BẢNG MỤC LỤC
-* [Giới thiệu môn học](#gioithieumonhoc)
-* [Giảng viên hướng dẫn](#giangvien)
-* [Thành viên nhóm](#thanhvien)
-* [Đồ án môn học](#doan)
-* [Công nghệ sử dụng](#congnghe)
-* [Chức năng hệ thống](#chucnang)
-* [Cài đặt và Triển khai](#caidat)
+* MySQL
 
+## Công cụ phát triển
 
-## GIỚI THIỆU MÔN HỌC
-<a name="gioithieumonhoc"></a>
-* **Tên môn học**: Phát triển ứng dụng Web - Web Development
-* **Mã môn học**: IS207
-* **Lớp học**: IS207.Q23
-* **Năm học**: 2025-2026
+* Git & GitHub
+* Visual Studio Code
+* Figma
+* Postman
 
-## GIẢNG VIÊN HƯỚNG DẪN
-<a name="giangvien"></a>
-* ThS. **Trình Trọng Tín**
+---
 
-## THÀNH VIÊN NHÓM
-THÀNH VIÊN NHÓM
-STT	MSSV	Họ và Tên	Ghi chú / Vai trò
-1	24520942	Xa Văn Lâm	
-2	24521021	Trịnh Duy Long	
-3	24521838	Nguyễn Thanh Trí	UI/UX & System Flow
-4	24520275	Ngô Trọng Đạt	
-5	24521027	Lê Lưu Luân	
-6	24520606	Nguyễn Hữu Phú Hưng	
-SEMINAR
-Chủ đề: Việc ứng dụng AI vào trang web Thương mại điện tử.
-Phân tích ưu/khuyết điểm, những khó khăn trong quá trình thực tiễn. Trình bày các giải pháp và cách thực hiện cụ thể (Ví dụ: Tích hợp AI Chatbot/Agent vào Website, Ứng dụng Recommendation Systems để tăng tỷ lệ chuyển đổi).
-ĐỒ ÁN MÔN HỌC
-Tên đề tài: Website thương mại điện tử B2C phòng GYM - GRYND
-Mô tả:
-Xây dựng hệ thống website B2C toàn diện cho phòng tập Gym, tích hợp các tính năng thương mại điện tử và quản lý hội viên. Hệ thống giải quyết bài toán quản lý rời rạc của các phòng gym truyền thống thông qua nền tảng số hóa, bao gồm quản lý gói tập, lớp học, huấn luyện viên và cửa hàng dụng cụ thể thao.
-Điểm nhấn công nghệ & Trải nghiệm:
-•	AI Chatbot: Tích hợp Google Gemini API để tự động hóa hỗ trợ khách hàng, tư vấn lộ trình tập luyện.
-•	Hệ thống Gợi ý (Recommendation System): Phân tích dữ liệu người dùng để đề xuất các sản phẩm/khóa học phù hợp.
-•	Trải nghiệm UI/UX (Dark Mode): Hệ thống được thiết kế đồng bộ theo chuẩn Dark Mode, tối ưu hóa các thao tác Xác thực (Auth) trực tiếp qua Modal, giảm thiểu tỷ lệ thoát trang.
-•	Luồng dữ liệu chặt chẽ (MVC): Kiến trúc hệ thống kiểm soát chặt chẽ luồng dữ liệu từ User Agent đến Database, tối ưu bảo mật CSRF và hiệu suất truy vấn.
-CÔNG NGHỆ SỬ DỤNG
-•	Backend: PHP (v8.1+), Laravel Framework.
-•	Frontend: HTML5, Tailwind CSS, JavaScript (ES6), Blade Template.
-•	Database: MySQL.
-•	Môi trường Deploy/Test: Docker (LEMP Stack).
-•	AI Integration: Google Gemini API.
-•	Công cụ thiết kế & Quản lý: Figma, Visual Studio Code, Git/GitHub.
-CHỨC NĂNG HỆ THỐNG
-1. Phân hệ Khách hàng (User)
-•	Tài khoản: Đăng ký, Đăng nhập bảo mật đa luồng, Quản lý hồ sơ cá nhân.
-•	Dịch vụ phòng tập: Đăng ký Gói tập (Tháng/Quý/Năm), Đặt lịch Lớp học, Thuê Huấn luyện viên (PT).
-•	Cửa hàng (E-commerce): Thêm vào giỏ hàng, Thanh toán trực tuyến (VNPay/MoMo), Theo dõi trạng thái đơn hàng.
-2. Phân hệ Quản trị (Admin)
-•	Dashboard: Thống kê doanh thu, số lượng hội viên, hiệu suất lớp học thời gian thực.
-•	Quản lý vận hành: Quản lý Lịch lớp học, Gói tập, Nhân sự (PT/Staff), Quản lý thiết bị.
-•	Quản lý kinh doanh: Quản lý Đơn hàng, Kho sản phẩm, Hệ thống Khuyến mãi.
-CÀI ĐẶT VÀ TRIỂN KHAI
-Yêu cầu tiên quyết
-•	Docker & Docker Compose (Khuyên dùng)
-•	Hoặc môi trường Local: PHP >= 8.1, Composer, Node.js >= 20 & NPM, MySQL.
-Các bước cài đặt chi tiết
-Bước 1: Clone mã nguồn dự án
-Bash
-git clone [URL_GITHUB_CỦA_NHÓM_BẠN]
-cd [TÊN_THƯ_MỤC_DỰ_ÁN]
-Bước 2: Cài đặt thư viện phụ thuộc
-Bash
+# Chức năng hệ thống
+
+## Người dùng
+
+### Xác thực
+
+* Đăng ký tài khoản
+* Đăng nhập bằng Email/Số điện thoại
+* Đăng nhập Google
+* Quên mật khẩu
+* Đổi mật khẩu
+
+### Quản lý hội viên
+
+* Đăng ký gói tập
+* Theo dõi thời hạn gói tập
+* Quản lý hồ sơ cá nhân
+
+### Đặt lớp học
+
+* Xem danh sách lớp học
+* Đăng ký lớp học
+* Hủy đăng ký
+
+### Đặt lịch PT
+
+* Xem danh sách PT
+* Đặt lịch tập cá nhân
+* Theo dõi trạng thái lịch hẹn
+
+### Cửa hàng thể thao
+
+* Xem sản phẩm
+* Tìm kiếm sản phẩm
+* Thêm vào giỏ hàng
+* Thanh toán
+* Xem lịch sử đơn hàng
+
+### Theo dõi sức khỏe
+
+* Cập nhật cân nặng
+* Cập nhật chiều cao
+* Tính BMI
+* Lưu lịch sử chỉ số cơ thể
+
+### Thông báo và đánh giá
+
+* Nhận thông báo hệ thống
+* Đánh giá PT
+* Đánh giá lớp học
+
+---
+
+## Quản trị viên (Admin)
+
+### Dashboard
+
+* Thống kê doanh thu
+* Thống kê hội viên
+* Thống kê đơn hàng
+* Thống kê lớp học
+
+### Quản lý dữ liệu
+
+* Quản lý gói tập
+* Quản lý lớp học
+* Quản lý hội viên
+* Quản lý sản phẩm
+* Quản lý đơn hàng
+* Quản lý PT Booking
+* Quản lý bài viết
+
+### Vận hành
+
+* Check-in hội viên
+* Theo dõi hoạt động hệ thống
+
+---
+
+## Huấn luyện viên (PT)
+
+* Quản lý lớp học phụ trách
+* Xem lịch PT Booking
+* Ghi nhật ký huấn luyện
+* Theo dõi hoạt động cá nhân
+
+---
+
+# Kiến trúc hệ thống
+
+Hệ thống được phát triển theo mô hình MVC (Model - View - Controller).
+
+* Model: Quản lý dữ liệu và quan hệ Eloquent.
+* View: Blade Template.
+* Controller: Xử lý nghiệp vụ.
+* Route: Điều hướng yêu cầu người dùng.
+* Middleware: Kiểm tra xác thực và phân quyền.
+
+---
+
+# Cài đặt hệ thống
+
+## Clone source code
+
+```bash
+git clone <repository-url>
+cd gym-manager
+```
+
+## Cài đặt thư viện
+
+```bash
 composer install
 npm install
-Bước 3: Cấu hình môi trường (.env)
-Sao chép file cấu hình mẫu và điền các thông tin kết nối (Vui lòng liên hệ Admin để lấy API Key thực tế):
-Bash
+```
+
+## Cấu hình môi trường
+
+```bash
 cp .env.example .env
-Cấu hình .env cơ bản:
-Đoạn mã
+```
+
+Cấu hình cơ sở dữ liệu:
+
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=webgym
-DB_USERNAME=root          
-DB_PASSWORD=             
+DB_DATABASE=gym_manager
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-# Điền key thực tế của bạn vào đây khi chạy local
-GEMINI_API_KEY=your_gemini_api_key_here
-VNPAY_TMN_CODE=your_vnpay_code_here
-VNPAY_HASH_SECRET=your_vnpay_secret_here
-Bước 4: Khởi tạo dữ liệu (Migration & Seeder)
-Bash
+## Khởi tạo hệ thống
+
+```bash
 php artisan key:generate
+
 php artisan migrate --seed
-Bước 5: Build Frontend & Khởi chạy Server
-Bash
+```
+
+## Build frontend
+
+```bash
 npm run build
-Bước 6: Khởi chạy Server
+```
+
+## Chạy hệ thống
+
+```bash
 php artisan serve
+```
+
+Truy cập:
+
+http://127.0.0.1:8000
+
+---
+
+# Cấu trúc dự án
+
+```text
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Admin/
+│   │   ├── Auth/
+│   │   ├── Pt/
+│   │   └── ...
+│   └── Middleware/
+
+app/Models/
+
+resources/views/
+├── admin/
+├── customer/
+├── pt/
+├── layout/
+
+database/
+├── migrations/
+└── seeders/
+
+routes/
+└── web.php
+```
+
+---
+
+# Giấy phép
+
+Dự án được phát triển phục vụ mục đích học tập trong môn IS207 - Phát triển ứng dụng Web.
