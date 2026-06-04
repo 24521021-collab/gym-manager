@@ -79,7 +79,7 @@ Ngoài các chức năng dành cho hội viên, hệ thống còn cung cấp khu
 
 * Git & GitHub
 * Visual Studio Code
-* Figma
+
 * Postman
 
 ---
