@@ -206,14 +206,14 @@ git clone <repository-url>
 cd gym-manager
 ```
 
-### Bước 2:Cài đặt thư viện
+### Bước 2: Cài đặt thư viện
 
 ```bash
 composer install
 npm install
 ```
 
-### Bước 3:Cấu hình môi trường
+### Bước 3: Cấu hình môi trường
 
 ```bash
 cp .env.example .env
@@ -238,13 +238,13 @@ php artisan key:generate
 php artisan migrate --seed
 ```
 
-### Bước 5:Build frontend
+### Bước 5: Build frontend
 
 ```bash
 npm run build
 ```
 
-### Bước 6:Chạy hệ thống
+### Bước 6: Chạy hệ thống
 
 ```bash
 php artisan serve
