@@ -31,13 +31,13 @@ class PtDashboardController extends Controller
             ->get();
 
         // Lấy thông tin Profile và các lớp học nhóm đảm nhận
-        $ptProfile = $pt->ptProfile;
+        $PtProfile = $pt->PtProfile;
         $classes = [];
         $classCommission = 0;
         $totalClassStudents = 0;
 
-        if ($ptProfile) {
-            $classes = GymClass::where('pt_id', $ptProfile->id)
+        if ($PtProfile) {
+            $classes = GymClass::where('pt_id', $PtProfile->id)
                 ->with('bookings.user.latestBodyMetric')
                 ->get();
             
@@ -49,7 +49,7 @@ class PtDashboardController extends Controller
             $classCommission = DB::table('order_items')
                 ->join('orders', 'order_items.order_id', '=', 'orders.id')
                 ->join('gym_classes', 'order_items.item_id', '=', 'gym_classes.id')
-                ->where('gym_classes.pt_id', $ptProfile->id)
+                ->where('gym_classes.pt_id', $PtProfile->id)
                 ->where('order_items.item_type', 'class')
                 ->where('orders.payment_status', 'Paid')
                 ->sum('order_items.subtotal') * 0.5;

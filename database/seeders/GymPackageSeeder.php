@@ -54,11 +54,5 @@ class GymPackageSeeder extends Seeder
     'price' => 4800000,
     'description' => "• Full quyền lợi cao cấp nhất của khu vực tự tập.\n• Được phép dẫn theo 1 người bạn đi tập cùng 2 lần/tháng (Người đi cùng miễn phí vé).\n• Đóng băng thẻ lên đến 45 ngày.\n• Tặng áo thun và túi tập gym cao cấp."
     ]);
-    \App\Models\GymPackage::create([
-    'package_name' => 'Gói Cam Kết Tác Phong',
-    'duration_days' => 365,
-    'price' => 4800000,
-    'description' => "• Full quyền lợi cao cấp nhất của khu vực tự tập.\n• Được phép dẫn theo 1 người bạn đi tập cùng 2 lần/tháng (Người đi cùng miễn phí vé).\n• Đóng băng thẻ lên đến 45 ngày.\n• Tặng áo thun và túi tập gym cao cấp."
-    ]);
     }
 }

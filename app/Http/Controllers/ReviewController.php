@@ -37,6 +37,7 @@ class ReviewController extends Controller
         // 1. Lấy danh sách sản phẩm: 
         // Chỉ lấy những sản phẩm xuất hiện trong các đơn hàng (Order) của người dùng này
         // và đơn hàng đó phải có trạng thái thanh toán là Chờ xử lý hoặc Đã thanh toán.
+    
         $products = Product::whereHas('orderItems.order', function ($query) use ($userId) {
             $query->where('user_id', $userId)
                   ->whereIn('payment_status', ['Pending', 'Paid']);
@@ -83,7 +84,16 @@ class ReviewController extends Controller
 
         // 2. Anti-Spam & Business Rules Check (Kiểm tra chống spam và quy tắc nghiệp vụ)
         if ($type === 'product') {
-            // Kiểm tra xem khách hàng đã mua sản phẩm này chưa qua các đơn hàng
+            // Kiểm tra xem khách hàng đã mua sản phẩm này chưa qua các đơn hàn
+            /**
+             * Giải thích truy vấn DB bên dưới:
+             * - DB::table('orders'): Truy cập trực tiếp vào bảng 'orders'.
+             * - join('order_items', ...): Kết nối với bảng 'order_items'.
+             *   (Ở đây dùng dấu gạch dưới vì Query Builder làm việc trực tiếp với tên bảng DB).
+             * - 'orders.id': Cột ID (khóa chính) của bảng đơn hàng.
+             * - 'order_items.order_id': Cột liên kết (khóa ngoại) trong bảng chi tiết để biết món hàng thuộc đơn nào.
+             * - where('order_items.product_id', $id): Kiểm tra sản phẩm đang đánh giá có nằm trong các đơn này không.
+             */
             $hasPurchased = DB::table('orders')
                 ->join('order_items', 'orders.id', '=', 'order_items.order_id')
                 ->where('orders.user_id', $user->id)
@@ -98,6 +108,7 @@ class ReviewController extends Controller
                     'message' => 'Bạn chỉ có thể đánh giá sản phẩm đã mua.'
                 ], 403);
             }
+            
         } elseif ($type === 'pt') {
             // Kiểm tra xem ID người dùng mục tiêu có thực sự là Huấn luyện viên (PT) không
             $targetPT = User::where('id', $id)->where('role', 'pt')->exists();

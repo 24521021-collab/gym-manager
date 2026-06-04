@@ -45,8 +45,8 @@ class HomeController extends Controller
                      ->take(10)
                      ->get();
 
-        // Lấy tất cả các gói tập Gym và phân trang với 6 gói mỗi trang.
-        $goiTaps = GymPackage::paginate(6);
+        // Lấy tất cả các gói tập Gym và phân trang với 8 gói mỗi trang.
+        $goiTaps = GymPackage::paginate(8);
         // Trả về view 'trangchu' và truyền các biến `$goiTaps`, `$latestMetric`, `$posts` sang view để hiển thị.
         return view('trangchu', compact('goiTaps', 'latestMetric', 'posts'));
     }  

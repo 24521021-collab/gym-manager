@@ -14,7 +14,7 @@ class PtLog extends Model
 
     // Định nghĩa mối quan hệ "thuộc về" (belongsTo) với model PtProfile.
     // Một PtLog thuộc về một PtProfile.
-    public function ptProfile()
+    public function PtProfile()
     {
         return $this->belongsTo(PtProfile::class, 'pt_profile_id');
     }

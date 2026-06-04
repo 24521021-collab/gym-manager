@@ -21,11 +21,11 @@ class PtBookingController extends Controller
             ->pluck('specialization');
 
         // Tạo Query Builder để lọc PT
-        $ptsQuery = User::where('role', 'pt')->whereHas('ptProfile')->with('ptProfile');
+        $ptsQuery = User::where('role', 'pt')->whereHas('PtProfile')->with('PtProfile');
 
         // Lọc theo chuyên môn nếu có yêu cầu
         if ($selectedSpec !== 'all') {
-            $ptsQuery->whereHas('ptProfile', function ($query) use ($selectedSpec) {
+            $ptsQuery->whereHas('PtProfile', function ($query) use ($selectedSpec) {
                 $query->where('specialization', $selectedSpec);
             });
         }
@@ -67,12 +67,14 @@ class PtBookingController extends Controller
             'pt_id' => 'required|exists:user,id',
             'booking_date' => 'required|date|after_or_equal:today',
             'start_time' => 'required',
+            'note' => 'nullable|string|max:500',
         ]);
 
         $startTime = Carbon::parse($request->start_time);
         $endTime = (clone $startTime)->addHour(); // Mặc định mỗi ca tập kéo dài 1 tiếng
-
-        // Kiểm tra xung đột lịch tập (Sử dụng công thức chồng lấn: StartA < EndB AND EndA > StartB)
+ 
+    
+        
         $isConflict = PtBooking::where('pt_id', $request->pt_id)
             ->where('booking_date', $request->booking_date)
             ->where('status', '!=', 'cancelled')
@@ -86,7 +88,10 @@ class PtBookingController extends Controller
                 'message' => 'Khung giờ này vừa có người đặt mất rồi. Vui lòng chọn giờ khác!'
             ], 422);
         }
-        // Tạo bản ghi mới
+        
+        /*
+         * BẢO MẬT XSS: Sử dụng strip_tags() để loại bỏ hoàn toàn các thẻ HTML 
+         */
         PtBooking::create([
             'customer_id' => auth()->id(), // ID khách hàng đang đăng nhập
             'pt_id' => $request->pt_id,
@@ -95,7 +100,7 @@ class PtBookingController extends Controller
             'end_time' => $endTime->format('H:i:s'),
             'price' => 300000, // Giá mặc định cho 1 buổi tập PT riêng
             'status' => 'pending', // Chờ huấn luyện viên duyệt lịch
-            'note' => $request->note,
+            'note' => $request->note ? strip_tags($request->note) : null,
         ]);
 
         // Gửi thông báo cho khách hàng

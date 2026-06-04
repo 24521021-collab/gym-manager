@@ -49,7 +49,7 @@ class PostSeeder extends Seeder
                 'header_image'=> 'post-1.jpg',
             ],
             [
-                'title' => 'Bí quyết xây dựng hình thể: Quy trình Bulking và Cutting chuẩn khoa học',
+                'title' => 'Bí quyết xây dựng hình thể: Quy trình Bulking và Cutting ',
                 'category' => 'Kỹ thuật tập luyện',
                 'header_image' => 'post-2.jpg',
                 'content' => '<h2>Bí Quyết Xây Dựng Hình Thể: Quy Trình Bulking (Xả Cơ) Và Cutting (Siết Cơ) Chuẩn Khoa Học</h2>

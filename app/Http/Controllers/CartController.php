@@ -54,7 +54,7 @@ class CartController extends Controller
                     "quantity" => $quantity,
                     "image"    => $product->image ?? null,
                     "stock_quantity" => $product->stock_quantity // Lưu stock để kiểm tra sau này
-                ];
+                    ];
                 break;
                 case 'package':
                 $package = GymPackage::findOrFail($id);

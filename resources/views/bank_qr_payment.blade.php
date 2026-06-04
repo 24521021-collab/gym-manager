@@ -14,9 +14,9 @@
                 </div>
 
                 @php
-                    $bankId = "ACB"; // Ví dụ: MB Bank. Bạn thay bằng ngân hàng của bạn
-                    $accountNo = "31438387"; // Thay bằng STK của bạn
-                    $accountName = "PHONG TAP GYMPRO"; // Thay bằng tên chủ TK
+                    $bankId = env('BANK_ID', 'ACB'); 
+                    $accountNo = env('BANK_ACCOUNT_NO', '18361836'); 
+                    $accountName = env('BANK_ACCOUNT_NAME', 'KOR GYM');
                     $amount = $order->total_amount;
                     $info = "Thanh toan don hang " . $order->id;
                     $qrUrl = "https://img.vietqr.io/image/{$bankId}-{$accountNo}-compact2.png?amount={$amount}&addInfo=" . urlencode($info) . "&accountName=" . urlencode($accountName);

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\GymClass;
-use App\Models\PTProfile;
+use App\Models\PtProfile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +18,7 @@ class GymClassSeeder extends Seeder
         DB::table('gym_classes')->truncate();
         Schema::enableForeignKeyConstraints();
 
-        $pts = PTProfile::all();
+        $pts = PtProfile::all();
         if ($pts->isEmpty()) {
             return;
         }

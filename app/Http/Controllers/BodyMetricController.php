@@ -32,6 +32,7 @@ class BodyMetricController extends Controller
                 'measured_at' => Carbon::now(),
             ]);
             return response()->json(['success' => true, 'message' => 'Đã cập nhật và lưu chỉ số vào hồ sơ!']);
+           // return response()->json(['success' => true, 'message' => 'Đã cập nhật và lưu chỉ số vào hồ sơ!', 'bmi' => $bmi]);
         }
 
         // TRẢ VỀ KẾT QUẢ CHO KHÁCH (GUEST) MÀ KHÔNG LƯU

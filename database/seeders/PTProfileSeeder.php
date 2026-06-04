@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\PTProfile;
+use App\Models\PtProfile;
 use App\Models\User;
 
-class PTProfileSeeder extends Seeder
+class PtProfileSeeder extends Seeder
 {
     public function run(): void
     {
@@ -16,7 +16,7 @@ class PTProfileSeeder extends Seeder
             return;
         }
         foreach ($trainers as $index => $trainer) {
-            PTProfile::create([
+            PtProfile::create([
                 'user_id' => $trainer->id,
                 'bio' => 'Huấn luyện viên chuyên nghiệp với hơn ' . (5 + $index) . ' năm kinh nghiệm.',
                 'specialization' => match ($index % 3) {
@@ -32,7 +32,7 @@ class PTProfileSeeder extends Seeder
             ]);
         }
         // 1. Định nghĩa bộ thông tin chi tiết riêng biệt cho từng PT dựa theo email đăng ký
-        $ptProfilesData = [
+        $PtProfilesData = [
             'trainer1@gmail.com' => [
                 'specialization'       => 'Thể hình',
                 'bio'                  => 'Hơn 5 năm kinh nghiệm huấn luyện thi đấu. Chuyên thiết kế lộ trình siết cơ và thay đổi vóc dáng toàn diện nhanh chóng.',
@@ -98,11 +98,11 @@ class PTProfileSeeder extends Seeder
             ],
         ];
         // 2. Duyệt mảng dữ liệu để tìm User tương ứng và cập nhật cấu hình hồ sơ PT
-        foreach ($ptProfilesData as $email => $profile) {
+        foreach ($PtProfilesData as $email => $profile) {
             // Tìm User bằng email đã được tạo từ UserSeeder
             $user = User::where('email', $email)->first();
             if ($user) {
-                PTProfile::updateOrCreate(
+                PtProfile::updateOrCreate(
                     ['user_id' => $user->id], // Khóa ngoại liên kết
                     [
                         'bio'                  => $profile['bio'],

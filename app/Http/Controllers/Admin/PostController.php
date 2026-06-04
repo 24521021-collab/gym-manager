@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
-use App\Models\PTProfile;
+use App\Models\PtProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -141,7 +141,7 @@ class PostController extends Controller
     {
         // Khởi tạo một đối tượng Post rỗng để truyền sang view
         $post = new Post(); 
-        $authors = PTProfile::with('user')
+        $authors = PtProfile::with('user')
             ->get()
             ->sortBy(fn($pt) => $pt->user->full_name);
 
@@ -151,7 +151,7 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::findOrFail($id);
-        $authors = PTProfile::with('user')
+        $authors = PtProfile::with('user')
             ->get()
             ->sortBy(fn($pt) => $pt->user->full_name);
 

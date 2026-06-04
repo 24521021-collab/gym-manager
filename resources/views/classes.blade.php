@@ -72,7 +72,6 @@
             allData = await response.json(); // Chuyển đổi phản hồi từ server thành đối tượng JS
             renderClasses(); // Gọi hàm xóa danh sách cũ và vẽ danh sách lớp học mới
             renderPagination(allData.classes); // Cập nhật lại các nút phân trang (Trang 1, 2, 3...)
-
         } catch (error) {
             // Xử lý trường hợp mất mạng hoặc server gặp lỗi 500
             console.error("Fetch Error:", error);
