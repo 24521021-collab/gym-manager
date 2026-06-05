@@ -15,7 +15,7 @@
 
                 @php
                     $bankId = env('BANK_ID', 'ACB'); 
-                    $accountNo = env('BANK_ACCOUNT_NO', '18361836'); 
+                    $accountNo = env('BANK_ACCOUNT_NO', '00000000'); 
                     $accountName = env('BANK_ACCOUNT_NAME', 'KOR GYM');
                     $amount = $order->total_amount;
                     $info = "Thanh toan don hang " . $order->id;

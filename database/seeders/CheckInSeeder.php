@@ -27,11 +27,9 @@ class CheckInSeeder extends Seeder
         if ($members->isEmpty()) {
             return;
         }
-
         $methods = ['QR Code'];
-
         // 3. Tạo 20 lượt điểm danh mẫu rải rác trong 30 ngày qua
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             CheckIn::create([
                 'user_id'       => $members->random()->id,
                 // Ngẫu nhiên từ ngày 1 đến ngày 5 tháng 6, rải rác từ 6h sáng đến 22h đêm

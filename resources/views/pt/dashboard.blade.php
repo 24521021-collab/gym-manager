@@ -332,7 +332,6 @@
             });
             const result = await res.json();
             if(res.ok) {
-                
                 closeNoteModal();
                 document.getElementById('logForm').reset(); // Reset form sau khi lưu
                 alert(result.message); // Thêm thông báo thành công
