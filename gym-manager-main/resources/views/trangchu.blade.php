@@ -81,8 +81,8 @@
                 <div id="catalog-recommendation-panel" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-black/30 border border-white/10 rounded-xl p-4">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Goi tap phu hop</span>
-                            <a href="#membership-packages" class="text-[10px] text-white bg-primary hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold uppercase">Xem goi phu hop</a>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Gói tập phù hợp</span>
+                            <a href="#membership-packages" class="text-[10px] text-white bg-primary hover:bg-red-700 px-3 py-1.5 rounded-lg font-bold uppercase">Xem gói phù hợp</a>
                         </div>
                         <div id="recommended-packages-list" class="space-y-2 text-xs text-gray-300">
                             @forelse(($recommendedPackageIds ?? []) as $recommendedPackageId)
@@ -94,23 +94,23 @@
                                     </div>
                                 @endif
                             @empty
-                                <p class="text-gray-500 italic">Nhap chi so de he thong chon goi tap phu hop.</p>
+                                <p class="text-gray-500 italic">Nhập chỉ số để hệ thống chọn gói tập phù hợp.</p>
                             @endforelse
                         </div>
                     </div>
                     <div class="bg-black/30 border border-white/10 rounded-xl p-4">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Lop nen tham gia</span>
-                            <a href="{{ route('classes.index') }}" class="text-[10px] text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg font-bold uppercase">Xem lop</a>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Lớp nên tham gia</span>
+                            <a href="{{ route('classes.index') }}" class="text-[10px] text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg font-bold uppercase">Xem lớp</a>
                         </div>
                         <div id="recommended-classes-list" class="space-y-2 text-xs text-gray-300">
                             @forelse(($recommendedClasses ?? []) as $recommendedClass)
                                 <a href="{{ route('classes.index', ['recommended_class' => $recommendedClass->id]) }}" class="block border border-white/5 rounded-lg px-3 py-2 bg-white/5 hover:border-primary/50 transition-colors">
                                     <span class="font-bold text-white">{{ $recommendedClass->name }}</span>
-                                    <span class="block text-gray-500 mt-0.5">{{ number_format($recommendedClass->price, 0, ',', '.') }}đ / {{ $recommendedClass->total_sessions }} buoi</span>
+                                    <span class="block text-gray-500 mt-0.5">{{ number_format($recommendedClass->price, 0, ',', '.') }}đ / {{ $recommendedClass->total_sessions }} buổi</span>
                                 </a>
                             @empty
-                                <p class="text-gray-500 italic">Nhap chi so de he thong chon lop phu hop.</p>
+                                <p class="text-gray-500 italic">Nhập chỉ số để hệ thống chọn lớp phù hợp.</p>
                             @endforelse
                         </div>
                     </div>
@@ -346,7 +346,7 @@
 
             if (packageIds.includes(Number(button.dataset.id))) {
                 card.classList.add('ring-2', 'ring-primary', 'shadow-[0_0_35px_rgba(227,24,55,0.45)]', 'relative');
-                card.insertAdjacentHTML('afterbegin', '<span class="js-recommended-badge absolute -top-4 right-4 bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest z-20 border border-white/20">Phu hop voi ban</span>');
+                card.insertAdjacentHTML('afterbegin', '<span class="js-recommended-badge absolute -top-4 right-4 bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest z-20 border border-white/20">Phù hợp với bạn</span>');
             }
         });
     }
@@ -358,55 +358,55 @@
 
         if (bmi < 18.5) {
             recommendation = {
-                status: 'Thieu can',
+                status: 'Thiếu cân',
                 risk_level: 'warning',
-                goal: 'Tang co va cai thien suc ben',
-                package_hint: 'Goi tap 3-6 thang kem PT dinh ky',
-                class_hint: 'Strength Foundation, Pilates co ban, lop ky thuat may tap',
-                weekly_plan: ['3 buoi tap khang luc toan than.', '1 buoi mobility hoac yoga nhe.', '2 ngay nghi chu dong, di bo 20-30 phut.'],
-                nutrition_tip: 'Tang 300-500 kcal moi ngay, uu tien protein va bua phu sau tap.'
+                goal: 'Tăng cơ và cải thiện sức bền',
+                package_hint: 'Gói tập 3-6 tháng kèm PT định kỳ',
+                class_hint: 'Strength Foundation, Pilates cơ bản, lớp kỹ thuật máy tập',
+                weekly_plan: ['3 buổi tập kháng lực toàn thân.', '1 buổi mobility hoặc yoga nhẹ.', '2 ngày nghỉ chủ động, đi bộ 20-30 phút.'],
+                nutrition_tip: 'Tăng 300-500 kcal mỗi ngày, ưu tiên protein và bữa phụ sau tập.'
             };
         } else if (bmi < 23) {
             recommendation = {
-                status: 'Can doi',
+                status: 'Cân đối',
                 risk_level: 'success',
-                goal: 'Duy tri the trang va tang hieu suat',
-                package_hint: 'Goi tap linh hoat 3 thang hoac goi lop nhom',
-                class_hint: 'Functional Training, HIIT vua phai, Yoga phuc hoi',
-                weekly_plan: ['2 buoi khang luc chia than tren/than duoi.', '2 buoi cardio hoac lop nhom cuong do vua.', '1 buoi mobility, core hoac yoga phuc hoi.'],
-                nutrition_tip: 'Duy tri protein 1.6-2.0g/kg can nang va ngu du.'
+                goal: 'Duy trì thể trạng và tăng hiệu suất',
+                package_hint: 'Gói tập linh hoạt 3 tháng hoặc gói lớp nhóm',
+                class_hint: 'Functional Training, HIIT vừa phải, Yoga phục hồi',
+                weekly_plan: ['2 buổi kháng lực chia thân trên/thân dưới.', '2 buổi cardio hoặc lớp nhóm cường độ vừa.', '1 buổi mobility, core hoặc yoga phục hồi.'],
+                nutrition_tip: 'Duy trì protein 1.6-2.0g/kg cân nặng và ngủ đủ.'
             };
         } else if (bmi < 25) {
             recommendation = {
-                status: 'Can theo doi',
+                status: 'Cần theo dõi',
                 risk_level: 'info',
-                goal: 'Giam mo nhe va giu khoi co',
-                package_hint: 'Goi tap 3 thang ket hop lop cardio',
-                class_hint: 'HIIT beginner, Boxing co ban, Strength circuit',
-                weekly_plan: ['3 buoi tap khang luc theo vong.', '2 buoi cardio 25-35 phut.', 'Theo doi can nang va vong eo moi tuan.'],
-                nutrition_tip: 'Giam nhe 200-300 kcal moi ngay, khong cat protein.'
+                goal: 'Giảm mỡ nhẹ và giữ khối cơ',
+                package_hint: 'Gói tập 3 tháng kết hợp lớp cardio',
+                class_hint: 'HIIT beginner, Boxing cơ bản, Strength circuit',
+                weekly_plan: ['3 buổi tập kháng lực theo vòng.', '2 buổi cardio 25-35 phút.', 'Theo dõi cân nặng và vòng eo mỗi tuần.'],
+                nutrition_tip: 'Giảm nhẹ 200-300 kcal mỗi ngày, không cắt protein.'
             };
         } else {
             recommendation = {
-                status: 'Thua can',
+                status: 'Thừa cân',
                 risk_level: 'danger',
-                goal: 'Giam mo, tang suc ben tim mach',
-                package_hint: 'Goi 6 thang co PT theo doi tien do',
-                class_hint: 'Cardio, Boxing, HIIT beginner, lop giam mo',
-                weekly_plan: ['3 buoi cardio cuong do thap-vua, moi buoi 30-45 phut.', '2 buoi khang luc toan than de bao ve khoi co.', '1 buoi stretching/yoga de tang kha nang duy tri.'],
-                nutrition_tip: 'Tao tham hut 300-500 kcal moi ngay, uu tien rau va protein nac.'
+                goal: 'Giảm mỡ, tăng sức bền tim mạch',
+                package_hint: 'Gói 6 tháng có PT theo dõi tiến độ',
+                class_hint: 'Cardio, Boxing, HIIT beginner, lớp giảm mỡ',
+                weekly_plan: ['3 buổi cardio cường độ thấp-vừa, mỗi buổi 30-45 phút.', '2 buổi kháng lực toàn thân để bảo vệ khối cơ.', '1 buổi stretching/yoga để tăng khả năng duy trì.'],
+                nutrition_tip: 'Tạo thâm hụt 300-500 kcal mỗi ngày, ưu tiên rau và protein nạc.'
             };
         }
 
         recommendation.body_fat_note = Number.isFinite(bf)
-            ? (bf >= 30 ? 'Ty le mo cao, nen tang cardio va kiem soat nang luong.' : 'Ty le mo da duoc ghi nhan de ca nhan hoa de xuat.')
-            : 'Nhap them body fat de he thong ca nhan hoa chinh xac hon.';
+            ? (bf >= 30 ? 'Tỷ lệ mỡ cao, nên tăng cardio và kiểm soát năng lượng.' : 'Tỷ lệ mỡ đã được ghi nhận để cá nhân hóa đề xuất.')
+            : 'Nhập thêm tỷ lệ mỡ (body fat) để hệ thống cá nhân hóa chính xác hơn.';
 
         return recommendation;
     }
 
     function renderRecommendation(recommendation) {
-        if (!recommendation) return 'Nhap chi so de nhan de xuat ca nhan hoa.';
+        if (!recommendation) return 'Nhập chỉ số để nhận đề xuất cá nhân hóa.';
 
         const plan = Array.isArray(recommendation.weekly_plan)
             ? recommendation.weekly_plan.map(item => `<li>${item}</li>`).join('')
@@ -414,11 +414,11 @@
 
         return `
             <div class="space-y-2">
-                <p><span class="text-white font-bold">Muc tieu:</span> ${recommendation.goal}</p>
-                <p><span class="text-white font-bold">Goi tap goi y:</span> ${recommendation.package_hint}</p>
-                <p><span class="text-white font-bold">Lop nen thu:</span> ${recommendation.class_hint}</p>
+                <p><span class="text-white font-bold">Mục tiêu:</span> ${recommendation.goal}</p>
+                <p><span class="text-white font-bold">Gói tập gợi ý:</span> ${recommendation.package_hint}</p>
+                <p><span class="text-white font-bold">Lớp nên thử:</span> ${recommendation.class_hint}</p>
                 <ul class="list-disc list-inside space-y-1">${plan}</ul>
-                <p><span class="text-white font-bold">Dinh duong:</span> ${recommendation.nutrition_tip}</p>
+                <p><span class="text-white font-bold">Dinh dưỡng:</span> ${recommendation.nutrition_tip}</p>
                 <p class="text-gray-400">${recommendation.body_fat_note || ''}</p>
             </div>
         `;
@@ -439,16 +439,16 @@
                     <span class="text-primary font-mono">${new Intl.NumberFormat('vi-VN').format(item.price)}đ</span>
                 </div>
             `).join('')
-            : '<p class="text-gray-500 italic">Chua tim thay goi tap phu hop.</p>';
+            : '<p class="text-gray-500 italic">Chưa tìm thấy gói tập phù hợp.</p>';
 
         classBox.innerHTML = classes.length
             ? classes.map(item => `
                 <a href="${item.url}" class="block border border-white/5 rounded-lg px-3 py-2 bg-white/5 hover:border-primary/50 transition-colors">
                     <span class="font-bold text-white">${item.name}</span>
-                    <span class="block text-gray-500 mt-0.5">${new Intl.NumberFormat('vi-VN').format(item.price)}đ / ${item.total_sessions} buoi</span>
+                    <span class="block text-gray-500 mt-0.5">${new Intl.NumberFormat('vi-VN').format(item.price)}đ / ${item.total_sessions} buổi</span>
                 </a>
             `).join('')
-            : '<p class="text-gray-500 italic">Chua tim thay lop phu hop.</p>';
+            : '<p class="text-gray-500 italic">Chưa tìm thấy lớp phù hợp.</p>';
 
         highlightRecommendedPackages(packages.map(item => Number(item.id)));
     }
@@ -491,7 +491,7 @@
 
         if (bmi !== '--' && !isNaN(bmi)) {
             const recommendation = serverRecommendation || buildLocalRecommendation(parseFloat(bmi), bodyFat);
-            statusText.innerText = `Trang thai: ${recommendation.status} - ${recommendation.goal}`;
+            statusText.innerText = `Trạng thái: ${recommendation.status} - ${recommendation.goal}`;
             aiText.innerHTML = renderRecommendation(recommendation);
 
             panel.className = "p-4 rounded-xl border transition-all duration-300 flex flex-col md:flex-row justify-between items-start md:items-center gap-4";

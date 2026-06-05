@@ -22,7 +22,7 @@ class HealthRecommendationService
             'body_fat_note' => $bodyFatNote,
             'trend' => $trend,
             'summary' => trim($profile['summary'] . ' ' . $bodyFatNote . ' ' . $trend),
-            'disclaimer' => 'De xuat nay mang tinh tham khao hoc tap, khong thay the tu van y khoa hoac huan luyen vien ca nhan.',
+            'disclaimer' => 'Đề xuất này mang tính tham khảo học tập, không thay thế tư vấn y khoa hoặc huấn luyện viên cá nhân.',
         ];
     }
 
@@ -30,106 +30,106 @@ class HealthRecommendationService
     {
         if ($bmi < 18.5) {
             return [
-                'status' => 'Thieu can',
+                'status' => 'Thiếu cân',
                 'risk_level' => 'warning',
-                'goal' => 'Tang co va cai thien suc ben',
-                'package_hint' => 'Goi tap 3-6 thang kem PT dinh ky',
-                'class_hint' => 'Strength Foundation, Pilates co ban, lop ky thuat may tap',
+                'goal' => 'Tăng cơ và cải thiện sức bền',
+                'package_hint' => 'Gói tập 3-6 tháng kèm PT định kỳ',
+                'class_hint' => 'Strength Foundation, Pilates cơ bản, lớp kỹ thuật máy tập',
                 'weekly_plan' => [
-                    '3 buoi tap khang luc toan than, uu tien squat, deadlift nhe, push, pull.',
-                    '1 buoi mobility hoac yoga nhe de cai thien bien do van dong.',
-                    '2 ngay nghi chu dong, di bo 20-30 phut.',
+                    '3 buổi tập kháng lực toàn thân, ưu tiên squat, deadlift nhẹ, push, pull.',
+                    '1 buổi mobility hoặc yoga nhẹ để cải thiện biên độ vận động.',
+                    '2 ngày nghỉ chủ động, đi bộ 20-30 phút.',
                 ],
-                'nutrition_tip' => 'Tang 300-500 kcal moi ngay, uu tien protein, tinh bot tot va bua phu sau tap.',
-                'summary' => 'BMI dang thap, he thong uu tien giao an tang co an toan va tang nang luong nap vao.',
+                'nutrition_tip' => 'Tăng 300-500 kcal mỗi ngày, ưu tiên protein, tinh bột tốt và bữa phụ sau tập.',
+                'summary' => 'BMI đang thấp, hệ thống ưu tiên giáo án tăng cơ an toàn và tăng lượng năng lượng nạp vào.',
             ];
         }
 
         if ($bmi < 23) {
             return [
-                'status' => 'Can doi',
+                'status' => 'Cân đối',
                 'risk_level' => 'success',
-                'goal' => 'Duy tri the trang va tang hieu suat',
-                'package_hint' => 'Goi tap linh hoat 3 thang hoac goi lop nhom',
-                'class_hint' => 'Functional Training, HIIT vua phai, Yoga phuc hoi',
+                'goal' => 'Duy trì thể trạng và tăng hiệu suất',
+                'package_hint' => 'Gói tập linh hoạt 3 tháng hoặc gói lớp nhóm',
+                'class_hint' => 'Functional Training, HIIT vừa phải, Yoga phục hồi',
                 'weekly_plan' => [
-                    '2 buoi khang luc chia than tren/than duoi.',
-                    '2 buoi cardio hoac lop nhom cuong do vua.',
-                    '1 buoi mobility, core hoac yoga phuc hoi.',
+                    '2 buổi kháng lực chia thân trên/thân dưới.',
+                    '2 buổi cardio hoặc lớp nhóm cường độ vừa.',
+                    '1 buổi mobility, core hoặc yoga phục hồi.',
                 ],
-                'nutrition_tip' => 'Duy tri protein 1.6-2.0g/kg can nang, can bang tinh bot quanh buoi tap.',
-                'summary' => 'BMI dang trong vung can doi, muc tieu phu hop la giu phong do va nang hieu suat.',
+                'nutrition_tip' => 'Duy trì protein 1.6-2.0g/kg cân nặng, cân bằng tinh bột quanh buổi tập.',
+                'summary' => 'BMI đang trong vùng cân đối, mục tiêu phù hợp là giữ phong độ và nâng hiệu suất.',
             ];
         }
 
         if ($bmi < 25) {
             return [
-                'status' => 'Can theo doi',
+                'status' => 'Cần theo dõi',
                 'risk_level' => 'info',
-                'goal' => 'Giam mo nhe va giu khoi co',
-                'package_hint' => 'Goi tap 3 thang ket hop lop cardio',
-                'class_hint' => 'HIIT beginner, Boxing co ban, Strength circuit',
+                'goal' => 'Giảm mỡ nhẹ và giữ khối cơ',
+                'package_hint' => 'Gói tập 3 tháng kết hợp lớp cardio',
+                'class_hint' => 'HIIT beginner, Boxing cơ bản, Strength circuit',
                 'weekly_plan' => [
-                    '3 buoi tap khang luc theo vong de giu co.',
-                    '2 buoi cardio 25-35 phut, uu tien zone 2 hoac HIIT nhe.',
-                    'Theo doi can nang va vong eo moi tuan.',
+                    '3 buổi tập kháng lực theo vòng để giữ cơ.',
+                    '2 buổi cardio 25-35 phút, ưu tiên zone 2 hoặc HIIT nhẹ.',
+                    'Theo dõi cân nặng và vòng eo mỗi tuần.',
                 ],
-                'nutrition_tip' => 'Giam nhe 200-300 kcal moi ngay, khong cat protein de tranh mat co.',
-                'summary' => 'BMI hoi cao so voi muc ly tuong Chau A, nen uu tien giam mo co kiem soat.',
+                'nutrition_tip' => 'Giảm nhẹ 200-300 kcal mỗi ngày, không cắt protein để tránh mất cơ.',
+                'summary' => 'BMI hơi cao so với mức lý tưởng Châu Á, nên ưu tiên giảm mỡ có kiểm soát.',
             ];
         }
 
         return [
-            'status' => 'Thua can',
+            'status' => 'Thừa cân',
             'risk_level' => 'danger',
-            'goal' => 'Giam mo, tang suc ben tim mach',
-            'package_hint' => 'Goi 6 thang co PT theo doi tien do',
-            'class_hint' => 'Cardio, Boxing, HIIT beginner, lop giam mo',
+            'goal' => 'Giảm mỡ, tăng sức bền tim mạch',
+            'package_hint' => 'Gói 6 tháng có PT theo dõi tiến độ',
+            'class_hint' => 'Cardio, Boxing, HIIT beginner, lớp giảm mỡ',
             'weekly_plan' => [
-                '3 buoi cardio cuong do thap-vua, moi buoi 30-45 phut.',
-                '2 buoi khang luc toan than de bao ve khoi co.',
-                '1 buoi stretching/yoga de giam dau moi va tang kha nang duy tri.',
+                '3 buổi cardio cường độ thấp-vừa, mỗi buổi 30-45 phút.',
+                '2 buổi kháng lực toàn thân để bảo vệ khối cơ.',
+                '1 buổi stretching/yoga để giảm đau mỏi và tăng khả năng duy trì.',
             ],
-            'nutrition_tip' => 'Tao tham hut 300-500 kcal moi ngay, uu tien rau, protein nac va han che do uong co duong.',
-            'summary' => 'BMI dang cao, he thong uu tien lich tap giam mo ben vung va an toan cho khop.',
+            'nutrition_tip' => 'Tạo thâm hụt 300-500 kcal mỗi ngày, ưu tiên rau, protein nạc và hạn chế đồ uống có đường.',
+            'summary' => 'BMI đang cao, hệ thống ưu tiên lịch tập giảm mỡ bền vững và an toàn cho khớp.',
         ];
     }
 
     private static function bodyFatNote(?float $bodyFat): string
     {
         if ($bodyFat === null) {
-            return 'Nhap them body fat de he thong ca nhan hoa chinh xac hon.';
+            return 'Nhập thêm tỷ lệ mỡ (body fat) để hệ thống cá nhân hóa chính xác hơn.';
         }
 
         if ($bodyFat >= 30) {
-            return 'Ty le mo cao, nen tang cardio va kiem soat nang luong nap vao.';
+            return 'Tỷ lệ mỡ cao, nên tăng cardio và kiểm soát năng lượng nạp vào.';
         }
 
         if ($bodyFat >= 22) {
-            return 'Ty le mo can theo doi, nen ket hop khang luc va cardio deu dan.';
+            return 'Tỷ lệ mỡ cần theo dõi, nên kết hợp kháng lực và cardio đều đặn.';
         }
 
         if ($bodyFat < 10) {
-            return 'Ty le mo rat thap, can chu y phuc hoi va dinh duong.';
+            return 'Tỷ lệ mỡ rất thấp, cần chú ý phục hồi và dinh dưỡng.';
         }
 
-        return 'Ty le mo o muc on, co the tap trung vao hieu suat va duy tri.';
+        return 'Tỷ lệ mỡ ở mức ổn, có thể tập trung vào hiệu suất và duy trì.';
     }
 
     private static function trend(float $bmi, ?float $previousBmi): string
     {
         if ($previousBmi === null) {
-            return 'Chua co du lieu cu de danh gia xu huong.';
+            return 'Chưa có dữ liệu cũ để đánh giá xu hướng.';
         }
 
         $delta = round($bmi - $previousBmi, 1);
 
         if (abs($delta) < 0.2) {
-            return 'BMI gan nhu on dinh so voi lan do truoc.';
+            return 'BMI gần như ổn định so với lần đo trước.';
         }
 
         return $delta > 0
-            ? "BMI tang {$delta} diem so voi lan do truoc, nen kiem tra lai muc an va lich cardio."
-            : 'BMI dang giam so voi lan do truoc, tiep tuc theo doi de tranh giam qua nhanh.';
+            ? "BMI tăng {$delta} điểm so với lần đo trước, nên kiểm tra lại mức ăn và lịch cardio."
+            : 'BMI đang giảm so với lần đo trước, tiếp tục theo dõi để tránh giảm quá nhanh.';
     }
 }
